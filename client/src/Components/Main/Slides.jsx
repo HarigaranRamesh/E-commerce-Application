@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import "./Slider.css";
-// import img1 from "./src/assets/logo.png";
-// import img1 from "./src/assets/man.jpg";
+
+import saleImg from "../../assets/sale.jpg";
+import manImg from "../../assets/man.jpg";
 
 export default function Slides() {
   const carouselRef = useRef(null);
@@ -32,7 +33,7 @@ export default function Slides() {
         <div ref={carouselRef} className="carousel">
           <div className="carousel-item">
             <img
-              src="/public/images/sale.jpg"
+              src={saleImg} // ✅ use imported variable
               alt="Slide 1"
               className="carousel-img"
             />
@@ -42,7 +43,7 @@ export default function Slides() {
 
           <div className="carousel-item">
             <img
-              src="/public/images/man.jpg"
+              src={manImg} // ✅ use imported variable
               alt="Slide 2"
               className="carousel-img"
             />
