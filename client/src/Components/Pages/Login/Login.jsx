@@ -79,8 +79,16 @@ export default function Login() {
           </button>
         </form>
 
+
         <p className="login-footer">
-          Don’t have an account? <a href="/signup">Sign Up</a>
+          Don’t have an account?{" "}
+          <span
+            className="signup-link"
+            onClick={() => navigate("/signup")}
+            style={{ color: "blue", cursor: "pointer" }}
+          >
+            Sign Up
+          </span>
         </p>
       </div>
     </div>

@@ -6,8 +6,8 @@ import "./Category.css";
 const categories = [
   { id: 1, name: "Shirts", image: "/images/shirt13.jpeg" },
   { id: 2, name: "Hoodies", image: "/images/Hoodies.jpeg" },
-  { id: 3, name: "Pants", image: "/images/pant6.jpeg" },
-  { id: 4, name: "T-Shirts", image: "/images/tshirt.jpeg" },
+  { id: 3, name: "Pants", image: "/images/pant16.jpeg" },
+  { id: 4, name: "T-Shirts", image: "/images/Tshirt6.jpeg" },
 ];
 
 const CategoryPage = () => {

@@ -28,7 +28,7 @@ const products = [
   { id: 19, name: "Hoodie 5", price: 1700, image: "/images/Hoodie5.jpeg" },
   { id: 20, name: "T-Shirt 5", price: 900, image: "/images/Tshirt5.jpeg" },
   { id: 21, name: "Shirt 6", price: 950, image: "/images/shirt6.jpeg" },
-  { id: 22, name: "Pant 6", price: 1450, image: "/images/pant6.jpeg" },
+  { id: 22, name: "Pant 17", price: 1450, image: "/images/pant17.jpeg" },
   { id: 23, name: "Hoodie 6", price: 1750, image: "/images/Hoodie6.jpeg" },
   { id: 24, name: "T-Shirt 6", price: 950, image: "/images/Tshirt6.jpeg" },
 ];
