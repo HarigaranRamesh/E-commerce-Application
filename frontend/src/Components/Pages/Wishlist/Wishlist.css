@@ -1,5 +1,5 @@
 body {
-  font-family: "Arial", sans-serif;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .wishlist-container {
@@ -83,6 +83,7 @@ body {
 .remove-button:hover {
   color: #e53935;
 }
+
 .wishlist-btn {
   background: #01579b;
   color: white;
@@ -111,14 +112,15 @@ body {
 }
 
 .wishlist-btn.remove:hover {
-  background:#004c84;
+  background: #004c84;
 }
 
 
 /* Tablet */
 @media (max-width: 992px) {
   .wishlist-container {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns on tablets */
     gap: 15px;
     padding: 15px;
   }
@@ -149,7 +151,8 @@ body {
 /* Mobile */
 @media (max-width: 576px) {
   .wishlist-container {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns on mobile */
     gap: 10px;
     padding: 10px;
   }

@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useContext, useState } from "react";
-import { ShoppingCart, Heart } from "lucide-react";
 import { CartContext } from "../../Context/CartContext";
 import { AuthContext } from "../../Context/AuthContext";
 import { WishlistContext } from "../../Context/WishlistContext";
+import { ShoppingCart, Heart, User } from "lucide-react";
 import toast from "react-hot-toast";
 import logo from "../../assets/logo.png";
 import "./Navbar.css";
@@ -29,7 +29,7 @@ export default function Navbar() {
       },
     });
     setTimeout(() => {
-      navigate("/"); 
+      navigate("/");
     }, 2000);
   };
 
@@ -84,9 +84,19 @@ export default function Navbar() {
           </Link>
 
           {user ? (
-            <button onClick={handleLogout} className="auth-button logout">
-              Logout
-            </button>
+            <>
+              <Link
+                to="/profile"
+                className="nav-item"
+                onClick={() => setMenuOpen(false)}
+              >
+                <User className="icon" />
+                Profile
+              </Link>
+              <button onClick={handleLogout} className="auth-button logout">
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <Link

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -13,9 +13,16 @@ const api = axios.create({
 // Add token to requests if available
 api.interceptors.request.use(
     (config) => {
-        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        if (user.token) {
-            config.headers.Authorization = `Bearer ${user.token}`;
+        try {
+            const userStr = localStorage.getItem('currentUser');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (user && user.token) {
+                    config.headers.Authorization = `Bearer ${user.token}`;
+                }
+            }
+        } catch (error) {
+            console.error("Error parsing user token:", error);
         }
         return config;
     },

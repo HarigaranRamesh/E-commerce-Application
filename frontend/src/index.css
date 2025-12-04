@@ -23,42 +23,14 @@
   --footer-bg: #212529;
 }
 
-[data-theme='dark'] {
-  /* Dark Mode Colors */
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #2d2d2d;
-  --bg-tertiary: #3a3a3a;
-  --text-primary: #f8f9fa;
-  --text-secondary: #adb5bd;
-  --text-tertiary: #6c757d;
-  --border-color: #495057;
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
-  --accent-primary: #4fc3f7;
-  --accent-secondary: #29b6f6;
-  --accent-hover: #81d4fa;
-  --success: #4caf50;
-  --danger: #f44336;
-  --warning: #ff9800;
-  --info: #00bcd4;
-  --card-bg: #2d2d2d;
-  --input-bg: #3a3a3a;
-  --navbar-bg: #212529;
-  --footer-bg: #0d0d0d;
-}
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Times New Roman', Times, serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-primary);
@@ -127,12 +99,6 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(1, 87, 155, 0.1);
 }
 
-[data-theme='dark'] input:focus,
-[data-theme='dark'] textarea:focus,
-[data-theme='dark'] select:focus {
-  box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
-}
-
 /* Global link styles */
 a {
   color: var(--accent-primary);
@@ -170,20 +136,53 @@ a:hover {
   text-align: center;
 }
 
-.mt-1 { margin-top: 0.5rem; }
-.mt-2 { margin-top: 1rem; }
-.mt-3 { margin-top: 1.5rem; }
-.mt-4 { margin-top: 2rem; }
+.mt-1 {
+  margin-top: 0.5rem;
+}
 
-.mb-1 { margin-bottom: 0.5rem; }
-.mb-2 { margin-bottom: 1rem; }
-.mb-3 { margin-bottom: 1.5rem; }
-.mb-4 { margin-bottom: 2rem; }
+.mt-2 {
+  margin-top: 1rem;
+}
 
-.p-1 { padding: 0.5rem; }
-.p-2 { padding: 1rem; }
-.p-3 { padding: 1.5rem; }
-.p-4 { padding: 2rem; }
+.mt-3 {
+  margin-top: 1.5rem;
+}
+
+.mt-4 {
+  margin-top: 2rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 1rem;
+}
+
+.mb-3 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 2rem;
+}
+
+.p-1 {
+  padding: 0.5rem;
+}
+
+.p-2 {
+  padding: 1rem;
+}
+
+.p-3 {
+  padding: 1.5rem;
+}
+
+.p-4 {
+  padding: 2rem;
+}
 
 /* Loading spinner */
 .spinner {
@@ -197,8 +196,13 @@ a:hover {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive */

@@ -1,5 +1,5 @@
 body {
-  font-family: "Arial", sans-serif;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .product-container {
@@ -32,6 +32,7 @@ body {
   cursor: pointer;
   transition: fill 0.2s ease, stroke 0.2s ease;
 }
+
 .wishlist-icon:hover {
   color: #ff4d4d;
 }
@@ -102,7 +103,8 @@ body {
 /* Mobile */
 @media (max-width: 576px) {
   .product-container {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns for mobile */
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns for mobile */
     gap: 10px;
     padding: 10px;
   }

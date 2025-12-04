@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { AuthContext } from "../../../Context/AuthContext";
@@ -8,9 +8,7 @@ import { Elements, CardElement, useStripe, useElements } from "@stripe/react-str
 import { paymentAPI, ordersAPI } from "../../../services/api";
 import "./Checkout.css";
 
-const stripePromise = loadStripe("pk_test_51QRxxx"); // Dummy key for demo
-
-const CheckoutForm = ({ cart, totalAmount, shippingInfo, onSuccess }) => {
+const CheckoutForm = ({ cart, totalAmount, shippingInfo, onSuccess, user }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
@@ -29,6 +27,10 @@ const CheckoutForm = ({ cart, totalAmount, shippingInfo, onSuccess }) => {
       const result = await stripe.confirmCardPayment(data.clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
+          billing_details: {
+            name: user?.name,
+            email: user?.email,
+          },
         },
       });
 
@@ -52,11 +54,24 @@ const CheckoutForm = ({ cart, totalAmount, shippingInfo, onSuccess }) => {
           shippingPrice: 0,
         };
 
-        await ordersAPI.create(orderData);
+        const { data: createdOrder } = await ordersAPI.create(orderData);
+
+        // Update order to paid
+        if (result.paymentIntent.status === 'succeeded') {
+          const paymentResult = {
+            id: result.paymentIntent.id,
+            status: result.paymentIntent.status,
+            update_time: new Date().toISOString(),
+            email_address: user?.email,
+          };
+          await ordersAPI.updateToPaid(createdOrder._id, paymentResult);
+        }
+
         toast.success("Payment successful! Order placed.");
         onSuccess();
       }
     } catch (error) {
+      console.error(error);
       toast.error(error.response?.data?.message || "Payment failed");
     } finally {
       setProcessing(false);
@@ -77,7 +92,7 @@ const CheckoutForm = ({ cart, totalAmount, shippingInfo, onSuccess }) => {
         }} />
       </div>
       <button type="submit" disabled={!stripe || processing} className="pay-button">
-        {processing ? "Processing..." : `Pay $${totalAmount.toFixed(2)}`}
+        {processing ? "Processing..." : "Place Order"}
       </button>
     </form>
   );
@@ -89,6 +104,7 @@ const Checkout = () => {
   const { user } = useContext(AuthContext);
   const { clearCart } = useContext(CartContext);
   const cart = location.state?.cart || [];
+  const [stripePromise, setStripePromise] = useState(null);
 
   const [shippingInfo, setShippingInfo] = useState({
     fullName: user?.name || "",
@@ -99,6 +115,14 @@ const Checkout = () => {
     phone: "",
   });
 
+  useEffect(() => {
+    const getStripeKey = async () => {
+      const { data } = await paymentAPI.getConfig();
+      setStripePromise(loadStripe(data.publishableKey));
+    };
+    getStripeKey();
+  }, []);
+
   const totalAmount = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleInputChange = (e) => {
@@ -107,7 +131,7 @@ const Checkout = () => {
 
   const handleSuccess = () => {
     clearCart();
-    setTimeout(() => navigate("/"), 2000);
+    setTimeout(() => navigate("/myorders"), 2000);
   };
 
   if (cart.length === 0) {
@@ -133,9 +157,13 @@ const Checkout = () => {
           </div>
 
           <h2 className="mt-4">Payment Details</h2>
-          <Elements stripe={stripePromise}>
-            <CheckoutForm cart={cart} totalAmount={totalAmount} shippingInfo={shippingInfo} onSuccess={handleSuccess} />
-          </Elements>
+          {stripePromise ? (
+            <Elements stripe={stripePromise}>
+              <CheckoutForm cart={cart} totalAmount={totalAmount} shippingInfo={shippingInfo} onSuccess={handleSuccess} user={user} />
+            </Elements>
+          ) : (
+            <div className="loading-stripe">Loading payment system...</div>
+          )}
         </div>
 
         <div className="checkout-right">
