@@ -28,6 +28,11 @@ app.use('/api/orders', orderRoutes);
 
 app.use('/api/analytics', analyticsRoutes);
 
+// Root route
+app.get('/', (req, res) => {
+  res.send('API is running...');
+});
+
 // Health check route
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running', timestamp: new Date() });
