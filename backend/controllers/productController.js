@@ -1,8 +1,13 @@
 import Product from '../models/Product.js';
 
-// @desc    Get all products
-// @route   GET /api/products
-// @access  Public
+/**
+ * @desc    Get all products
+ * @route   GET /api/products
+ * @access  Public
+ * @param   {Object} req - Express request object (query: category, search, featured)
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const getProducts = async (req, res) => {
     try {
         const { category, search, featured } = req.query;
@@ -30,9 +35,14 @@ export const getProducts = async (req, res) => {
     }
 };
 
-// @desc    Get single product
-// @route   GET /api/products/:id
-// @access  Public
+/**
+ * @desc    Get single product by ID
+ * @route   GET /api/products/:id
+ * @access  Public
+ * @param   {Object} req - Express request object (params: id)
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -47,9 +57,14 @@ export const getProductById = async (req, res) => {
     }
 };
 
-// @desc    Create a product
-// @route   POST /api/products
-// @access  Private/Admin
+/**
+ * @desc    Create a new product
+ * @route   POST /api/products
+ * @access  Private/Admin
+ * @param   {Object} req - Express request object (body: product details)
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const createProduct = async (req, res) => {
     try {
         const product = new Product({
@@ -73,9 +88,14 @@ export const createProduct = async (req, res) => {
     }
 };
 
-// @desc    Update a product
-// @route   PUT /api/products/:id
-// @access  Private/Admin
+/**
+ * @desc    Update a product
+ * @route   PUT /api/products/:id
+ * @access  Private/Admin
+ * @param   {Object} req - Express request object (params: id, body: updates)
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const updateProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -103,9 +123,14 @@ export const updateProduct = async (req, res) => {
     }
 };
 
-// @desc    Delete a product
-// @route   DELETE /api/products/:id
-// @access  Private/Admin
+/**
+ * @desc    Delete a product
+ * @route   DELETE /api/products/:id
+ * @access  Private/Admin
+ * @param   {Object} req - Express request object (params: id)
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const deleteProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -121,9 +146,14 @@ export const deleteProduct = async (req, res) => {
     }
 };
 
-// @desc    Create product review
-// @route   POST /api/products/:id/reviews
-// @access  Private
+/**
+ * @desc    Create product review
+ * @route   POST /api/products/:id/reviews
+ * @access  Private
+ * @param   {Object} req - Express request object (params: id, body: rating, comment)
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const createProductReview = async (req, res) => {
     try {
         const { rating, comment } = req.body;

@@ -1,110 +1,155 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff, User, Mail, Lock, Phone } from "lucide-react";
 import { toast } from "react-hot-toast";
-import "./Signup.css";
+import { authAPI } from "../../../services/api";
+import "../Login/Login.css"; // Reuse styling
 
 export default function Signup() {
   const [formData, setFormData] = useState({
-    fullname: "",
+    name: "",
     email: "",
-    mobile: "",
     password: "",
     confirmPassword: "",
-    gender: "",
-    dob: "",
-    street: "",
-    city: "",
-    state: "",
-    zip: "",
-    country: "",
   });
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validate = () => {
+    let newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Full Name is required";
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+    }
 
-    if (!validateEmail(formData.email)) {
-      toast.error("Please enter a valid email");
-      return;
+    if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match!");
-      return;
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    if (users.some((user) => user.email === formData.email)) {
-      toast.error("Email already registered. Please login.");
-      return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      await authAPI.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
+
+      toast.success("Account created successfully! Please login.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } catch (error) {
+      console.error("Signup error:", error);
+      const message = error.response?.data?.message || "Registration failed. Please try again.";
+      toast.error(message);
     }
-
-    users.push(formData);
-    localStorage.setItem("users", JSON.stringify(users));
-
-    toast.success("Registration successful! Redirecting to login...");
-
-    setTimeout(() => {
-      navigate("/login");
-    }, 2000);
   };
 
   return (
-    <div className="signup-container">
-      <div className="signup-card">
-        <h2 className="signup-title">Create Account</h2>
-        <form className="signup-form" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="fullname"
-            className="signup-input"
-            placeholder="Full Name"
-            value={formData.fullname}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            className="signup-input"
-            placeholder="Email Address"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            className="signup-input"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            className="signup-input"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-          <button type="submit" className="signup-button">
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h2>Create Account</h2>
+          <p>Join us today and start shopping</p>
+        </div>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Full Name</label>
+            <div className={`input-wrapper ${errors.name ? "error" : ""}`}>
+              <User className="input-icon" size={20} />
+              <input
+                type="text"
+                name="name"
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+            {errors.name && <span className="error-text">{errors.name}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>Email Address</label>
+            <div className={`input-wrapper ${errors.email ? "error" : ""}`}>
+              <Mail className="input-icon" size={20} />
+              <input
+                type="email"
+                name="email"
+                placeholder="john@example.com"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+            {errors.email && <span className="error-text">{errors.email}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>Password</label>
+            <div className={`input-wrapper ${errors.password ? "error" : ""}`}>
+              <Lock className="input-icon" size={20} />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Create a password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {errors.password && <span className="error-text">{errors.password}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <div className={`input-wrapper ${errors.confirmPassword ? "error" : ""}`}>
+              <Lock className="input-icon" size={20} />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm your password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+            </div>
+            {errors.confirmPassword && (
+              <span className="error-text">{errors.confirmPassword}</span>
+            )}
+          </div>
+
+          <button type="submit" className="auth-button">
             Sign Up
           </button>
         </form>
-        <p className="signup-footer">
-          Already have an account? <a href="/login">Login</a>
+
+        <p className="auth-switch">
+          Already have an account? <Link to="/login">Sign In</Link>
         </p>
       </div>
     </div>

@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { CartContext } from "../../Context/CartContext";
 import { AuthContext } from "../../Context/AuthContext";
 import { WishlistContext } from "../../Context/WishlistContext";
-import { ShoppingCart, Heart, User } from "lucide-react";
+import { ShoppingCart, Heart, User, Search, Menu, X, LogOut } from "lucide-react";
 import toast from "react-hot-toast";
 import logo from "../../assets/logo.png";
 import "./Navbar.css";
@@ -13,43 +13,59 @@ export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const { wishlist } = useContext(WishlistContext);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
 
   const totalItems =
     cart?.reduce((total, item) => total + item.quantity, 0) || 0;
   const wishlistCount = wishlist?.length || 0;
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleLogout = () => {
     logout();
     setMenuOpen(false);
-    toast.success("Logged out successfully", {
-      style: {
-        background: "#01579b",
-        color: "#fff",
-      },
-    });
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
+    toast.success("Logged out successfully");
+    navigate("/");
   };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
+    <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
+      <div className="navbar-container container">
         {/* Logo */}
         <Link to="/" className="logo">
           <img src={logo} alt="Logo" className="logo-img" />
           <span className="logo-text">Brand Originals</span>
         </Link>
 
-        {/* Hamburger Toggler */}
+        {/* Search Bar (Desktop) */}
+        <div className="search-bar">
+          <Search size={18} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search products..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                navigate(`/search?q=${e.target.value}`);
+                setMenuOpen(false);
+              }
+            }}
+          />
+        </div>
+
+        {/* Mobile Toggle */}
         <button
-          className={`menu-toggler ${menuOpen ? "open" : ""}`}
+          className="menu-toggler"
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
         >
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
         {/* Navigation Links */}
@@ -62,59 +78,67 @@ export default function Navbar() {
             className="nav-item"
             onClick={() => setMenuOpen(false)}
           >
-            Categories
-          </Link>
-          <Link
-            to="/Wishlist"
-            className="nav-item"
-            onClick={() => setMenuOpen(false)}
-          >
-            <Heart className="icon" />
-            {wishlistCount > 0 && <span className="wishlist-count">{wishlistCount}</span>}
-            Wishlist
-          </Link>
-          <Link
-            to="/Cart"
-            className="nav-item"
-            onClick={() => setMenuOpen(false)}
-          >
-            <ShoppingCart className="icon" />
-            {totalItems > 0 && <span className="cart-count">{totalItems}</span>}
-            Cart
+            Shop
           </Link>
 
-          {user ? (
-            <>
-              <Link
-                to="/profile"
-                className="nav-item"
-                onClick={() => setMenuOpen(false)}
-              >
-                <User className="icon" />
-                Profile
-              </Link>
-              <button onClick={handleLogout} className="auth-button logout">
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/Login"
-                className="auth-button login"
-                onClick={() => setMenuOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                to="/Signup"
-                className="auth-button signup"
-                onClick={() => setMenuOpen(false)}
-              >
-                Sign Up
-              </Link>
-            </>
-          )}
+          <div className="nav-icons">
+            <Link
+              to="/Wishlist"
+              className="nav-icon-link"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="icon-wrapper">
+                <Heart size={22} />
+                {wishlistCount > 0 && <span className="badge">{wishlistCount}</span>}
+              </div>
+              <span className="mobile-label">Wishlist</span>
+            </Link>
+
+            <Link
+              to="/Cart"
+              className="nav-icon-link"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="icon-wrapper">
+                <ShoppingCart size={22} />
+                {totalItems > 0 && <span className="badge">{totalItems}</span>}
+              </div>
+              <span className="mobile-label">Cart</span>
+            </Link>
+
+            {user ? (
+              <div className="user-menu">
+                <Link
+                  to="/profile"
+                  className="nav-icon-link"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <User size={22} />
+                  <span className="mobile-label">Profile</span>
+                </Link>
+                <button onClick={handleLogout} className="logout-btn">
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="auth-buttons">
+                <Link
+                  to="/Login"
+                  className="btn btn-login"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/Signup"
+                  className="btn btn-signup"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>

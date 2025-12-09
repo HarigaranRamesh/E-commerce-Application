@@ -1,9 +1,14 @@
 import User from '../models/User.js';
 import { generateToken } from '../utils/token.js';
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
+/**
+ * @desc    Register a new user
+ * @route   POST /api/auth/register
+ * @access  Public
+ * @param   {Object} req - Express request object (body: name, email, password)
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -42,9 +47,14 @@ export const registerUser = async (req, res) => {
     }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
+/**
+ * @desc    Login user & get token
+ * @route   POST /api/auth/login
+ * @access  Public
+ * @param   {Object} req - Express request object (body: email, password)
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -73,9 +83,14 @@ export const loginUser = async (req, res) => {
     }
 };
 
-// @desc    Get user profile
-// @route   GET /api/auth/profile
-// @access  Private
+/**
+ * @desc    Get user profile
+ * @route   GET /api/auth/profile
+ * @access  Private
+ * @param   {Object} req - Express request object
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const getUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
@@ -99,9 +114,14 @@ export const getUserProfile = async (req, res) => {
     }
 };
 
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
+/**
+ * @desc    Update user profile
+ * @route   PUT /api/auth/profile
+ * @access  Private
+ * @param   {Object} req - Express request object (body: updates)
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
 export const updateUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
@@ -130,6 +150,23 @@ export const updateUserProfile = async (req, res) => {
         } else {
             res.status(404).json({ message: 'User not found' });
         }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @desc    Get all users (Admin)
+ * @route   GET /api/auth/users
+ * @access  Private/Admin
+ * @param   {Object} req - Express request object
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
+export const getUsers = async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.json(users);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

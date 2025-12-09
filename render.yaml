@@ -1,0 +1,67 @@
+# Render Blueprint Configuration
+# This file defines all services for your application
+
+services:
+  # Backend Service
+  - type: web
+    name: ecommerce-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    rootDir: backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false  # Set this in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true  # Auto-generate secure secret
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: STRIPE_SECRET_KEY
+        sync: false  # Set this in Render dashboard
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false  # Set this in Render dashboard
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: ecommerce-frontend
+          property: url
+
+  # Frontend Service
+  - type: web
+    name: ecommerce-frontend
+    env: static
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: frontend
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: ecommerce-backend
+          envVarKey: RENDER_EXTERNAL_URL
+        value: /api
+      - key: VITE_STRIPE_PUBLISHABLE_KEY
+        sync: false  # Set this in Render dashboard
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

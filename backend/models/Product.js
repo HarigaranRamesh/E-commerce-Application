@@ -20,10 +20,15 @@ const productSchema = new mongoose.Schema(
             type: Number,
             min: 0,
         },
+        id: {
+            type: Number,
+            required: true,
+            unique: true,
+        },
         category: {
             type: String,
             required: [true, 'Please provide a category'],
-            enum: ['Electronics', 'Fashion', 'Home', 'Sports', 'Books', 'Toys', 'Beauty', 'Other'],
+            index: true,
         },
         image: {
             type: String,

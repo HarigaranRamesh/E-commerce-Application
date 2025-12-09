@@ -5,24 +5,30 @@ export const CartContext = createContext();
 
 const cartReducer = (state, action) => {
   switch (action.type) {
-    case "ADD_TO_CART":
-      const existingItem = state.find((item) => item.id === action.payload.id);
+    case "ADD_TO_CART": {
+      const { id, size } = action.payload;
+      // Unique item key combines ID and Size (e.g., "1-M")
+      const itemKey = size ? `${id}-${size}` : `${id}`;
+
+      const existingItem = state.find((item) => item.itemKey === itemKey);
+
       if (existingItem) {
         return state.map((item) =>
-          item.id === action.payload.id
+          item.itemKey === itemKey
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
-        return [...state, { ...action.payload, quantity: 1 }];
+        return [...state, { ...action.payload, itemKey, quantity: 1 }];
       }
+    }
 
     case "REMOVE_FROM_CART":
-      return state.filter((item) => item.id !== action.payload);
+      return state.filter((item) => item.itemKey !== action.payload);
 
     case "UPDATE_QUANTITY":
       return state.map((item) =>
-        item.id === action.payload.id
+        item.itemKey === action.payload.itemKey
           ? { ...item, quantity: Math.max(1, action.payload.quantity) }
           : item
       );
@@ -61,20 +67,20 @@ export const CartProvider = ({ children }) => {
   }, [cart, user]);
 
   // Actions
-  const addToCart = (product) => {
+  const addToCart = (product, size = null) => {
     if (!user) {
       alert("Please login to add products to cart");
       return;
     }
-    dispatch({ type: "ADD_TO_CART", payload: product });
+    dispatch({ type: "ADD_TO_CART", payload: { ...product, size } });
   };
 
-  const removeFromCart = (productId) => {
-    dispatch({ type: "REMOVE_FROM_CART", payload: productId });
+  const removeFromCart = (itemKey) => {
+    dispatch({ type: "REMOVE_FROM_CART", payload: itemKey });
   };
 
-  const updateQuantity = (productId, quantity) => {
-    dispatch({ type: "UPDATE_QUANTITY", payload: { id: productId, quantity } });
+  const updateQuantity = (itemKey, quantity) => {
+    dispatch({ type: "UPDATE_QUANTITY", payload: { itemKey, quantity } });
   };
 
   const clearCart = () => {

@@ -1,13 +1,14 @@
-body {
-  font-family: 'Times New Roman', Times, serif;
-}
-
 .wishlist-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
-  padding: 20px;
+  padding: 120px 20px 40px 20px;
+  /* Fixed navbar padding + spacing */
   justify-content: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: 80vh;
+  /* Ensure it takes full screen height */
 }
 
 .wishlist-card {
@@ -21,7 +22,8 @@ body {
 }
 
 .wishlist-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
 .wishlist-image {
@@ -47,26 +49,7 @@ body {
   text-align: center;
 }
 
-.cart-button {
-  background: #01579b;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: 0.3s;
-  width: 50%;
-  margin-left: 65px;
-}
 
-.cart-button:hover {
-  background: #004c84;
-}
 
 /* Trash or remove button icon (top-right) */
 .remove-button {
@@ -85,7 +68,7 @@ body {
 }
 
 .wishlist-btn {
-  background: #01579b;
+  background: var(--accent-primary);
   color: white;
   border: none;
   padding: 10px 15px;
@@ -103,16 +86,17 @@ body {
 
 /* Hover effect like in Products.css */
 .wishlist-btn:hover {
-  background: #004c84;
+  background: var(--accent-hover);
 }
 
 /* Remove button (styled like a red danger button) */
 .wishlist-btn.remove {
-  background: #004c84;
+  background: var(--danger);
 }
 
 .wishlist-btn.remove:hover {
-  background: #004c84;
+  background: #b91c1c;
+  /* Darker red */
 }
 
 
