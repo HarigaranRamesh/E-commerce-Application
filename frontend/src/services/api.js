@@ -191,23 +191,6 @@ export const adminAPI = {
     getOrders: () => api.get('/orders'),
 };
 
-/**
- * Payment API Service
- * Handles payment intent creation and configuration.
- */
-export const paymentAPI = {
-    /**
-     * Create a payment intent (Stripe).
-     * @param {number} amount - Amount to charge.
-     * @returns {Promise<Object>} Payment intent client secret.
-     */
-    createPaymentIntent: (amount) => api.post('/payment/create-payment-intent', { amount }),
 
-    /**
-     * Get payment configuration (e.g., Stripe public key).
-     * @returns {Promise<Object>} Configuration object.
-     */
-    getConfig: () => api.get('/payment/config'),
-};
 
 export default api;
