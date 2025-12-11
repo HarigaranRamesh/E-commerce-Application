@@ -41,7 +41,7 @@ const Checkout = () => {
     try {
       const orderData = {
         orderItems: cart.map(item => ({
-          product: item.id, // Sending numeric ID
+          product: item._id, // Sending MongoDB _id
           name: item.name,
           quantity: item.quantity,
           price: item.price,

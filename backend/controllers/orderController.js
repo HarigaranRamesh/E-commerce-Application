@@ -28,7 +28,7 @@ export const createOrder = async (req, res) => {
         // Map over orderItems and find the corresponding product _id for each numeric id
         const dbOrderItems = [];
         for (const item of orderItems) {
-            const product = await Product.findOne({ id: item.product });
+            const product = await Product.findById(item.product);
             if (!product) {
                 return res.status(404).json({ message: `Product with id ${item.product} not found` });
             }
