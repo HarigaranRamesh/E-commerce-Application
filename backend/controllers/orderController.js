@@ -41,6 +41,10 @@ export const createOrder = async (req, res) => {
             if (!product) {
                 return res.status(404).json({ message: `Product with id ${item.product} not found` });
             }
+            if (product.stock < item.quantity) {
+                return res.status(400).json({ message: `Insufficient stock for product: ${product.name}` });
+            }
+
             dbOrderItems.push({
                 ...item,
                 product: product._id,
@@ -69,6 +73,7 @@ export const createOrder = async (req, res) => {
 
 
     } catch (error) {
+        console.error("Error creating order:", error);
         res.status(500).json({ message: error.message });
     }
 };
