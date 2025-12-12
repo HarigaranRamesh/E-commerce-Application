@@ -46,10 +46,10 @@ function App() {
                 color: "#fff",
               },
               success: {
-                duration: 3000,
+                duration: 1500,
               },
               error: {
-                duration: 3000,
+                duration: 1500,
               },
             }}
           />

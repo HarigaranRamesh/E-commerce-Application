@@ -20,6 +20,11 @@ const ProductDetail = () => {
     // Find product by ID (string/number conversion handled)
     const product = products.find((p) => p.id == productId);
 
+    // Scroll to top on mount or product change
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [productId]);
+
     if (!product) {
         return <div className="product-not-found">Product not found.</div>;
     }
