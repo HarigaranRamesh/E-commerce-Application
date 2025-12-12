@@ -22,17 +22,19 @@ const seedAdmin = async () => {
             console.log('Admin user created successfully: admin@example.com / password123');
         }
 
-        // 2. Seed Products - Ensure specific products exist (Upsert-like behavior)
+        // 2. Seed Products - Upsert (Insert or Update) to match local data exactly
         if (products) {
             for (const productData of products) {
-                const productExists = await Product.findOne({ id: productData.id });
-                if (!productExists) {
-                    await Product.create({
+                // Upsert: Update if exists, Insert if not
+                await Product.findOneAndUpdate(
+                    { id: productData.id },
+                    {
                         ...productData,
                         user: adminUser._id
-                    });
-                    console.log(`Seeded missing product: ${productData.name} (ID: ${productData.id})`);
-                }
+                    },
+                    { upsert: true, new: true, setDefaultsOnInsert: true }
+                );
+                console.log(`Synced product: ${productData.name} (ID: ${productData.id})`);
             }
         }
 
