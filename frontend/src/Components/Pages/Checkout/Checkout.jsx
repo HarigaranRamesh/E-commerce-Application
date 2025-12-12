@@ -57,11 +57,11 @@ const Checkout = () => {
         shippingPrice: 0
       };
 
-      await ordersAPI.create(orderData); // Call Backend API
+      const response = await ordersAPI.create(orderData); // Call Backend API
 
       clearCart();
       toast.success("Order placed successfully! Will be delivered soon 🚚");
-      setTimeout(() => navigate("/"), 2500);
+      setTimeout(() => navigate(`/order/${response.data._id}`), 2500);
 
     } catch (error) {
       console.error(error);

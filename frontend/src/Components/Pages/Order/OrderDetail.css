@@ -1,0 +1,147 @@
+
+.order-detail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    text-decoration: none;
+    margin-bottom: 1rem;
+}
+
+.back-link:hover {
+    color: #333;
+}
+
+.order-header-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.order-header-detail h1 {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+}
+
+.order-date {
+    color: #888;
+    margin-bottom: 2rem;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status-pending { background-color: #fff3cd; color: #856404; }
+.status-processing { background-color: #cfe2ff; color: #084298; }
+.status-shipped { background-color: #e0cffc; color: #430BAF; }
+.status-delivered { background-color: #d1e7dd; color: #0f5132; }
+.status-cancelled { background-color: #f8d7da; color: #842029; }
+
+.order-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .order-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
+}
+
+.card h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #444;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+}
+
+.order-item-detail {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.order-item-detail:last-child {
+    border-bottom: none;
+}
+
+.order-item-detail img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-info h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+}
+
+.item-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.item-total {
+    font-weight: 600;
+}
+
+.info-group p {
+    margin: 0.25rem 0;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+.summary-row.total {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    font-weight: bold;
+    color: #333;
+    font-size: 1.1rem;
+}

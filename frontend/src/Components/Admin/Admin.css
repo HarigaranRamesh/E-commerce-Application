@@ -399,13 +399,12 @@
 @media (max-width: 1024px) {
     .admin-sidebar {
         width: 70px;
-        /* Collapsed view could implement later, or just hide */
         overflow: hidden;
     }
 
-    .admin-sidebar:hover {
+    .admin-sidebar:hover,
+    .admin-sidebar.open {
         width: 260px;
-        /* Expand on hover for tablet? or simple query */
     }
 
     .admin-main {
@@ -415,9 +414,11 @@
 
     .admin-nav-item span {
         display: none;
+        white-space: nowrap;
     }
 
-    .admin-sidebar:hover .admin-nav-item span {
+    .admin-sidebar:hover .admin-nav-item span,
+    .admin-sidebar.open .admin-nav-item span {
         display: inline;
     }
 
@@ -425,15 +426,78 @@
         display: none;
     }
 
-    .admin-sidebar:hover .admin-sidebar-header h2 {
+    .admin-sidebar:hover .admin-sidebar-header h2,
+    .admin-sidebar.open .admin-sidebar-header h2 {
         display: block;
     }
+}
+
+/* Mobile Header & Toggle */
+.admin-mobile-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-mobile-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.menu-toggle-btn,
+.close-sidebar-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+}
+
+.menu-toggle-btn:hover,
+.close-sidebar-btn:hover {
+    background-color: var(--bg-secondary);
+}
+
+.close-sidebar-btn {
+    display: none;
+    /* Hidden by default */
+}
+
+/* Overlay */
+.admin-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 90;
+    display: none;
 }
 
 @media (max-width: 768px) {
     .admin-sidebar {
         transform: translateX(-100%);
         width: 260px;
+        /* Full width sidebar on mobile open */
+    }
+
+    .admin-sidebar.open {
+        transform: translateX(0);
+    }
+
+    /* Reset sidebar content visibility for mobile when open */
+    .admin-sidebar .admin-nav-item span,
+    .admin-sidebar .admin-sidebar-header h2 {
+        display: inline;
     }
 
     .admin-main {
@@ -442,5 +506,43 @@
         padding: 1rem;
     }
 
-    /* We would need a hamburger menu to toggle sidebar, but for now this prevents overlap */
+    .admin-mobile-header {
+        display: flex;
+    }
+
+    .admin-sidebar-overlay {
+        display: block;
+    }
+
+    .close-sidebar-btn {
+        display: flex;
+    }
+
+    .admin-sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Adjust page headers for mobile */
+    .admin-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .admin-page-header .btn {
+        width: 100%;
+    }
+
+    /* Adjust Grid */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Adjust Tables */
+    .admin-table th,
+    .admin-table td {
+        padding: 0.75rem 1rem;
+    }
 }

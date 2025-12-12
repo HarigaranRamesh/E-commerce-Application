@@ -16,6 +16,7 @@ const Profile = lazy(() => import("./Components/Pages/Profile/Profile"));
 const MyOrders = lazy(() => import("./Components/Pages/Profile/MyOrders"));
 const ProductDetail = lazy(() => import("./Components/Pages/ProductDetail/ProductDetail"));
 const SearchResults = lazy(() => import("./Components/Pages/Search/SearchResults"));
+const OrderDetail = lazy(() => import("./Components/Pages/Order/OrderDetail"));
 
 // Admin Components (Lazy load)
 const AdminLayout = lazy(() => import("./Components/Admin/AdminLayout"));
@@ -72,6 +73,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/my-orders" element={<MyOrders />} />
+                <Route path="/order/:id" element={<OrderDetail />} />
               </Route>
 
               {/* Admin Routes - Isolated from Public Layout */}
