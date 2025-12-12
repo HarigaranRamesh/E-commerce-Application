@@ -21,19 +21,21 @@ const seedAdmin = async () => {
             console.log('Admin user created successfully: admin@example.com / password123');
         }
 
-        // 2. Seed Products if empty
-        const productCount = await Product.countDocuments();
-        if (productCount === 0) {
-            // Assign admin user as the creator of products
-            const sampleProducts = products.map((product) => {
-                return { ...product, user: adminUser._id };
-            });
-
-            await Product.insertMany(sampleProducts);
-            console.log('Products seeded successfully including ID 17');
-        } else {
-            console.log('Products already exist, skipping seed.');
+        // 2. Seed Products - Ensure specific products exist (Upsert-like behavior)
+        if (products) {
+            for (const productData of products) {
+                const productExists = await Product.findOne({ id: productData.id });
+                if (!productExists) {
+                    await Product.create({
+                        ...productData,
+                        user: adminUser._id
+                    });
+                    console.log(`Seeded missing product: ${productData.name} (ID: ${productData.id})`);
+                }
+            }
         }
+
+        console.log('Seeder check complete.');
 
     } catch (error) {
         console.error(`Error seeding data: ${error.message}`);
