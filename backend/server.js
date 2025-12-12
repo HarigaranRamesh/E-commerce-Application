@@ -5,6 +5,7 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import seedAdmin from './utils/seeder.js';
 
 
 import analyticsRoutes from './routes/analyticsRoutes.js';
@@ -14,7 +15,10 @@ dotenv.config();
 const app = express();
 
 // Connect to MongoDB
-connectDB();
+// Connect to MongoDB
+connectDB().then(() => {
+  seedAdmin();
+});
 
 // Middleware
 app.use(cors());
