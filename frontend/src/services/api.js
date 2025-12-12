@@ -1,11 +1,16 @@
 import axios from 'axios';
 
 const getBaseUrl = () => {
+    // For local development, we want to force usage of localhost
+    return 'http://localhost:5001/api';
+
+    /* 
     let url = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
     if (!url.endsWith('/api')) {
         url += '/api';
     }
     return url;
+    */
 };
 
 const API_URL = getBaseUrl();
