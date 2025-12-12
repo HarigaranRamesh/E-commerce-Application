@@ -1,4 +1,5 @@
 import Product from '../models/Product.js';
+import User from '../models/User.js';
 import products from '../data/products.js';
 
 const seedAdmin = async () => {
