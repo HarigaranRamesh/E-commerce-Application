@@ -30,10 +30,12 @@ export const createOrder = async (req, res) => {
         const dbOrderItems = [];
         for (const item of orderItems) {
             let product;
-            if (mongoose.isValidObjectId(item.product)) {
+            // Check if it's a valid MongoDB ObjectId (24 hex chars)
+            if (mongoose.isValidObjectId(item.product) && String(item.product).length === 24) {
                 product = await Product.findById(item.product);
             }
-            // Fallback to searching by numeric id if not found by _id or if invalid ObjectId
+
+            // Fallback to searching by numeric id (legacy id)
             if (!product) {
                 product = await Product.findOne({ id: item.product });
             }
