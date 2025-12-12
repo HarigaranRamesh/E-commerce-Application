@@ -1,0 +1,102 @@
+const products = [
+    {
+        id: 1,
+        name: 'Wireless Bluetooth Headphones',
+        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60',
+        description: 'High-quality wireless headphones with noise cancellation.',
+        brand: 'Sony',
+        category: 'Electronics',
+        price: 89.99,
+        originalPrice: 120.00,
+        countInStock: 10,
+        rating: 4.5,
+        numReviews: 12,
+        stock: 15
+    },
+    {
+        id: 2,
+        name: 'Smart Watch Series 7',
+        image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60',
+        description: 'Advanced smartwatch with fitness tracking and heart rate monitor.',
+        brand: 'Apple',
+        category: 'Electronics',
+        price: 399.99,
+        originalPrice: 450.00,
+        countInStock: 5,
+        rating: 4.8,
+        numReviews: 8,
+        stock: 8
+    },
+    {
+        id: 3,
+        name: 'Running Shoes',
+        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
+        description: 'Lightweight and durable running shoes for all terrains.',
+        brand: 'Nike',
+        category: 'Fashion',
+        price: 120.00,
+        originalPrice: 150.00,
+        countInStock: 20,
+        rating: 4.7,
+        numReviews: 15,
+        stock: 20
+    },
+    {
+        id: 4,
+        name: 'Premium Leather Bag',
+        image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&auto=format&fit=crop&q=60',
+        description: 'Stylish and spacious leather bag for everyday use.',
+        brand: 'Gucci',
+        category: 'Fashion',
+        price: 250.00,
+        originalPrice: 300.00,
+        countInStock: 8,
+        rating: 4.6,
+        numReviews: 10,
+        stock: 8
+    },
+    {
+        id: 5,
+        name: 'Gaming Mouse',
+        image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500&auto=format&fit=crop&q=60',
+        description: 'Ergonomic gaming mouse with customizable RGB lighting.',
+        brand: 'Logitech',
+        category: 'Electronics',
+        price: 49.99,
+        originalPrice: 70.00,
+        countInStock: 25,
+        rating: 4.4,
+        numReviews: 20,
+        stock: 25
+    },
+    {
+        id: 6,
+        name: 'Coffee Maker',
+        image: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=500&auto=format&fit=crop&q=60',
+        description: 'Automatic coffee maker for brewing fresh coffee at home.',
+        brand: 'Nespresso',
+        category: 'Home & Kitchen',
+        price: 150.00,
+        originalPrice: 180.00,
+        countInStock: 12,
+        rating: 4.9,
+        numReviews: 30,
+        stock: 12
+    },
+    {
+        id: 17,
+        name: 'Classic White T-Shirt',
+        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&auto=format&fit=crop&q=60',
+        description: 'A classic white t-shirt made from 100% cotton.',
+        brand: 'H&M',
+        category: 'Fashion',
+        price: 19.99,
+        originalPrice: 25.00,
+        countInStock: 50,
+        rating: 4.3,
+        numReviews: 5,
+        stock: 50
+    }
+];
+
+export default products;
