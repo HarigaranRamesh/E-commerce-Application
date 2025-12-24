@@ -7,7 +7,7 @@ const Home = lazy(() => import("./Components/Pages/Home/Home"));
 const Category = lazy(() => import("./Components/Pages/Categories/Category"));
 const CategoryDetail = lazy(() => import("./Components/Pages/Categories/CategoryDetail"));
 const Wishlist = lazy(() => import("./Components/Pages/Wishlist/Wishlist"));
-const Cart = lazy(() => import("./Components/Pages/Cart/Cart"));
+const Bag = lazy(() => import("./Components/Pages/Bag/Bag"));
 const Checkout = lazy(() => import("./Components/Pages/Checkout/Checkout.jsx"));
 const Login = lazy(() => import("./Components/Pages/Login/Login"));
 const Signup = lazy(() => import("./Components/Pages/Signup/Signup"));
@@ -65,7 +65,7 @@ function App() {
                 />
                 <Route path="/search" element={<SearchResults />} />
                 <Route path="/Wishlist" element={<Wishlist />} />
-                <Route path="/Cart" element={<Cart />} />
+                <Route path="/bag" element={<Bag />} />
                 <Route path="/Checkout" element={<Checkout />} />
                 <Route path="/product/:productId" element={<ProductDetail />} />
                 <Route path="/login" element={<Login />} />

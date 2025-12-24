@@ -1,139 +1,136 @@
+/* Global Product Container */
 .product-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 2rem;
-  padding: 80px 1rem 2rem 1rem;
-  /* Added top padding for fixed navbar */
+  grid-template-columns: repeat(4, 1fr);
+  /* 4 columns like H&M desktop */
+  column-gap: 100px;
+  /* Increased to 100px */
+  row-gap: 80px;
+  /* Kept at 80px */
+  padding: 80px 4rem 60px;
+  /* More breathable padding */
+  max-width: 1800px;
+  /* Wider max-width */
+  margin: 0 auto;
 }
 
+/* Product Card - Minimalist */
 .product-card {
-  background: white;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-  transition: all 0.3s ease;
   position: relative;
   display: flex;
   flex-direction: column;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
-.product-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-  border-color: #cbd5e1;
-}
+/* .product-card:hover removed to avoid empty ruleset warning */
 
+/* Image Wrapper with Aspect Ratio */
 .product-image-wrapper {
   position: relative;
-  background-color: var(--bg-secondary);
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 250px;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  /* Vertical fashion ratio */
+  background-color: #f4f4f4;
+  /* Light gray placeholder background */
+  overflow: hidden;
+  margin-bottom: 12px;
 }
 
 .product-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  transition: transform 0.3s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
 }
 
 .product-card:hover .product-image {
-  transform: scale(1.05);
+  transform: scale(1.03);
+  /* Subtle zoom */
 }
 
+/* Wishlist Icon */
 .wishlist-icon {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 10;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
   cursor: pointer;
   background: white;
   padding: 6px;
   border-radius: 50%;
   width: 32px;
-  /* icon size + padding */
   height: 32px;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, background-color 0.2s;
 }
 
 .wishlist-icon:hover {
   transform: scale(1.1);
+  background-color: #fff;
 }
 
+/* Typography & Details */
 .product-details {
-  padding: 1.25rem;
-  flex: 1;
+  padding: 0;
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
 .product-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  text-align: left;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  /* Slightly smaller, cleaner text */
+  font-weight: 400;
+  /* Regular weight like H&M */
+  color: #222;
+  margin: 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .product-price {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-  text-align: left;
-}
-
-.cart-button {
-  margin-top: auto;
-  width: 100%;
-  background-color: var(--accent-primary);
-  color: white;
-  border: none;
-  padding: 0.875rem;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
-  font-weight: 500;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
 }
 
-.cart-button:hover {
-  background-color: var(--accent-hover);
-  transform: translateY(-1px);
+/* Responsive Grid */
+@media (max-width: 1024px) {
+  .product-container {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 20px 1.5rem;
+  }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .product-container {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .product-image-wrapper {
-    height: 180px;
-    padding: 1rem;
-  }
-
-  .product-details {
-    padding: 1rem;
+    /* 2 columns on mobile/tablet */
+    gap: 16px;
+    padding: 20px 1rem;
   }
 
   .product-title {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
   }
 
   .product-price {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
-  .cart-button {
-    font-size: 0.875rem;
-    padding: 0.6rem;
+  /* Make icons slightly smaller on mobile */
+  .wishlist-icon {
+    width: 28px;
+    height: 28px;
+    padding: 5px;
   }
 }

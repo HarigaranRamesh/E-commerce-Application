@@ -21,10 +21,10 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
   /* Brand Colors */
-  --accent-primary: #0f172a;
-  /* Slate 900 - very professional dark blue/black */
+  --accent-primary: #000000;
+  /* Pro Black */
   --accent-secondary: #334155;
-  --accent-hover: #1e293b;
+  --accent-hover: #333333;
 
   --success: #10b981;
   --danger: #ef4444;

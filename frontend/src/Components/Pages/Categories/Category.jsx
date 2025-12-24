@@ -31,15 +31,21 @@ const CategoryPage = () => {
             className="category-card"
             onClick={() => handleCategoryClick(category.name)}
           >
-            <img
-              src={category.image}
-              alt={category.name}
-              className="category-image"
-              onError={(e) => {
-                e.target.src = "/images/placeholder.png";
-              }}
-            />
-            <h3>{category.name}</h3>
+            <div className="category-image-wrapper">
+              <img
+                src={category.image}
+                alt={category.name}
+                className="category-image"
+                onError={(e) => {
+                  e.target.src = "/images/placeholder.png";
+                }}
+              />
+            </div>
+
+            <div className="category-info">
+              <h3>{category.name}</h3>
+              <span className="shop-link">Shop Now</span>
+            </div>
           </div>
         ))}
       </div>

@@ -2,7 +2,7 @@ import React from "react";
 import ProductList from "../../Main/ProductList";
 import Hero from "../../Main/Hero";
 import ServiceFeatures from "../../Main/ServiceFeatures";
-import Newsletter from "../../Main/Newsletter";
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -22,7 +22,7 @@ function Home() {
         <ProductList />
       </div>
 
-      <Newsletter />
+
       <ToastContainer />
     </div>
   );

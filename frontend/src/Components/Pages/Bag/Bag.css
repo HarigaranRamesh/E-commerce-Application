@@ -1,0 +1,252 @@
+/* Bag Page Container */
+.bag-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 20px 60px;
+  /* Top padding for fixed navbar */
+  min-height: 80vh;
+  font-family: 'Inter', sans-serif;
+  color: #222;
+}
+
+/* Header */
+.bag-header {
+  margin-bottom: 2rem;
+}
+
+.bag-title {
+  font-size: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+/* Promo Banner */
+.promo-banner {
+  border: 1px solid #e5e7eb;
+  padding: 1rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 3rem;
+  background-color: #fff;
+  letter-spacing: 0.5px;
+}
+
+/* Empty State Grid */
+.bag-empty-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 4rem;
+}
+
+.empty-message h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.empty-message p {
+  font-size: 1rem;
+  color: #444;
+  margin: 0;
+}
+
+/* Right Sidebar (Summary/Login) */
+.bag-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.summary-link {
+  text-decoration: underline;
+  color: #222;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.checkout-btn-disabled {
+  width: 100%;
+  padding: 1rem;
+  background-color: #e5e5e5;
+  color: #a3a3a3;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: not-allowed;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.signin-btn {
+  width: 100%;
+  padding: 1rem;
+  background-color: transparent;
+  color: #000;
+  border: 1px solid #000;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.signin-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.checkout-btn-black {
+  width: 100%;
+  padding: 1rem;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
+}
+
+.checkout-btn-black:hover {
+  background-color: #333;
+  transform: translateY(-2px);
+}
+
+.klarna-text {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 1rem;
+}
+
+.klarna-badge {
+  background-color: #ffb3c7;
+  padding: 0 4px;
+  border-radius: 2px;
+  font-weight: bold;
+  color: #000;
+  margin-left: 4px;
+}
+
+.learn-more {
+  text-decoration: underline;
+  color: #444;
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* Existing Cart Items Styles (Migrated & Simplified) */
+.cart-items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-image {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+}
+
+.item-info h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.item-meta {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.qty-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border: none;
+  cursor: pointer;
+}
+
+.item-price-col {
+  text-align: right;
+  font-weight: 600;
+}
+
+.remove-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-bottom: 8px;
+  /* Moved above price */
+  color: #666;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.remove-link:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+/* Breakdown for active cart */
+.active-cart-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 4rem;
+}
+
+@media (max-width: 768px) {
+
+  .bag-empty-grid,
+  .active-cart-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .bag-title {
+    font-size: 2rem;
+  }
+
+  .promo-banner {
+    font-size: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+}

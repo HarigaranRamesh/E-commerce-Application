@@ -1,7 +1,7 @@
 import React from "react";
 import "./Footer.css";
 import { Twitter, Instagram, Facebook, Phone, Mail, MapPin, } from "lucide-react";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/mens_hub_logo.png";
 
 export default function Footer() {
   return (
@@ -10,11 +10,11 @@ export default function Footer() {
         <div className="footer-section brand">
           <div className="footer-logo-container">
             <img src={logo} alt="Brand Logo" className="footer-logo-img" />
-            <h2 className="footer-logo-text">Brand Originals</h2>
+            <h2 className="footer-logo-text">Mens Hub</h2>
           </div>
           <p>“Quality products, Fresh Choices”</p>
           <p>
-            “At Brand Originals , we believe in delivering premium quality products
+            “At Mens Hub, we believe in delivering premium quality products
             with an effortless shopping experience. We bring you an exclusive selection curated
             with care.”
           </p>
@@ -34,13 +34,13 @@ export default function Footer() {
 
         <div className="footer-section social">
           <div className="social-icons">
-            <a href=" "target="_blank" rel="noopener noreferrer">
+            <a href=" " target="_blank" rel="noopener noreferrer">
               <Twitter className="icon" />
             </a>
             <a href=" " target="_blank" rel="noopener noreferrer">
               <Instagram className="icon" />
             </a>
-            <a href="  " target="_blank"rel="noopener noreferrer">
+            <a href="  " target="_blank" rel="noopener noreferrer">
               <Facebook className="icon" />
             </a>
           </div>
@@ -52,7 +52,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>© Copyright 2025 Brand Originals. All rights reserved.</p>
+        <p>© Copyright 2025 Mens Hub. All rights reserved.</p>
         <div className="footer-links">
           <a href="#">F.A.Q</a>
           <a href="#">Privacy Policy</a>

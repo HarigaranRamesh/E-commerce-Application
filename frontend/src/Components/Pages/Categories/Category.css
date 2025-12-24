@@ -1,102 +1,158 @@
 .category-page {
   text-align: center;
-  padding: 40px 20px;
+  padding: 120px 2rem 4rem;
+  /* Top padding to clear navbar */
+  min-height: 100vh;
+  background-color: #fafafa;
 }
 
 h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+  color: #111;
+  position: relative;
+  display: inline-block;
+}
+
+h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background-color: #000;
+  margin: 1rem auto 0;
+  border-radius: 2px;
 }
 
 .category-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .category-card {
+  position: relative;
   background: #fff;
-  border-radius: 10px;
+  border-radius: 16px;
   overflow: hidden;
-  text-align: center;
-  width: 250px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
-  color: black;
+  aspect-ratio: 3/4;
+  /* Vertical fashion card ratio */
+  display: flex;
+  flex-direction: column;
 }
 
 .category-card:hover {
-  transform: scale(1.05);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.category-image-wrapper {
+  height: 85%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
 .category-image {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-card:hover .category-image {
+  transform: scale(1.1);
+}
+
+.category-info {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 15%;
+  background-color: #fff;
+  z-index: 2;
+  transition: background-color 0.3s ease;
+}
+
+.category-card:hover .category-info {
+  background-color: #000;
 }
 
 .category-card h3 {
-  font-size: 1.5rem;
-  padding: 15px;
-  background: #f8f8f8;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
   margin: 0;
-  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #111;
+  transition: color 0.3s ease;
 }
 
-/* Tablet */
+.shop-link {
+  font-size: 0.8rem;
+  margin-top: 4px;
+  color: #666;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.category-card:hover h3 {
+  color: #fff;
+}
+
+.category-card:hover .shop-link {
+  opacity: 1;
+  transform: translateY(0);
+  color: #ccc;
+  height: 0;
+  /* Cheat to keep layout identical but show text, or keep it visible */
+  display: none;
+  /* Actually simplify - just changing text color is classy enough */
+}
+
+/* Responsive Design */
 @media (max-width: 992px) {
-  .category-page {
-    padding: 30px 15px;
-  }
-
-  h2 {
-    font-size: 1.8rem;
-  }
-
-  .category-card {
-    width: 45%; /* 2 cards per row */
-  }
-
-  .category-image {
-    height: 180px;
-  }
-
-  .category-card h3 {
-    font-size: 1.3rem;
-    padding: 12px;
+  .category-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 }
 
-/* Mobile */
 @media (max-width: 576px) {
   .category-page {
-    padding: 20px 10px;
+    padding: 100px 1rem 3rem;
   }
 
   h2 {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 
+  /* On mobile, maybe 2 columns is too tight if cards are small, but standard ecommerce is 2 cols */
   .category-container {
-    gap: 15px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
   .category-card {
-    width: 48%; /* 2 cards per row on mobile */
-  }
-
-  .category-image {
-    height: 150px;
+    border-radius: 12px;
   }
 
   .category-card h3 {
-    font-size: 1.1rem;
-    padding: 10px;
+    font-size: 0.9rem;
   }
 }
-
-

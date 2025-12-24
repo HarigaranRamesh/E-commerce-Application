@@ -3,9 +3,9 @@ import React, { useContext, useState, useEffect } from "react";
 import { CartContext } from "../../Context/CartContext";
 import { AuthContext } from "../../Context/AuthContext";
 import { WishlistContext } from "../../Context/WishlistContext";
-import { ShoppingCart, Heart, User, Search, Menu, X, LogOut } from "lucide-react";
+import { ShoppingBag, Heart, User, Search, Menu, X, LogOut } from "lucide-react";
 import toast from "react-hot-toast";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/mens_hub_logo.png";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -41,7 +41,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="logo">
           <img src={logo} alt="Logo" className="logo-img" />
-          <span className="logo-text">Brand Originals</span>
+          <span className="logo-text">Mens Hub</span>
         </Link>
 
         {/* Search Bar (Desktop) */}
@@ -95,15 +95,15 @@ export default function Navbar() {
             </Link>
 
             <Link
-              to="/Cart"
+              to="/bag"
               className="nav-icon-link"
               onClick={() => setMenuOpen(false)}
             >
               <div className="icon-wrapper">
-                <ShoppingCart size={22} />
+                <ShoppingBag size={22} />
                 {totalItems > 0 && <span className="badge">{totalItems}</span>}
               </div>
-              <span className="mobile-label">Cart</span>
+              <span className="mobile-label">Bag</span>
             </Link>
 
             {user ? (
@@ -121,22 +121,16 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <div className="auth-buttons">
-                <Link
-                  to="/Login"
-                  className="btn btn-login"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/Signup"
-                  className="btn btn-signup"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Sign Up
-                </Link>
-              </div>
+              <Link
+                to="/Login"
+                className="nav-icon-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                <div className="icon-wrapper">
+                  <User size={22} />
+                </div>
+                <span className="mobile-label">Login</span>
+              </Link>
             )}
           </div>
         </div>
