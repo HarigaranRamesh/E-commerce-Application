@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff, User, Mail, Lock, Phone } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, Phone, MapPin, Home, Calendar } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { authAPI } from "../../../services/api";
 import "../Login/Login.css"; // Reuse styling
@@ -11,6 +11,14 @@ export default function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
+    phone: "",
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+    gender: "",
+    dob: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -51,7 +59,17 @@ export default function Signup() {
       await authAPI.register({
         name: formData.name,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        phone: formData.phone,
+        address: {
+          street: formData.street,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+          country: formData.country,
+        },
+        gender: formData.gender,
+        dob: formData.dob,
       });
 
       toast.success("Account created successfully! Please login.");
@@ -102,6 +120,112 @@ export default function Signup() {
               />
             </div>
             {errors.email && <span className="error-text">{errors.email}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>Phone Number</label>
+            <div className="input-wrapper">
+              <Phone className="input-icon" size={20} />
+              <input
+                type="tel"
+                name="phone"
+                placeholder="+1 234 567 8900"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <div className="grid-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div>
+                <label>Gender</label>
+                <div className="input-wrapper">
+                  <User className="input-icon" size={20} />
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    style={{ border: "none", outline: "none", width: "100%", background: "transparent" }}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label>Date of Birth</label>
+                <div className="input-wrapper">
+                  <Calendar className="input-icon" size={20} />
+                  <input
+                    type="date"
+                    name="dob"
+                    value={formData.dob}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Address</label>
+            <div className="input-wrapper" style={{ marginBottom: "10px" }}>
+              <Home className="input-icon" size={20} />
+              <input
+                type="text"
+                name="street"
+                placeholder="Street Address"
+                value={formData.street}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
+              <div className="input-wrapper">
+                <MapPin className="input-icon" size={20} />
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="City"
+                  value={formData.city}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="input-wrapper">
+                <MapPin className="input-icon" size={20} />
+                <input
+                  type="text"
+                  name="state"
+                  placeholder="State"
+                  value={formData.state}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+            <div className="grid-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div className="input-wrapper">
+                <MapPin className="input-icon" size={20} />
+                <input
+                  type="text"
+                  name="zipCode"
+                  placeholder="Zip Code"
+                  value={formData.zipCode}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="input-wrapper">
+                <MapPin className="input-icon" size={20} />
+                <input
+                  type="text"
+                  name="country"
+                  placeholder="Country"
+                  value={formData.country}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="form-group">

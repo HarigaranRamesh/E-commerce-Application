@@ -62,9 +62,9 @@ const ProductListAdmin = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map((product) => (
+                        {products.map((product, index) => (
                             <tr key={product._id}>
-                                <td>{product._id.substring(0, 10)}...</td>
+                                <td>{index + 100}</td>
                                 <td>{product.name}</td>
                                 <td>${product.price}</td>
                                 <td>{product.category}</td>

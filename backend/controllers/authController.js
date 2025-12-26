@@ -11,7 +11,7 @@ import { generateToken } from '../utils/token.js';
  */
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, phone, address, gender, dob } = req.body;
 
         // Validation
         if (!name || !email || !password) {
@@ -29,6 +29,10 @@ export const registerUser = async (req, res) => {
             name,
             email,
             password,
+            phone,
+            address,
+            gender,
+            dob,
         });
 
         if (user) {
@@ -73,6 +77,10 @@ export const loginUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                phone: user.phone,
+                address: user.address,
+                gender: user.gender,
+                dob: user.dob,
                 token: generateToken(user._id),
             });
         } else {
@@ -102,6 +110,8 @@ export const getUserProfile = async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 address: user.address,
+                gender: user.gender,
+                dob: user.dob,
                 role: user.role,
                 wishlist: user.wishlist,
                 cart: user.cart,
@@ -131,6 +141,8 @@ export const updateUserProfile = async (req, res) => {
             user.email = req.body.email || user.email;
             user.phone = req.body.phone || user.phone;
             user.address = req.body.address || user.address;
+            user.gender = req.body.gender || user.gender;
+            user.dob = req.body.dob || user.dob;
 
             if (req.body.password) {
                 user.password = req.body.password;
@@ -144,6 +156,8 @@ export const updateUserProfile = async (req, res) => {
                 email: updatedUser.email,
                 phone: updatedUser.phone,
                 address: updatedUser.address,
+                gender: updatedUser.gender,
+                dob: updatedUser.dob,
                 role: updatedUser.role,
                 token: generateToken(updatedUser._id),
             });
@@ -167,6 +181,63 @@ export const getUsers = async (req, res) => {
     try {
         const users = await User.find({});
         res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @desc    Delete user
+ * @route   DELETE /api/auth/users/:id
+ * @access  Private/Admin
+ * @param   {Object} req - Express request object
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
+export const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (user) {
+            await user.deleteOne();
+            res.json({ message: 'User removed' });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @desc    Update user
+ * @route   PUT /api/auth/users/:id
+ * @access  Private/Admin
+ * @param   {Object} req - Express request object
+ * @param   {Object} res - Express response object
+ * @returns {void}
+ */
+export const updateUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (user) {
+            user.name = req.body.name || user.name;
+            user.email = req.body.email || user.email;
+            user.role = req.body.role || user.role;
+            // Can update other fields if needed, but these are main one for admin
+
+            const updatedUser = await user.save();
+
+            res.json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role,
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

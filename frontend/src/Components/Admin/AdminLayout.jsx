@@ -68,7 +68,7 @@ const AdminLayout = () => {
                     <button className="menu-toggle-btn" onClick={toggleSidebar}>
                         <LayoutDashboard size={24} />
                     </button>
-                    <h2>Admin Panel</h2>
+                    <h2></h2>
                 </header>
                 <Outlet />
             </main>

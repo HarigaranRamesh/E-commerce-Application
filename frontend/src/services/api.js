@@ -197,6 +197,21 @@ export const adminAPI = {
      * @returns {Promise<Array>} List of orders.
      */
     getOrders: () => api.get('/orders'),
+
+    /**
+     * Delete user by ID.
+     * @param {string} id - User ID.
+     * @returns {Promise<Object>} Success message.
+     */
+    deleteUser: (id) => api.delete(`/auth/users/${id}`),
+
+    /**
+     * Update user details.
+     * @param {string} id - User ID.
+     * @param {Object} userData - Data to update.
+     * @returns {Promise<Object>} Updated user.
+     */
+    updateUser: (id, userData) => api.put(`/auth/users/${id}`, userData),
 };
 
 

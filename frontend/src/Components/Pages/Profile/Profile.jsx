@@ -35,7 +35,7 @@ const Profile = () => {
                             <User className="info-icon" />
                             <div className="info-content">
                                 <label>Full Name</label>
-                                <p>{user.fullname || "Not provided"}</p>
+                                <p>{user.name || "Not provided"}</p>
                             </div>
                         </div>
 
@@ -51,7 +51,7 @@ const Profile = () => {
                             <Phone className="info-icon" />
                             <div className="info-content">
                                 <label>Mobile</label>
-                                <p>{user.mobile || "Not provided"}</p>
+                                <p>{user.phone || "Not provided"}</p>
                             </div>
                         </div>
 
@@ -76,8 +76,8 @@ const Profile = () => {
                             <div className="info-content">
                                 <label>Address</label>
                                 <p>
-                                    {user.street || user.city || user.state || user.zip || user.country
-                                        ? `${user.street || ""} ${user.city || ""} ${user.state || ""} ${user.zip || ""} ${user.country || ""}`.trim()
+                                    {user.address
+                                        ? `${user.address.street || ""} ${user.address.city || ""} ${user.address.state || ""} ${user.address.zipCode || ""} ${user.address.country || ""}`.trim() || "Not provided"
                                         : "Not provided"}
                                 </p>
                             </div>
