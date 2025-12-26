@@ -11,7 +11,7 @@ const seedAdmin = async () => {
             // Force reset password to ensure access
             adminUser.password = 'password123';
             await adminUser.save();
-            console.log('Admin user exists. Password reset to: password123');
+            // console.log('Admin user exists. Password reset to: password123');
         } else {
             adminUser = await User.create({
                 name: 'Admin User',
@@ -19,7 +19,7 @@ const seedAdmin = async () => {
                 password: 'password123',
                 role: 'admin',
             });
-            console.log('Admin user created successfully: admin@example.com / password123');
+            // console.log('Admin user created successfully: admin@example.com / password123');
         }
 
         // 2. Seed Products - Upsert (Insert or Update) to match local data exactly
@@ -34,11 +34,11 @@ const seedAdmin = async () => {
                     },
                     { upsert: true, new: true, setDefaultsOnInsert: true }
                 );
-                console.log(`Synced product: ${productData.name} (ID: ${productData.id})`);
+                // console.log(`Synced product: ${productData.name} (ID: ${productData.id})`);
             }
         }
 
-        console.log('Seeder check complete.');
+        // console.log('Seeder check complete.');
 
     } catch (error) {
         console.error(`Error seeding data: ${error.message}`);
