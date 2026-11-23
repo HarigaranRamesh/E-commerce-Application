@@ -61,7 +61,7 @@ const OrderList = () => {
                                 <td>{order._id.substring(0, 10)}...</td>
                                 <td>{order.user && order.user.name}</td>
                                 <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                                <td>${order.totalPrice.toFixed(2)}</td>
+                                <td>${Number(order.totalPrice || 0).toFixed(2)}</td>
                                 <td>
                                     {order.isPaid ? (
                                         <span className="status-badge status-delivered">Paid</span>

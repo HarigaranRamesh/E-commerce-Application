@@ -33,11 +33,6 @@ const ProductListAdmin = () => {
         }
     };
 
-    const createProductHandler = async () => {
-        // Placeholder for create logic or redirect
-        // For this task, we will just assume a redirect to an Edit/Create page
-    };
-
     if (loading) return <div className="loader"></div>;
 
     return (

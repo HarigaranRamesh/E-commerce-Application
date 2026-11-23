@@ -51,7 +51,7 @@ const DashboardData = () => {
                         </div>
                         <div className="stat-info">
                             <p className="stat-label">Total Sales</p>
-                            <h3 className="stat-value">${stats.totalSales.toFixed(2)}</h3>
+                            <h3 className="stat-value">${Number(stats.totalSales || 0).toFixed(2)}</h3>
                             <p className="stat-desc">Total revenue generated</p>
                         </div>
                     </div>
@@ -107,7 +107,7 @@ const DashboardData = () => {
                                     <div className="status-progress-bar">
                                         <div
                                             className={`progress-fill status-${status._id}`}
-                                            style={{ width: `${(status.count / stats.totalOrders) * 100}%` }}
+                                            style={{ width: `${stats.totalOrders > 0 ? (status.count / stats.totalOrders) * 100 : 0}%` }}
                                         ></div>
                                     </div>
                                 </div>

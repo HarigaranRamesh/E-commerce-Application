@@ -7,7 +7,7 @@ import { Trash2 } from "lucide-react";
 import "./Bag.css";
 
 const Bag = () => {
-  const { cart, removeFromCart, updateQuantity, getTotalPrice, clearCart } = useContext(CartContext);
+  const { cart, removeFromCart, updateQuantity, getTotalPrice } = useContext(CartContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 

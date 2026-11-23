@@ -59,7 +59,7 @@ const MyOrders = () => {
                                 ))}
                             </div>
                             <div className="order-footer">
-                                <h3>Total: ${order.totalPrice.toFixed(2)}</h3>
+                                <h3>Total: ${Number(order.totalPrice || 0).toFixed(2)}</h3>
                             </div>
                         </div>
                     ))}
