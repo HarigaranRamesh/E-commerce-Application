@@ -15,11 +15,19 @@ class OrderInstance {
         this.taxPrice = row.tax_price !== null ? parseFloat(row.tax_price) : 0;
         this.shippingPrice = row.shipping_price !== null ? parseFloat(row.shipping_price) : 0;
         this.totalPrice = row.total_price !== null ? parseFloat(row.total_price) : 0;
+        this.discountAmount = row.discount_amount !== null ? parseFloat(row.discount_amount) : 0;
+        this.couponCode = row.coupon_code || null;
         this.isPaid = Boolean(row.is_paid);
         this.paidAt = row.paid_at;
         this.isDelivered = Boolean(row.is_delivered);
         this.deliveredAt = row.delivered_at;
         this.status = row.status || 'pending';
+        this.timeline = Array.isArray(row.timeline) && row.timeline.length > 0 ? row.timeline : [
+            { status: 'pending', title: 'Order Placed', timestamp: row.created_at, note: 'Order details received' }
+        ];
+        this.trackingNumber = row.tracking_number || null;
+        this.carrier = row.carrier || null;
+        this.invoiceNumber = row.invoice_number || `INV-${String(row.id).substring(0, 8).toUpperCase()}`;
         this.createdAt = row.created_at;
         this.updatedAt = row.updated_at;
 
@@ -33,6 +41,21 @@ class OrderInstance {
         }
     }
 
+    addTimelineEvent(status, title, note = '') {
+        const event = {
+            status,
+            title,
+            timestamp: new Date().toISOString(),
+            note,
+        };
+        this.timeline.push(event);
+        this.status = status;
+        if (status === 'delivered') {
+            this.isDelivered = true;
+            this.deliveredAt = new Date();
+        }
+    }
+
     async save() {
         const queryText = `
             UPDATE orders
@@ -40,8 +63,10 @@ class OrderInstance {
                 payment_result = $4, items_price = $5, tax_price = $6,
                 shipping_price = $7, total_price = $8, is_paid = $9,
                 paid_at = $10, is_delivered = $11, delivered_at = $12,
-                status = $13, updated_at = NOW()
-            WHERE id = $14
+                status = $13, coupon_code = $14, discount_amount = $15,
+                timeline = $16, tracking_number = $17, carrier = $18,
+                invoice_number = $19, updated_at = NOW()
+            WHERE id = $20
             RETURNING *;
         `;
         const values = [
@@ -58,6 +83,12 @@ class OrderInstance {
             this.isDelivered,
             this.deliveredAt,
             this.status,
+            this.couponCode,
+            this.discountAmount,
+            JSON.stringify(this.timeline || []),
+            this.trackingNumber,
+            this.carrier,
+            this.invoiceNumber,
             this.id,
         ];
 
@@ -146,13 +177,25 @@ class OrderQueryBuilder {
 
 const Order = {
     async create(data) {
+        const initialTimeline = [
+            {
+                status: 'pending',
+                title: 'Order Placed',
+                timestamp: new Date().toISOString(),
+                note: `Payment via ${data.paymentMethod?.toUpperCase() || 'COD'}`,
+            },
+        ];
+
+        const invoiceNum = `INV-${Date.now().toString(36).toUpperCase()}`;
+
         const queryText = `
             INSERT INTO orders (
                 user_id, order_items, shipping_address, payment_method,
                 payment_result, items_price, tax_price, shipping_price,
-                total_price, is_paid, paid_at, is_delivered, delivered_at, status
+                total_price, is_paid, paid_at, is_delivered, delivered_at,
+                status, coupon_code, discount_amount, timeline, invoice_number
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
             RETURNING *;
         `;
         const values = [
@@ -170,6 +213,10 @@ const Order = {
             Boolean(data.isDelivered),
             data.deliveredAt || null,
             data.status || 'pending',
+            data.couponCode || null,
+            data.discountAmount || 0,
+            JSON.stringify(initialTimeline),
+            invoiceNum,
         ];
 
         const res = await pool.query(queryText, values);

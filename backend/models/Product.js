@@ -20,6 +20,10 @@ class ProductInstance {
         this.featured = Boolean(row.featured);
         this.brand = row.brand || '';
         this.tags = Array.isArray(row.tags) ? row.tags : [];
+        this.sku = row.sku || `SKU-${row.id}`;
+        this.specifications = typeof row.specifications === 'object' && row.specifications !== null ? row.specifications : {};
+        this.variants = Array.isArray(row.variants) ? row.variants : [];
+        this.viewsCount = parseInt(row.views_count || 0, 10);
         this.createdAt = row.created_at;
         this.updatedAt = row.updated_at;
     }
@@ -30,8 +34,9 @@ class ProductInstance {
             SET name = $1, description = $2, price = $3, original_price = $4,
                 category = $5, image = $6, images = $7, stock = $8,
                 rating = $9, num_reviews = $10, reviews = $11, featured = $12,
-                brand = $13, tags = $14, updated_at = NOW()
-            WHERE id = $15 OR _id::text = $16
+                brand = $13, tags = $14, sku = $15, specifications = $16,
+                variants = $17, views_count = $18, updated_at = NOW()
+            WHERE id = $19 OR _id::text = $20
             RETURNING *;
         `;
         const values = [
@@ -49,6 +54,10 @@ class ProductInstance {
             this.featured,
             this.brand,
             JSON.stringify(this.tags || []),
+            this.sku,
+            JSON.stringify(this.specifications || {}),
+            JSON.stringify(this.variants || []),
+            this.viewsCount,
             typeof this.id === 'number' ? this.id : -1,
             String(this._id || this.id),
         ];
@@ -81,9 +90,9 @@ const Product = {
                     return `$${values.length}`;
                 });
                 conditions.push(`category NOT IN (${placeholders.join(', ')})`);
-            } else {
+            } else if (query.category !== 'all') {
                 values.push(query.category);
-                conditions.push(`category = $${values.length}`);
+                conditions.push(`LOWER(category) = LOWER($${values.length})`);
             }
         }
 
@@ -91,7 +100,7 @@ const Product = {
         if (searchTerm) {
             values.push(`%${searchTerm}%`);
             const p = `$${values.length}`;
-            conditions.push(`(name ILIKE ${p} OR description ILIKE ${p})`);
+            conditions.push(`(name ILIKE ${p} OR description ILIKE ${p} OR brand ILIKE ${p})`);
         } else if (query.$or && Array.isArray(query.$or)) {
             const orParts = [];
             for (const orCond of query.$or) {
@@ -109,16 +118,94 @@ const Product = {
             }
         }
 
+        if (query.brand) {
+            values.push(query.brand);
+            conditions.push(`LOWER(brand) = LOWER($${values.length})`);
+        }
+
+        if (query.minPrice !== undefined && query.minPrice !== '') {
+            values.push(parseFloat(query.minPrice));
+            conditions.push(`price >= $${values.length}`);
+        }
+
+        if (query.maxPrice !== undefined && query.maxPrice !== '') {
+            values.push(parseFloat(query.maxPrice));
+            conditions.push(`price <= $${values.length}`);
+        }
+
+        if (query.minRating !== undefined && query.minRating !== '') {
+            values.push(parseFloat(query.minRating));
+            conditions.push(`rating >= $${values.length}`);
+        }
+
+        if (query.inStock === 'true' || query.inStock === true) {
+            conditions.push(`stock > 0`);
+        }
+
         if (query.featured !== undefined) {
-            values.push(Boolean(query.featured));
+            values.push(query.featured === 'true' || query.featured === true);
             conditions.push(`featured = $${values.length}`);
         }
 
+        // Sorting
+        let orderBy = 'id ASC';
+        if (query.sort) {
+            switch (query.sort) {
+                case 'price-asc':
+                case 'price_asc':
+                    orderBy = 'price ASC';
+                    break;
+                case 'price-desc':
+                case 'price_desc':
+                    orderBy = 'price DESC';
+                    break;
+                case 'rating':
+                    orderBy = 'rating DESC, num_reviews DESC';
+                    break;
+                case 'newest':
+                    orderBy = 'created_at DESC';
+                    break;
+                case 'popular':
+                    orderBy = 'views_count DESC, num_reviews DESC';
+                    break;
+                default:
+                    orderBy = 'id ASC';
+            }
+        }
+
+        let limitClause = '';
+        if (query.limit) {
+            const limit = parseInt(query.limit, 10);
+            const page = parseInt(query.page || 1, 10);
+            const offset = (page - 1) * limit;
+            limitClause = `LIMIT ${limit} OFFSET ${offset}`;
+        }
+
         const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-        const sql = `SELECT * FROM products ${whereClause} ORDER BY id ASC`;
+        const sql = `SELECT * FROM products ${whereClause} ORDER BY ${orderBy} ${limitClause}`;
         const res = await pool.query(sql, values);
 
         return res.rows.map((row) => new ProductInstance(row));
+    },
+
+    async count(query = {}) {
+        const conditions = [];
+        const values = [];
+
+        if (query.category && query.category !== 'all') {
+            values.push(query.category);
+            conditions.push(`LOWER(category) = LOWER($${values.length})`);
+        }
+        const searchTerm = query.search || query.keyword;
+        if (searchTerm) {
+            values.push(`%${searchTerm}%`);
+            const p = `$${values.length}`;
+            conditions.push(`(name ILIKE ${p} OR description ILIKE ${p} OR brand ILIKE ${p})`);
+        }
+
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        const res = await pool.query(`SELECT COUNT(*)::int AS count FROM products ${whereClause}`, values);
+        return res.rows[0].count;
     },
 
     async findById(id) {
@@ -137,6 +224,10 @@ const Product = {
         }
 
         if (res.rows.length === 0) return null;
+
+        // Increment views count non-blockingly
+        pool.query('UPDATE products SET views_count = views_count + 1 WHERE id = $1', [res.rows[0].id]).catch(() => {});
+
         return new ProductInstance(res.rows[0]);
     },
 
@@ -151,15 +242,47 @@ const Product = {
         return products.length > 0 ? products[0] : null;
     },
 
+    async getSuggestions(searchTerm, limit = 6) {
+        if (!searchTerm || searchTerm.trim().length === 0) return [];
+        const res = await pool.query(
+            `SELECT id, _id, name, price, category, image, brand
+             FROM products
+             WHERE name ILIKE $1 OR description ILIKE $1 OR category ILIKE $1
+             ORDER BY featured DESC, rating DESC
+             LIMIT $2`,
+            [`%${searchTerm.trim()}%`, limit]
+        );
+        return res.rows.map((row) => ({
+            id: row.id,
+            _id: row._id || String(row.id),
+            name: row.name,
+            price: parseFloat(row.price),
+            category: row.category,
+            image: row.image,
+            brand: row.brand,
+        }));
+    },
+
+    async getRelated(productId, category, limit = 4) {
+        const res = await pool.query(
+            `SELECT * FROM products
+             WHERE category = $1 AND id != $2
+             ORDER BY rating DESC, views_count DESC
+             LIMIT $3`,
+            [category, typeof productId === 'number' ? productId : -1, limit]
+        );
+        return res.rows.map((row) => new ProductInstance(row));
+    },
+
     async create(data) {
         let res;
         if (data.id) {
             const queryText = `
                 INSERT INTO products (
                     id, name, description, price, original_price, category, image, images,
-                    stock, rating, num_reviews, reviews, featured, brand, tags
+                    stock, rating, num_reviews, reviews, featured, brand, tags, sku, specifications, variants
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
                 RETURNING *;
             `;
             const values = [
@@ -178,17 +301,19 @@ const Product = {
                 Boolean(data.featured),
                 data.brand || '',
                 JSON.stringify(data.tags || []),
+                data.sku || `SKU-${data.id}`,
+                JSON.stringify(data.specifications || {}),
+                JSON.stringify(data.variants || []),
             ];
             res = await pool.query(queryText, values);
-            // Synchronize serial sequence after custom id insert
             await pool.query(`SELECT setval(pg_get_serial_sequence('products', 'id'), COALESCE(MAX(id), 1)) FROM products;`);
         } else {
             const queryText = `
                 INSERT INTO products (
                     name, description, price, original_price, category, image, images,
-                    stock, rating, num_reviews, reviews, featured, brand, tags
+                    stock, rating, num_reviews, reviews, featured, brand, tags, sku, specifications, variants
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
                 RETURNING *;
             `;
             const values = [
@@ -206,6 +331,9 @@ const Product = {
                 Boolean(data.featured),
                 data.brand || '',
                 JSON.stringify(data.tags || []),
+                data.sku || `SKU-AUTO-${Date.now()}`,
+                JSON.stringify(data.specifications || {}),
+                JSON.stringify(data.variants || []),
             ];
             res = await pool.query(queryText, values);
         }
