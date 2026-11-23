@@ -25,7 +25,6 @@ export const createOrder = async (req, res) => {
             return res.status(400).json({ message: 'No order items' });
         }
 
-        // Map over orderItems and find the corresponding product for each item
         const dbOrderItems = [];
         for (const item of orderItems) {
             let product = await Product.findById(item.product);
@@ -35,7 +34,9 @@ export const createOrder = async (req, res) => {
             }
 
             if (!product) {
-                return res.status(404).json({ message: `Product with id ${item.product} not found` });
+                return res.status(404).json({
+                    message: `Product with id ${item.product} not found. Please refresh your cart.`
+                });
             }
             if (product.stock < item.quantity) {
                 return res.status(400).json({ message: `Insufficient stock for product: ${product.name}` });
@@ -57,10 +58,10 @@ export const createOrder = async (req, res) => {
             orderItems: dbOrderItems,
             shippingAddress,
             paymentMethod,
-            itemsPrice,
-            taxPrice,
-            shippingPrice,
-            totalPrice,
+            itemsPrice: itemsPrice || totalPrice || 0,
+            taxPrice: taxPrice || 0,
+            shippingPrice: shippingPrice || 0,
+            totalPrice: totalPrice || itemsPrice || 0,
         });
 
         res.status(201).json(order);
@@ -82,11 +83,19 @@ export const getOrderById = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id).populate('user', 'name email');
 
-        if (order) {
-            res.json(order);
-        } else {
-            res.status(404).json({ message: 'Order not found' });
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
         }
+
+        // Authorization check: only owner or admin can view order
+        const reqUserId = String(req.user._id || req.user.id);
+        const orderUserId = typeof order.user === 'object' ? String(order.user._id || order.user.id) : String(order.user);
+
+        if (req.user.role !== 'admin' && reqUserId !== orderUserId) {
+            return res.status(403).json({ message: 'Not authorized to view this order' });
+        }
+
+        res.json(order);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

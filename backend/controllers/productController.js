@@ -4,28 +4,29 @@ import Product from '../models/Product.js';
  * @desc    Get all products
  * @route   GET /api/products
  * @access  Public
- * @param   {Object} req - Express request object (query: category, search, featured)
+ * @param   {Object} req - Express request object (query: category, search, keyword, featured)
  * @param   {Object} res - Express response object
  * @returns {void}
  */
 export const getProducts = async (req, res) => {
     try {
-        const { category, search, featured } = req.query;
+        const { category, search, keyword, featured } = req.query;
         let query = {};
 
         if (category) {
             query.category = category;
         }
 
-        if (search) {
+        const searchTerm = search || keyword;
+        if (searchTerm) {
             query.$or = [
-                { name: { $regex: search, $options: 'i' } },
-                { description: { $regex: search, $options: 'i' } },
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { description: { $regex: searchTerm, $options: 'i' } },
             ];
         }
 
-        if (featured) {
-            query.featured = featured === 'true';
+        if (featured !== undefined) {
+            query.featured = featured === 'true' || featured === true;
         }
 
         const products = await Product.find(query);
@@ -67,7 +68,7 @@ export const getProductById = async (req, res) => {
  */
 export const createProduct = async (req, res) => {
     try {
-        const product = new Product({
+        const product = await Product.create({
             name: req.body.name,
             description: req.body.description,
             price: req.body.price,
@@ -75,14 +76,13 @@ export const createProduct = async (req, res) => {
             category: req.body.category,
             image: req.body.image,
             images: req.body.images || [],
-            stock: req.body.stock,
-            brand: req.body.brand,
+            stock: req.body.stock !== undefined ? req.body.stock : 0,
+            brand: req.body.brand || '',
             tags: req.body.tags || [],
-            featured: req.body.featured || false,
+            featured: req.body.featured !== undefined ? req.body.featured : false,
         });
 
-        const createdProduct = await product.save();
-        res.status(201).json(createdProduct);
+        res.status(201).json(product);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -103,13 +103,13 @@ export const updateProduct = async (req, res) => {
         if (product) {
             product.name = req.body.name || product.name;
             product.description = req.body.description || product.description;
-            product.price = req.body.price || product.price;
-            product.originalPrice = req.body.originalPrice || product.originalPrice;
+            product.price = req.body.price !== undefined ? req.body.price : product.price;
+            product.originalPrice = req.body.originalPrice !== undefined ? req.body.originalPrice : product.originalPrice;
             product.category = req.body.category || product.category;
             product.image = req.body.image || product.image;
             product.images = req.body.images || product.images;
             product.stock = req.body.stock !== undefined ? req.body.stock : product.stock;
-            product.brand = req.body.brand || product.brand;
+            product.brand = req.body.brand !== undefined ? req.body.brand : product.brand;
             product.tags = req.body.tags || product.tags;
             product.featured = req.body.featured !== undefined ? req.body.featured : product.featured;
 
@@ -160,8 +160,9 @@ export const createProductReview = async (req, res) => {
         const product = await Product.findById(req.params.id);
 
         if (product) {
+            const userId = String(req.user._id || req.user.id);
             const alreadyReviewed = product.reviews.find(
-                (r) => r.user.toString() === req.user._id.toString()
+                (r) => String(r.user) === userId
             );
 
             if (alreadyReviewed) {
@@ -172,7 +173,8 @@ export const createProductReview = async (req, res) => {
                 name: req.user.name,
                 rating: Number(rating),
                 comment,
-                user: req.user._id,
+                user: userId,
+                createdAt: new Date().toISOString(),
             };
 
             product.reviews.push(review);

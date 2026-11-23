@@ -1,6 +1,7 @@
 import Product from '../models/Product.js';
 import User from '../models/User.js';
 import products from '../data/products.js';
+import { pool } from '../config/db.js';
 
 const seedAdmin = async () => {
     try {
@@ -8,7 +9,6 @@ const seedAdmin = async () => {
         let adminUser = await User.findOne({ email: 'admin@example.com' });
 
         if (adminUser) {
-            // Ensure admin role and verified password
             adminUser.password = 'password123';
             await adminUser.save();
         } else {
@@ -29,6 +29,8 @@ const seedAdmin = async () => {
                     { upsert: true }
                 );
             }
+            // Synchronize the serial sequence after upserting products
+            await pool.query(`SELECT setval(pg_get_serial_sequence('products', 'id'), COALESCE(MAX(id), 1)) FROM products;`);
         }
     } catch (error) {
         console.error(`Error seeding data: ${error.message}`);
