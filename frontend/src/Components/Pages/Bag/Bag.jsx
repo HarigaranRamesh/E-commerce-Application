@@ -1,19 +1,79 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../../../Context/CartContext";
 import { AuthContext } from "../../../Context/AuthContext";
+import { couponsAPI } from "../../../services/api";
 import { toast } from "react-hot-toast";
-import { Trash2 } from "lucide-react";
+import { Trash2, Tag, CheckCircle, Truck, X } from "lucide-react";
 import "./Bag.css";
 
+const FREE_SHIPPING_THRESHOLD = 999;
+const STANDARD_SHIPPING_FEE = 60;
+
 const Bag = () => {
-  const { cart, removeFromCart, updateQuantity, getTotalPrice } = useContext(CartContext);
+  const { cart, removeFromCart, updateQuantity } = useContext(CartContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  // Free shipping calculation
+  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const shippingFee = isFreeShipping || subtotal === 0 ? 0 : STANDARD_SHIPPING_FEE;
+  const progressToFreeShipping = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  const amountNeededForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+
+  // Discount calculation
+  const discountAmount = appliedCoupon ? appliedCoupon.discount : 0;
+  const taxPrice = Math.round((subtotal - discountAmount) * 0.05); // 5% GST
+  const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee + taxPrice);
+
+  const handleApplyCoupon = async (e) => {
+    e.preventDefault();
+    if (!couponCode.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
+    }
+
+    setValidatingCoupon(true);
+    try {
+      const { data } = await couponsAPI.validate(couponCode.trim(), subtotal);
+      if (data.valid) {
+        setAppliedCoupon(data);
+        toast.success(data.message || `Coupon ${data.code} applied!`);
+      } else {
+        toast.error(data.message || "Invalid coupon");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Invalid or expired coupon code");
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    toast("Coupon removed", { icon: "ℹ️" });
+  };
+
   const handleCheckout = () => {
     if (cart.length === 0) return;
-    navigate("/checkout", { state: { cart } });
+    navigate("/checkout", {
+      state: {
+        cart,
+        subtotal,
+        discountAmount,
+        couponCode: appliedCoupon?.code || null,
+        shippingFee,
+        taxPrice,
+        grandTotal,
+      },
+    });
   };
 
   const handleRemove = (id) => {
@@ -27,46 +87,34 @@ const Bag = () => {
         <h1 className="bag-title">SHOPPING BAG</h1>
       </div>
 
-      <div className="promo-banner">
-        NEED A GIFT? PICK UP IN-STORE TODAY WHEN YOU ORDER BY 1PM ET.
+      {/* Free Shipping Progress Indicator */}
+      <div className="free-shipping-meter">
+        <div className="meter-label">
+          <Truck size={18} />
+          {isFreeShipping ? (
+            <span>You've unlocked <strong>FREE Express Delivery</strong>! 🎉</span>
+          ) : (
+            <span>Add <strong>₹{amountNeededForFreeShipping.toLocaleString("en-IN")}</strong> more to get FREE Delivery!</span>
+          )}
+        </div>
+        <div className="meter-bar">
+          <div className="meter-fill" style={{ width: `${progressToFreeShipping}%` }}></div>
+        </div>
       </div>
 
       {cart.length === 0 ? (
-        /* EMPTY STATE */
         <div className="bag-empty-grid">
           <div className="empty-message">
             <h3>YOUR SHOPPING BAG IS EMPTY.</h3>
-            {!user && <p>Sign in to save or access saved items in your shopping bag.</p>}
-          </div>
-
-          <div className="bag-sidebar">
-            <div className="summary-section">
-              <div className="summary-row" style={{ marginBottom: '1rem' }}>
-                <span>DISCOUNTS</span>
-                <span className="summary-link">ADD</span>
-              </div>
-              <div className="summary-row" style={{ marginTop: '2rem', fontWeight: 700 }}>
-                <span>TOTAL</span>
-                <div></div> {/* Total hidden when empty */}
-              </div>
-            </div>
-
-            <button className="checkout-btn-disabled" disabled>
-              CONTINUE TO CHECKOUT
+            <p>Explore our premium shirts, trousers, and streetwear collection.</p>
+            <button className="btn-explore" onClick={() => navigate("/Category")}>
+              EXPLORE CATALOG
             </button>
-
-            {!user && (
-              <button className="signin-btn" onClick={() => navigate('/login')}>
-                SIGN IN
-              </button>
-            )}
-
-            {/* Klarna text removed */}
           </div>
         </div>
       ) : (
-        /* ACTIVE CART STATE */
         <div className="active-cart-grid">
+          {/* Cart Items List */}
           <div className="cart-items-section">
             <ul className="cart-items-list">
               {cart.map((item) => (
@@ -76,9 +124,11 @@ const Bag = () => {
                   </div>
                   <div className="item-info">
                     <h3>{item.name}</h3>
-                    <div className="item-meta">Size: {item.size || 'N/A'}</div>
-                    <div className="item-meta">Art. no. 0987654321</div>
-                    <div className="item-meta">Total: ₹{(item.price * item.quantity).toLocaleString("en-IN")}</div>
+                    <div className="item-meta">Size: <strong>{item.size || "M"}</strong></div>
+                    {item.selectedColor && (
+                      <div className="item-meta">Color: <strong>{item.selectedColor}</strong></div>
+                    )}
+                    <div className="item-meta">Price: ₹{Number(item.price).toLocaleString("en-IN")}</div>
 
                     <div className="quantity-controls">
                       <button
@@ -99,40 +149,79 @@ const Bag = () => {
                   </div>
                   <div className="item-price-col">
                     <button className="remove-link" onClick={() => handleRemove(item.itemKey)}>
-                      <Trash2 size={16} style={{ marginRight: '4px' }} />
+                      <Trash2 size={16} style={{ marginRight: "4px" }} />
                       Remove
                     </button>
-                    <div>₹{item.price.toLocaleString("en-IN")}</div>
+                    <div className="item-subtotal">₹{(item.price * item.quantity).toLocaleString("en-IN")}</div>
                   </div>
                 </li>
               ))}
             </ul>
           </div>
 
+          {/* Order Summary & Coupon Sidebar */}
           <div className="bag-sidebar">
+            {/* Coupon Code Section */}
+            <div className="coupon-card">
+              <h4><Tag size={16} /> Have a Promo Code?</h4>
+              {appliedCoupon ? (
+                <div className="applied-coupon-pill">
+                  <div className="coupon-details">
+                    <CheckCircle size={16} color="#10b981" />
+                    <span><strong>{appliedCoupon.code}</strong> (-₹{appliedCoupon.discount})</span>
+                  </div>
+                  <button type="button" className="remove-coupon-btn" onClick={handleRemoveCoupon}>
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApplyCoupon} className="coupon-form">
+                  <input
+                    type="text"
+                    placeholder="e.g. WELCOME10, SUPER20"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                  />
+                  <button type="submit" disabled={validatingCoupon}>
+                    {validatingCoupon ? "..." : "APPLY"}
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Financial Breakdown */}
             <div className="summary-section">
-              <div className="summary-row" style={{ marginBottom: '1rem' }}>
-                <span>DISCOUNTS</span>
-                <span className="summary-link">ADD</span>
-              </div>
               <div className="summary-row">
-                <span>Order value</span>
-                <span>₹{getTotalPrice().toLocaleString("en-IN")}</span>
+                <span>Order Subtotal</span>
+                <span>₹{subtotal.toLocaleString("en-IN")}</span>
               </div>
-              <div className="summary-row" style={{ marginTop: '1rem', fontWeight: 700, fontSize: '1.2rem' }}>
-                <span>TOTAL</span>
-                <span>₹{getTotalPrice().toLocaleString("en-IN")}</span>
+
+              {appliedCoupon && (
+                <div className="summary-row discount-row">
+                  <span>Discount ({appliedCoupon.code})</span>
+                  <span>-₹{discountAmount.toLocaleString("en-IN")}</span>
+                </div>
+              )}
+
+              <div className="summary-row">
+                <span>Estimated Shipping</span>
+                <span>{shippingFee === 0 ? <strong className="text-green">FREE</strong> : `₹${shippingFee}`}</span>
+              </div>
+
+              <div className="summary-row">
+                <span>Estimated Taxes (GST)</span>
+                <span>₹{taxPrice.toLocaleString("en-IN")}</span>
+              </div>
+
+              <div className="summary-row total-row">
+                <span>ESTIMATED TOTAL</span>
+                <span>₹{grandTotal.toLocaleString("en-IN")}</span>
               </div>
             </div>
 
-            <button
-              className="checkout-btn-black"
-              onClick={handleCheckout}
-            >
-              CONTINUE TO CHECKOUT
+            <button className="checkout-btn-black" onClick={handleCheckout}>
+              PROCEED TO CHECKOUT
             </button>
-
-            {/* Klarna text removed */}
           </div>
         </div>
       )}
