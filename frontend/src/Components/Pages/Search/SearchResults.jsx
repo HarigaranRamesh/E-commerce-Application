@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast";
 import "../../../Components/Main/Products.css";
 
 const SearchResults = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const query = searchParams.get("q") || "";
     const navigate = useNavigate();
     const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
@@ -36,7 +36,7 @@ const SearchResults = () => {
                 const { data } = await productsAPI.getAll(params);
                 const results = Array.isArray(data) ? data : data.products || [];
                 setProducts(results);
-            } catch (err) {
+            } catch {
                 // Client-side fallback if backend request fails
                 let list = [...staticProducts];
                 if (query) {

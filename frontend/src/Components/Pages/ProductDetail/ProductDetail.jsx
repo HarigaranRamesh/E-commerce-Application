@@ -56,7 +56,7 @@ const ProductDetail = () => {
                         const filtered = existing.filter((item) => String(item.id) !== String(currentItem.id));
                         filtered.unshift(currentItem);
                         localStorage.setItem("recently_viewed", JSON.stringify(filtered.slice(0, 10)));
-                    } catch (e) {
+                    } catch {
                         // ignore storage errors
                     }
 

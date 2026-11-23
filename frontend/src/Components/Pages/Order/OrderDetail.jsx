@@ -50,6 +50,7 @@ const OrderDetail = () => {
         if (id) {
             fetchOrder();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const handleCancelOrder = async () => {
