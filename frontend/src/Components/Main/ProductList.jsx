@@ -50,7 +50,7 @@ const ProductList = ({ category, featured, sort, limit, minRating }) => {
             setProducts(fallbackList);
           }
         }
-      } catch (err) {
+      } catch {
         if (isMounted) {
           let fallbackList = [...staticProducts];
           if (category && category !== "All" && category !== "Mens") {

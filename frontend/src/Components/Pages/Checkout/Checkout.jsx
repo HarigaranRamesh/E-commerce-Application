@@ -68,7 +68,7 @@ const Checkout = () => {
       if (paymentMethod !== "cod") {
         toast("Initiating secure payment gateway...", { icon: "🔒" });
         const intentRes = await paymentAPI.createIntent(totalPrice, "inr");
-        const { clientSecret, paymentIntentId } = intentRes.data;
+        const { paymentIntentId } = intentRes.data;
 
         // Verify intent on the server
         const verifyRes = await paymentAPI.verify(paymentIntentId);
@@ -97,6 +97,7 @@ const Checkout = () => {
         couponCode,
         discountAmount,
         isPaid: paymentMethod !== "cod",
+        paymentResult,
       };
 
       const response = await ordersAPI.create(orderPayload);

@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../../../Context/CartContext";
-import { AuthContext } from "../../../Context/AuthContext";
 import { couponsAPI } from "../../../services/api";
 import { toast } from "react-hot-toast";
 import { Trash2, Tag, CheckCircle, Truck, X } from "lucide-react";
@@ -12,7 +11,6 @@ const STANDARD_SHIPPING_FEE = 60;
 
 const Bag = () => {
   const { cart, removeFromCart, updateQuantity } = useContext(CartContext);
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [couponCode, setCouponCode] = useState("");

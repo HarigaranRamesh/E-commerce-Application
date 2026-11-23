@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ProductList from "../../Main/ProductList";
 import Hero from "../../Main/Hero";
 import ServiceFeatures from "../../Main/ServiceFeatures";
-import { Tag, Copy, Check, ArrowRight, Sparkles, Clock, Flame, Award, Zap, History } from "lucide-react";
+import { Tag, Copy, Check, ArrowRight, Sparkles, Flame, Award, Zap, History } from "lucide-react";
 import { toast } from "react-hot-toast";
 import "./Home.css";
 
@@ -56,7 +56,7 @@ function Home() {
     try {
       const items = JSON.parse(localStorage.getItem("recently_viewed") || "[]");
       setRecentlyViewed(items.slice(0, 5));
-    } catch (e) {
+    } catch {
       setRecentlyViewed([]);
     }
   }, []);

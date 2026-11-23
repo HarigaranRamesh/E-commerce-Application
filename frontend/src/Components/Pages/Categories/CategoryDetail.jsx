@@ -69,7 +69,7 @@ const CategoryDetail = () => {
             setProducts(filtered);
           }
         }
-      } catch (err) {
+      } catch {
         if (isMounted) {
           let filtered = staticProducts.filter((p) => {
             if (categoryName.toLowerCase() === "mens") return true;
