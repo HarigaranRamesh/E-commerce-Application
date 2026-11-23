@@ -38,7 +38,7 @@ export const WishlistProvider = ({ children }) => {
       let userWishlist = [];
       try {
         userWishlist = JSON.parse(localStorage.getItem(userKey)) || [];
-      } catch (e) {
+      } catch {
         userWishlist = [];
       }
 
@@ -46,7 +46,7 @@ export const WishlistProvider = ({ children }) => {
       let guestWishlist = [];
       try {
         guestWishlist = JSON.parse(localStorage.getItem("wishlist_guest")) || [];
-      } catch (e) {
+      } catch {
         guestWishlist = [];
       }
 
@@ -66,7 +66,7 @@ export const WishlistProvider = ({ children }) => {
       let guestWishlist = [];
       try {
         guestWishlist = JSON.parse(localStorage.getItem("wishlist_guest")) || [];
-      } catch (e) {
+      } catch {
         guestWishlist = [];
       }
       dispatch({ type: "LOAD_WISHLIST", payload: guestWishlist });

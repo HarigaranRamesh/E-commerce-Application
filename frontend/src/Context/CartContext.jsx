@@ -64,7 +64,7 @@ export const CartProvider = ({ children }) => {
       let userCart = [];
       try {
         userCart = JSON.parse(localStorage.getItem(userKey)) || [];
-      } catch (e) {
+      } catch {
         userCart = [];
       }
 
@@ -72,7 +72,7 @@ export const CartProvider = ({ children }) => {
       let guestCart = [];
       try {
         guestCart = JSON.parse(localStorage.getItem("cart_guest")) || [];
-      } catch (e) {
+      } catch {
         guestCart = [];
       }
 
@@ -96,7 +96,7 @@ export const CartProvider = ({ children }) => {
       let guestCart = [];
       try {
         guestCart = JSON.parse(localStorage.getItem("cart_guest")) || [];
-      } catch (e) {
+      } catch {
         guestCart = [];
       }
       dispatch({ type: "LOAD_CART", payload: guestCart });

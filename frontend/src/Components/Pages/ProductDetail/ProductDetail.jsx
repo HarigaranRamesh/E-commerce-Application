@@ -64,11 +64,11 @@ const ProductDetail = () => {
                     try {
                         const relRes = await productsAPI.getRelated(data.id || productId);
                         setRelatedProducts(relRes.data || []);
-                    } catch (e) {
-                        console.warn("Could not load related products", e);
+                    } catch {
+                        // ignore
                     }
                 }
-            } catch (err) {
+            } catch {
                 // Fallback to static data if backend is offline
                 const fallback = staticProducts.find((p) => String(p.id) === String(productId));
                 if (fallback) {
@@ -87,7 +87,7 @@ const ProductDetail = () => {
                         const filtered = existing.filter((item) => String(item.id) !== String(currentItem.id));
                         filtered.unshift(currentItem);
                         localStorage.setItem("recently_viewed", JSON.stringify(filtered.slice(0, 10)));
-                    } catch (e) {
+                    } catch {
                         // ignore
                     }
                 }

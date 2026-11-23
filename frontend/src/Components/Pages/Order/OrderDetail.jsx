@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ordersAPI, paymentAPI } from "../../../services/api";
+import { ordersAPI } from "../../../services/api";
 import { toast } from "react-hot-toast";
 import {
     Package,
