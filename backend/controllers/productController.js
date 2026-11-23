@@ -1,36 +1,68 @@
 import Product from '../models/Product.js';
 
 /**
- * @desc    Get all products
+ * @desc    Get all products with filtering, sorting, and pagination
  * @route   GET /api/products
  * @access  Public
- * @param   {Object} req - Express request object (query: category, search, keyword, featured)
- * @param   {Object} res - Express response object
- * @returns {void}
  */
 export const getProducts = async (req, res) => {
     try {
-        const { category, search, keyword, featured } = req.query;
-        let query = {};
+        const {
+            category,
+            search,
+            keyword,
+            featured,
+            brand,
+            minPrice,
+            maxPrice,
+            minRating,
+            inStock,
+            sort,
+            page = 1,
+            limit,
+        } = req.query;
 
-        if (category) {
-            query.category = category;
-        }
+        const query = {
+            category,
+            search,
+            keyword,
+            featured,
+            brand,
+            minPrice,
+            maxPrice,
+            minRating,
+            inStock,
+            sort,
+            page: parseInt(page, 10),
+            limit: limit ? parseInt(limit, 10) : undefined,
+        };
 
-        const searchTerm = search || keyword;
-        if (searchTerm) {
-            query.$or = [
-                { name: { $regex: searchTerm, $options: 'i' } },
-                { description: { $regex: searchTerm, $options: 'i' } },
-            ];
-        }
+        const [products, totalCount] = await Promise.all([
+            Product.find(query),
+            Product.count(query),
+        ]);
 
-        if (featured !== undefined) {
-            query.featured = featured === 'true' || featured === true;
-        }
+        res.json({
+            products,
+            page: parseInt(page, 10),
+            pages: limit ? Math.ceil(totalCount / parseInt(limit, 10)) : 1,
+            total: totalCount,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-        const products = await Product.find(query);
-        res.json(products);
+/**
+ * @desc    Get live search suggestions
+ * @route   GET /api/products/search/suggestions
+ * @access  Public
+ */
+export const getProductSuggestions = async (req, res) => {
+    try {
+        const { q } = req.query;
+        const suggestions = await Product.getSuggestions(q);
+        res.json(suggestions);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -40,9 +72,6 @@ export const getProducts = async (req, res) => {
  * @desc    Get single product by ID
  * @route   GET /api/products/:id
  * @access  Public
- * @param   {Object} req - Express request object (params: id)
- * @param   {Object} res - Express response object
- * @returns {void}
  */
 export const getProductById = async (req, res) => {
     try {
@@ -59,12 +88,27 @@ export const getProductById = async (req, res) => {
 };
 
 /**
+ * @desc    Get related products
+ * @route   GET /api/products/:id/related
+ * @access  Public
+ */
+export const getRelatedProducts = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        const related = await Product.getRelated(product.id, product.category, 4);
+        res.json(related);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
  * @desc    Create a new product
  * @route   POST /api/products
  * @access  Private/Admin
- * @param   {Object} req - Express request object (body: product details)
- * @param   {Object} res - Express response object
- * @returns {void}
  */
 export const createProduct = async (req, res) => {
     try {
@@ -80,6 +124,9 @@ export const createProduct = async (req, res) => {
             brand: req.body.brand || '',
             tags: req.body.tags || [],
             featured: req.body.featured !== undefined ? req.body.featured : false,
+            sku: req.body.sku,
+            specifications: req.body.specifications || {},
+            variants: req.body.variants || [],
         });
 
         res.status(201).json(product);
@@ -92,9 +139,6 @@ export const createProduct = async (req, res) => {
  * @desc    Update a product
  * @route   PUT /api/products/:id
  * @access  Private/Admin
- * @param   {Object} req - Express request object (params: id, body: updates)
- * @param   {Object} res - Express response object
- * @returns {void}
  */
 export const updateProduct = async (req, res) => {
     try {
@@ -112,6 +156,9 @@ export const updateProduct = async (req, res) => {
             product.brand = req.body.brand !== undefined ? req.body.brand : product.brand;
             product.tags = req.body.tags || product.tags;
             product.featured = req.body.featured !== undefined ? req.body.featured : product.featured;
+            product.sku = req.body.sku || product.sku;
+            product.specifications = req.body.specifications || product.specifications;
+            product.variants = req.body.variants || product.variants;
 
             const updatedProduct = await product.save();
             res.json(updatedProduct);
@@ -127,9 +174,6 @@ export const updateProduct = async (req, res) => {
  * @desc    Delete a product
  * @route   DELETE /api/products/:id
  * @access  Private/Admin
- * @param   {Object} req - Express request object (params: id)
- * @param   {Object} res - Express response object
- * @returns {void}
  */
 export const deleteProduct = async (req, res) => {
     try {
@@ -150,9 +194,6 @@ export const deleteProduct = async (req, res) => {
  * @desc    Create product review
  * @route   POST /api/products/:id/reviews
  * @access  Private
- * @param   {Object} req - Express request object (params: id, body: rating, comment)
- * @param   {Object} res - Express response object
- * @returns {void}
  */
 export const createProductReview = async (req, res) => {
     try {
