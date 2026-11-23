@@ -41,6 +41,25 @@ const ProductDetail = () => {
                     if (data.variants && data.variants.length > 0 && data.variants[0].color) {
                         setSelectedColor(data.variants[0].color);
                     }
+
+                    // Track recently viewed
+                    try {
+                        const currentItem = {
+                            id: data.id || productId,
+                            name: data.name,
+                            price: data.price,
+                            image: data.image,
+                            category: data.category,
+                            rating: data.rating
+                        };
+                        const existing = JSON.parse(localStorage.getItem("recently_viewed") || "[]");
+                        const filtered = existing.filter((item) => String(item.id) !== String(currentItem.id));
+                        filtered.unshift(currentItem);
+                        localStorage.setItem("recently_viewed", JSON.stringify(filtered.slice(0, 10)));
+                    } catch (e) {
+                        // ignore storage errors
+                    }
+
                     // Fetch related products
                     try {
                         const relRes = await productsAPI.getRelated(data.id || productId);
@@ -55,6 +74,22 @@ const ProductDetail = () => {
                 if (fallback) {
                     setProduct(fallback);
                     setSelectedImage(fallback.image);
+                    try {
+                        const currentItem = {
+                            id: fallback.id,
+                            name: fallback.name,
+                            price: fallback.price,
+                            image: fallback.image,
+                            category: fallback.category,
+                            rating: fallback.rating
+                        };
+                        const existing = JSON.parse(localStorage.getItem("recently_viewed") || "[]");
+                        const filtered = existing.filter((item) => String(item.id) !== String(currentItem.id));
+                        filtered.unshift(currentItem);
+                        localStorage.setItem("recently_viewed", JSON.stringify(filtered.slice(0, 10)));
+                    } catch (e) {
+                        // ignore
+                    }
                 }
             } finally {
                 setLoading(false);
