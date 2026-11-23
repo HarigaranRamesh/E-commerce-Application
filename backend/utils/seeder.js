@@ -8,10 +8,9 @@ const seedAdmin = async () => {
         let adminUser = await User.findOne({ email: 'admin@example.com' });
 
         if (adminUser) {
-            // Force reset password to ensure access
+            // Ensure admin role and verified password
             adminUser.password = 'password123';
             await adminUser.save();
-            // console.log('Admin user exists. Password reset to: password123');
         } else {
             adminUser = await User.create({
                 name: 'Admin User',
@@ -19,30 +18,20 @@ const seedAdmin = async () => {
                 password: 'password123',
                 role: 'admin',
             });
-            // console.log('Admin user created successfully: admin@example.com / password123');
         }
 
-        // 2. Seed Products - Upsert (Insert or Update) to match local data exactly
-        if (products) {
+        // 2. Seed Products
+        if (products && products.length > 0) {
             for (const productData of products) {
-                // Upsert: Update if exists, Insert if not
                 await Product.findOneAndUpdate(
                     { id: productData.id },
-                    {
-                        ...productData,
-                        user: adminUser._id
-                    },
-                    { upsert: true, new: true, setDefaultsOnInsert: true }
+                    productData,
+                    { upsert: true }
                 );
-                // console.log(`Synced product: ${productData.name} (ID: ${productData.id})`);
             }
         }
-
-        // console.log('Seeder check complete.');
-
     } catch (error) {
         console.error(`Error seeding data: ${error.message}`);
-        // Do not exit process, just log error
     }
 };
 

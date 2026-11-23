@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from './models/User.js';
 import connectDB from './config/db.js';
@@ -9,25 +8,21 @@ const resetAdmin = async () => {
     try {
         await connectDB();
 
-        // Find admin
         let admin = await User.findOne({ email: 'admin@example.com' });
 
         if (!admin) {
             console.log('Admin not found, creating new one...');
-            admin = new User({
+            admin = await User.create({
                 name: 'Admin User',
                 email: 'admin@example.com',
-                role: 'admin'
+                password: 'password123',
+                role: 'admin',
             });
         } else {
             console.log('Admin found, updating password...');
+            admin.password = 'password123';
+            await admin.save();
         }
-
-        // Explicitly set/reset password
-        admin.password = 'password123';
-
-        // Save triggers the pre-save hook for hashing
-        await admin.save();
 
         console.log('Admin password verified/reset to: password123');
         process.exit();

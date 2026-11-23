@@ -14,8 +14,7 @@ dotenv.config();
 
 const app = express();
 
-// Connect to MongoDB
-// Connect to MongoDB
+// Connect to PostgreSQL
 connectDB().then(() => {
   seedAdmin();
 });

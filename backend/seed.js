@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Product from './models/Product.js';
 import User from './models/User.js';
@@ -468,7 +467,7 @@ const seedDatabase = async () => {
         await User.deleteMany();
 
         // Create admin user
-        const adminUser = await User.create({
+        await User.create({
             name: 'Admin User',
             email: 'admin@example.com',
             password: 'admin123',
@@ -486,7 +485,7 @@ const seedDatabase = async () => {
         // Insert products
         await Product.insertMany(products);
 
-        console.log('Database seeded successfully!');
+        console.log('Database seeded successfully in PostgreSQL!');
         console.log('Admin credentials: admin@example.com / admin123');
         console.log('User credentials: user@example.com / user123');
         process.exit();

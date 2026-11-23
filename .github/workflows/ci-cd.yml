@@ -1,0 +1,106 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  backend-test:
+    name: Backend CI (Node & PostgreSQL)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+          POSTGRES_DB: ecommerce_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Validate Backend Code Syntax
+        working-directory: ./backend
+        run: |
+          node --check server.js
+          node --check config/db.js
+          node --check models/User.js
+          node --check models/Product.js
+          node --check models/Order.js
+          node --check controllers/authController.js
+          node --check controllers/productController.js
+          node --check controllers/orderController.js
+          node --check controllers/analyticsController.js
+          node --check middleware/authMiddleware.js
+          node --check utils/seeder.js
+
+      - name: Test Database Connection & Seeding
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/ecommerce_test
+          JWT_SECRET: test_jwt_secret_key_minimum_32_characters_long
+          PORT: 5001
+        run: |
+          node seed.js
+
+  frontend-build:
+    name: Frontend CI (Lint & Build)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build Frontend Application
+        working-directory: ./frontend
+        env:
+          VITE_API_URL: http://localhost:5001
+        run: npm run build
+
+  deploy:
+    name: Production Deployment
+    needs: [backend-test, frontend-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deployment Notification
+        run: |
+          echo "All CI checks passed successfully on main branch."
+          echo "Ready for automated deployment (Render / Railway / Vercel)."

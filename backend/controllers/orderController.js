@@ -1,6 +1,5 @@
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
-import mongoose from 'mongoose';
 
 /**
  * @desc    Create new order
@@ -26,16 +25,11 @@ export const createOrder = async (req, res) => {
             return res.status(400).json({ message: 'No order items' });
         }
 
-        // Map over orderItems and find the corresponding product _id for each numeric id
+        // Map over orderItems and find the corresponding product for each item
         const dbOrderItems = [];
         for (const item of orderItems) {
-            let product;
-            // Check if it's a valid MongoDB ObjectId (24 hex chars)
-            if (mongoose.isValidObjectId(item.product) && String(item.product).length === 24) {
-                product = await Product.findById(item.product);
-            }
+            let product = await Product.findById(item.product);
 
-            // Fallback to searching by numeric id (legacy id)
             if (!product) {
                 product = await Product.findOne({ id: item.product });
             }
@@ -49,8 +43,8 @@ export const createOrder = async (req, res) => {
 
             dbOrderItems.push({
                 ...item,
-                product: product._id,
-                _id: undefined // simple cloning artifact removal if any
+                product: product._id || product.id,
+                _id: undefined,
             });
 
             // Deduct stock immediately
@@ -58,8 +52,8 @@ export const createOrder = async (req, res) => {
             await product.save();
         }
 
-        const order = new Order({
-            user: req.user._id,
+        const order = await Order.create({
+            user: req.user._id || req.user.id,
             orderItems: dbOrderItems,
             shippingAddress,
             paymentMethod,
@@ -69,13 +63,9 @@ export const createOrder = async (req, res) => {
             totalPrice,
         });
 
-        const createdOrder = await order.save();
-
-        res.status(201).json(createdOrder);
-
-
+        res.status(201).json(order);
     } catch (error) {
-        console.error("Error creating order:", error);
+        console.error('Error creating order:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -116,7 +106,7 @@ export const updateOrderToPaid = async (req, res) => {
 
         if (order) {
             order.isPaid = true;
-            order.paidAt = Date.now();
+            order.paidAt = new Date();
             order.paymentResult = {
                 id: req.body.id,
                 status: req.body.status,
@@ -145,7 +135,7 @@ export const updateOrderToPaid = async (req, res) => {
  */
 export const getMyOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+        const orders = await Order.find({ user: req.user._id || req.user.id }).sort({ createdAt: -1 });
         res.json(orders);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -183,7 +173,7 @@ export const updateOrderToDelivered = async (req, res) => {
 
         if (order) {
             order.isDelivered = true;
-            order.deliveredAt = Date.now();
+            order.deliveredAt = new Date();
             order.status = 'delivered';
 
             const updatedOrder = await order.save();

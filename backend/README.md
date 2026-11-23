@@ -1,13 +1,13 @@
-# Backend - Node.js E-commerce API
+# Backend - Node.js E-commerce API (PostgreSQL)
 
 ## Overview
-RESTful API for e-commerce application built with Node.js, Express, and MongoDB following professional architecture patterns.
+RESTful API for e-commerce application built with Node.js, Express, and PostgreSQL following professional architecture patterns.
 
 ## Tech Stack
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
-- **MongoDB** - Database
-- **Mongoose** - ODM
+- **PostgreSQL** - Relational Database
+- **pg (node-postgres)** - PostgreSQL client
 - **JWT** - Authentication
 - **Stripe** - Payment processing
 - **bcryptjs** - Password hashing
@@ -16,8 +16,8 @@ RESTful API for e-commerce application built with Node.js, Express, and MongoDB 
 
 ### Prerequisites
 - Node.js (v16 or higher)
-- MongoDB (local or Atlas)
-- Stripe account
+- PostgreSQL (local, Neon, Supabase, Railway, etc.)
+- Stripe account (optional for checkout)
 
 ### Installation
 
@@ -28,7 +28,7 @@ npm install
 # Create environment file
 cp .env.example .env
 
-# Update .env with your values
+# Update .env with your PostgreSQL credentials
 ```
 
 ### Environment Variables
@@ -36,10 +36,10 @@ cp .env.example .env
 ```env
 # Server
 NODE_ENV=development
-PORT=5000
+PORT=5001
 
-# Database
-MONGODB_URI=mongodb://localhost:27017/ecommerce
+# PostgreSQL Database
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ecommerce
 
 # JWT
 JWT_SECRET=your_jwt_secret_key
