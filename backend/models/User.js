@@ -1,6 +1,8 @@
 import { pool } from '../config/db.js';
 import bcrypt from 'bcryptjs';
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 class UserInstance {
     constructor(row) {
         this.id = row.id;
@@ -11,10 +13,10 @@ class UserInstance {
         this.phone = row.phone || '';
         this.gender = row.gender || null;
         this.dob = row.dob || null;
-        this.address = row.address || {};
+        this.address = typeof row.address === 'object' && row.address !== null ? row.address : {};
         this.role = row.role || 'user';
-        this.wishlist = row.wishlist || [];
-        this.cart = row.cart || [];
+        this.wishlist = Array.isArray(row.wishlist) ? row.wishlist : [];
+        this.cart = Array.isArray(row.cart) ? row.cart : [];
         this.createdAt = row.created_at;
         this.updatedAt = row.updated_at;
     }
@@ -26,7 +28,6 @@ class UserInstance {
 
     async save() {
         let passwordToSave = this.password;
-        // If password is not hashed yet, hash it
         if (passwordToSave && !passwordToSave.startsWith('$2a$') && !passwordToSave.startsWith('$2b$')) {
             const salt = await bcrypt.genSalt(10);
             passwordToSave = await bcrypt.hash(passwordToSave, salt);
@@ -73,7 +74,6 @@ class UserQueryBuilder {
     }
 
     select(fields) {
-        // Handled directly, user instances are returned with fields
         return this;
     }
 
@@ -123,7 +123,9 @@ const User = {
                 conditions.push(`LOWER(email) = $${values.length}`);
             }
             if (filter.id || filter._id) {
-                values.push(filter.id || filter._id);
+                const targetId = String(filter.id || filter._id);
+                if (!UUID_REGEX.test(targetId)) return null;
+                values.push(targetId);
                 conditions.push(`id = $${values.length}`);
             }
 
@@ -140,7 +142,10 @@ const User = {
     findById(id) {
         const exec = async () => {
             if (!id) return null;
-            const res = await pool.query('SELECT * FROM users WHERE id = $1 LIMIT 1', [id]);
+            const targetId = String(id);
+            if (!UUID_REGEX.test(targetId)) return null;
+
+            const res = await pool.query('SELECT * FROM users WHERE id = $1 LIMIT 1', [targetId]);
             if (res.rows.length === 0) return null;
             return new UserInstance(res.rows[0]);
         };

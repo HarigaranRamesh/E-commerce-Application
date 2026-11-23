@@ -1,5 +1,7 @@
 import { pool } from '../config/db.js';
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 class ProductInstance {
     constructor(row) {
         this.id = row.id;
@@ -10,14 +12,14 @@ class ProductInstance {
         this.originalPrice = row.original_price !== null ? parseFloat(row.original_price) : undefined;
         this.category = row.category;
         this.image = row.image;
-        this.images = row.images || [];
+        this.images = Array.isArray(row.images) ? row.images : [];
         this.stock = row.stock !== null ? parseInt(row.stock, 10) : 0;
         this.rating = row.rating !== null ? parseFloat(row.rating) : 0;
         this.numReviews = row.num_reviews !== null ? parseInt(row.num_reviews, 10) : 0;
-        this.reviews = row.reviews || [];
+        this.reviews = Array.isArray(row.reviews) ? row.reviews : [];
         this.featured = Boolean(row.featured);
         this.brand = row.brand || '';
-        this.tags = row.tags || [];
+        this.tags = Array.isArray(row.tags) ? row.tags : [];
         this.createdAt = row.created_at;
         this.updatedAt = row.updated_at;
     }
@@ -85,8 +87,9 @@ const Product = {
             }
         }
 
-        if (query.search) {
-            values.push(`%${query.search}%`);
+        const searchTerm = query.search || query.keyword;
+        if (searchTerm) {
+            values.push(`%${searchTerm}%`);
             const p = `$${values.length}`;
             conditions.push(`(name ILIKE ${p} OR description ILIKE ${p})`);
         } else if (query.$or && Array.isArray(query.$or)) {
@@ -121,10 +124,10 @@ const Product = {
     async findById(id) {
         if (!id) return null;
 
-        let res;
         const isNumeric = !isNaN(Number(id));
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id));
+        const isUuid = UUID_REGEX.test(String(id));
 
+        let res;
         if (isNumeric) {
             res = await pool.query('SELECT * FROM products WHERE id = $1 LIMIT 1', [Number(id)]);
         } else if (isUuid) {
@@ -149,40 +152,64 @@ const Product = {
     },
 
     async create(data) {
-        const queryText = `
-            INSERT INTO products (
-                ${data.id ? 'id,' : ''}
-                name, description, price, original_price, category, image, images,
-                stock, rating, num_reviews, reviews, featured, brand, tags
-            )
-            VALUES (
-                ${data.id ? '$15,' : ''}
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
-            )
-            RETURNING *;
-        `;
-        const values = [
-            data.name,
-            data.description,
-            data.price,
-            data.originalPrice || null,
-            data.category,
-            data.image,
-            JSON.stringify(data.images || []),
-            data.stock || 0,
-            data.rating || 0,
-            data.numReviews || 0,
-            JSON.stringify(data.reviews || []),
-            Boolean(data.featured),
-            data.brand || '',
-            JSON.stringify(data.tags || []),
-        ];
-
+        let res;
         if (data.id) {
-            values.push(data.id);
+            const queryText = `
+                INSERT INTO products (
+                    id, name, description, price, original_price, category, image, images,
+                    stock, rating, num_reviews, reviews, featured, brand, tags
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+                RETURNING *;
+            `;
+            const values = [
+                data.id,
+                data.name,
+                data.description,
+                data.price,
+                data.originalPrice || null,
+                data.category,
+                data.image,
+                JSON.stringify(data.images || []),
+                data.stock || 0,
+                data.rating || 0,
+                data.numReviews || 0,
+                JSON.stringify(data.reviews || []),
+                Boolean(data.featured),
+                data.brand || '',
+                JSON.stringify(data.tags || []),
+            ];
+            res = await pool.query(queryText, values);
+            // Synchronize serial sequence after custom id insert
+            await pool.query(`SELECT setval(pg_get_serial_sequence('products', 'id'), COALESCE(MAX(id), 1)) FROM products;`);
+        } else {
+            const queryText = `
+                INSERT INTO products (
+                    name, description, price, original_price, category, image, images,
+                    stock, rating, num_reviews, reviews, featured, brand, tags
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                RETURNING *;
+            `;
+            const values = [
+                data.name,
+                data.description,
+                data.price,
+                data.originalPrice || null,
+                data.category,
+                data.image,
+                JSON.stringify(data.images || []),
+                data.stock || 0,
+                data.rating || 0,
+                data.numReviews || 0,
+                JSON.stringify(data.reviews || []),
+                Boolean(data.featured),
+                data.brand || '',
+                JSON.stringify(data.tags || []),
+            ];
+            res = await pool.query(queryText, values);
         }
 
-        const res = await pool.query(queryText, values);
         return new ProductInstance(res.rows[0]);
     },
 
@@ -205,6 +232,7 @@ const Product = {
             const prod = await this.create(item);
             inserted.push(prod);
         }
+        await pool.query(`SELECT setval(pg_get_serial_sequence('products', 'id'), COALESCE(MAX(id), 1)) FROM products;`);
         return inserted;
     },
 

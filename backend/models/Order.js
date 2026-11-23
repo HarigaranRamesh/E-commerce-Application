@@ -1,14 +1,16 @@
 import { pool } from '../config/db.js';
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 class OrderInstance {
     constructor(row) {
         this.id = row.id;
         this._id = row.id;
         this.user = row.user_id;
-        this.orderItems = row.order_items || [];
-        this.shippingAddress = row.shipping_address || {};
+        this.orderItems = Array.isArray(row.order_items) ? row.order_items : [];
+        this.shippingAddress = typeof row.shipping_address === 'object' && row.shipping_address !== null ? row.shipping_address : {};
         this.paymentMethod = row.payment_method;
-        this.paymentResult = row.payment_result || {};
+        this.paymentResult = typeof row.payment_result === 'object' && row.payment_result !== null ? row.payment_result : {};
         this.itemsPrice = row.items_price !== null ? parseFloat(row.items_price) : 0;
         this.taxPrice = row.tax_price !== null ? parseFloat(row.tax_price) : 0;
         this.shippingPrice = row.shipping_price !== null ? parseFloat(row.shipping_price) : 0;
@@ -21,7 +23,6 @@ class OrderInstance {
         this.createdAt = row.created_at;
         this.updatedAt = row.updated_at;
 
-        // If populated user data exists in join
         if (row.user_name) {
             this.user = {
                 id: row.user_id,
@@ -95,13 +96,16 @@ class OrderQueryBuilder {
 
     async exec() {
         if (this.isSingle) {
+            const targetId = String(this.singleId);
+            if (!UUID_REGEX.test(targetId)) return null;
+
             const sql = this.doPopulate
                 ? `SELECT o.*, u.name as user_name, u.email as user_email
                    FROM orders o
                    LEFT JOIN users u ON o.user_id = u.id
                    WHERE o.id = $1 LIMIT 1`
                 : `SELECT * FROM orders WHERE id = $1 LIMIT 1`;
-            const res = await pool.query(sql, [this.singleId]);
+            const res = await pool.query(sql, [targetId]);
             if (res.rows.length === 0) return null;
             return new OrderInstance(res.rows[0]);
         }
@@ -110,7 +114,9 @@ class OrderQueryBuilder {
         const values = [];
 
         if (this.filter.user) {
-            values.push(this.filter.user);
+            const targetUserId = String(this.filter.user);
+            if (!UUID_REGEX.test(targetUserId)) return [];
+            values.push(targetUserId);
             conditions.push(`o.user_id = $${values.length}`);
         }
 
@@ -187,7 +193,6 @@ const Order = {
     },
 
     async aggregate(pipeline = []) {
-        // Specifically handles salesByStatus group
         const res = await pool.query(`
             SELECT status AS "_id", COUNT(*)::int AS count
             FROM orders
