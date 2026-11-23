@@ -5,20 +5,22 @@ export const WishlistContext = createContext();
 
 const wishlistReducer = (state, action) => {
   switch (action.type) {
-    case "ADD_TO_WISHLIST":
-      if (!state.find((item) => item.id === action.payload.id)) {
+    case "ADD_TO_WISHLIST": {
+      const exists = state.some((item) => String(item.id) === String(action.payload.id));
+      if (!exists) {
         return [...state, action.payload];
       }
       return state;
+    }
 
     case "REMOVE_FROM_WISHLIST":
-      return state.filter((item) => item.id !== action.payload);
+      return state.filter((item) => String(item.id) !== String(action.payload));
 
     case "CLEAR_WISHLIST":
       return [];
 
     case "LOAD_WISHLIST":
-      return action.payload;
+      return Array.isArray(action.payload) ? action.payload : [];
 
     default:
       return state;
@@ -29,29 +31,58 @@ export const WishlistProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [wishlist, dispatch] = useReducer(wishlistReducer, []);
 
-  // Load wishlist for the current user
+  // Load and merge wishlist on mount or user change
   useEffect(() => {
-    if (user) {
-      const savedWishlist =
-        JSON.parse(localStorage.getItem(`wishlist_${user.email}`)) || [];
-      dispatch({ type: "LOAD_WISHLIST", payload: savedWishlist });
+    if (user && user.email) {
+      const userKey = `wishlist_${user.email}`;
+      let userWishlist = [];
+      try {
+        userWishlist = JSON.parse(localStorage.getItem(userKey)) || [];
+      } catch (e) {
+        userWishlist = [];
+      }
+
+      // Merge guest wishlist
+      let guestWishlist = [];
+      try {
+        guestWishlist = JSON.parse(localStorage.getItem("wishlist_guest")) || [];
+      } catch (e) {
+        guestWishlist = [];
+      }
+
+      if (guestWishlist.length > 0) {
+        guestWishlist.forEach((guestItem) => {
+          if (!userWishlist.some((i) => String(i.id) === String(guestItem.id))) {
+            userWishlist.push(guestItem);
+          }
+        });
+        localStorage.removeItem("wishlist_guest");
+        localStorage.setItem(userKey, JSON.stringify(userWishlist));
+      }
+
+      dispatch({ type: "LOAD_WISHLIST", payload: userWishlist });
     } else {
-      dispatch({ type: "LOAD_WISHLIST", payload: [] });
+      // Guest mode
+      let guestWishlist = [];
+      try {
+        guestWishlist = JSON.parse(localStorage.getItem("wishlist_guest")) || [];
+      } catch (e) {
+        guestWishlist = [];
+      }
+      dispatch({ type: "LOAD_WISHLIST", payload: guestWishlist });
     }
   }, [user]);
 
-  // Save wishlist whenever it changes
+  // Persist wishlist whenever it changes
   useEffect(() => {
-    if (user) {
+    if (user && user.email) {
       localStorage.setItem(`wishlist_${user.email}`, JSON.stringify(wishlist));
+    } else {
+      localStorage.setItem("wishlist_guest", JSON.stringify(wishlist));
     }
   }, [wishlist, user]);
 
   const addToWishlist = (product) => {
-    if (!user) {
-      alert("Please login to add products to wishlist");
-      return;
-    }
     dispatch({ type: "ADD_TO_WISHLIST", payload: product });
   };
 
@@ -61,12 +92,26 @@ export const WishlistProvider = ({ children }) => {
 
   const clearWishlist = () => {
     dispatch({ type: "CLEAR_WISHLIST" });
-    if (user) localStorage.removeItem(`wishlist_${user.email}`);
+    if (user && user.email) {
+      localStorage.removeItem(`wishlist_${user.email}`);
+    } else {
+      localStorage.removeItem("wishlist_guest");
+    }
+  };
+
+  const isWishlisted = (productId) => {
+    return wishlist.some((item) => String(item.id) === String(productId));
   };
 
   return (
     <WishlistContext.Provider
-      value={{ wishlist, addToWishlist, removeFromWishlist, clearWishlist }}
+      value={{
+        wishlist,
+        addToWishlist,
+        removeFromWishlist,
+        clearWishlist,
+        isWishlisted,
+      }}
     >
       {children}
     </WishlistContext.Provider>
