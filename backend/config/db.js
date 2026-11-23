@@ -73,6 +73,15 @@ const createTables = async () => {
         );
     `);
 
+    // Add enterprise columns to products if missing
+    await pool.query(`
+        ALTER TABLE products
+        ADD COLUMN IF NOT EXISTS sku VARCHAR(100),
+        ADD COLUMN IF NOT EXISTS specifications JSONB DEFAULT '{}'::jsonb,
+        ADD COLUMN IF NOT EXISTS variants JSONB DEFAULT '[]'::jsonb,
+        ADD COLUMN IF NOT EXISTS views_count INTEGER DEFAULT 0;
+    `);
+
     // Orders table
     await pool.query(`
         CREATE TABLE IF NOT EXISTS orders (
@@ -96,9 +105,52 @@ const createTables = async () => {
         );
     `);
 
+    // Add enterprise columns to orders if missing
+    await pool.query(`
+        ALTER TABLE orders
+        ADD COLUMN IF NOT EXISTS coupon_code VARCHAR(50),
+        ADD COLUMN IF NOT EXISTS discount_amount NUMERIC(10, 2) DEFAULT 0.00,
+        ADD COLUMN IF NOT EXISTS timeline JSONB DEFAULT '[]'::jsonb,
+        ADD COLUMN IF NOT EXISTS tracking_number VARCHAR(100),
+        ADD COLUMN IF NOT EXISTS carrier VARCHAR(50),
+        ADD COLUMN IF NOT EXISTS invoice_number VARCHAR(50);
+    `);
+
+    // Coupons table
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS coupons (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            code VARCHAR(50) UNIQUE NOT NULL,
+            discount_type VARCHAR(20) NOT NULL DEFAULT 'percentage',
+            discount_value NUMERIC(10, 2) NOT NULL,
+            min_purchase NUMERIC(10, 2) DEFAULT 0.00,
+            max_discount NUMERIC(10, 2) DEFAULT NULL,
+            expires_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            usage_count INTEGER DEFAULT 0,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+    `);
+
+    // Seed default coupons if none exist
+    const couponCount = await pool.query('SELECT COUNT(*)::int AS count FROM coupons');
+    if (couponCount.rows[0].count === 0) {
+        await pool.query(`
+            INSERT INTO coupons (code, discount_type, discount_value, min_purchase, max_discount, is_active)
+            VALUES 
+                ('WELCOME10', 'percentage', 10.00, 500.00, 200.00, true),
+                ('SUPER20', 'percentage', 20.00, 1000.00, 500.00, true),
+                ('FREESHIP', 'fixed', 50.00, 499.00, 50.00, true)
+            ON CONFLICT (code) DO NOTHING;
+        `);
+    }
+
     // Indexes for fast querying
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons(code);`);
 };
 
 const connectDB = async () => {
