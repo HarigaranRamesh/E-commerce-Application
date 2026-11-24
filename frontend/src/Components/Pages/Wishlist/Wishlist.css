@@ -15,69 +15,74 @@
 
 .wishlist-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
-  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #ededed;
+  border-radius: 0px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 16px;
   text-align: center;
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .wishlist-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 40px rgba(1, 87, 155, 0.12);
-  background: rgba(255, 255, 255, 0.9);
+  transform: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-color: #d1d5db;
 }
 
 .wishlist-image {
   width: 100%;
-  height: 220px;
+  height: 240px;
   object-fit: cover;
-  border-radius: var(--radius-md);
+  border-radius: 0px !important;
   margin-bottom: 12px;
 }
 
 .wishlist-title {
-  font-size: 1.05rem;
+  font-family: var(--ajio-font-primary, sans-serif);
+  font-size: 0.95rem;
   font-weight: 700;
   margin: 8px 0 4px;
-  color: var(--text-primary);
+  color: #2c2c2c;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .wishlist-price {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--text-primary);
+  font-family: var(--ajio-font-primary, sans-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2c2c2c;
   margin-bottom: 14px;
 }
 
 .wishlist-btn {
-  background: var(--accent-gradient);
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  font-size: 0.9rem;
+  background: #d5a249 !important;
+  color: #ffffff !important;
+  border: 1px solid #d5a249;
+  padding: 12px 18px;
+  font-family: var(--ajio-font-primary, sans-serif);
+  font-size: 0.85rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
   cursor: pointer;
-  border-radius: var(--radius-full);
+  border-radius: 0px !important;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
   width: 100%;
-  box-shadow: 0 4px 15px rgba(1, 87, 155, 0.25);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .wishlist-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(1, 87, 155, 0.35);
+  background: #c29037 !important;
+  border-color: #c29037 !important;
+  transform: none !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
 }
 
 .wishlist-btn.remove {
