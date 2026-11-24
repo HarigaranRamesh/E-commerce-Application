@@ -14,9 +14,9 @@ const GlassButton = ({
   const baseClass = variant === "primary" ? "btn-glass-primary" : "btn-glass";
 
   const sizeStyles = {
-    sm: { padding: "8px 16px", fontSize: "0.85rem" },
-    md: { padding: "11px 22px", fontSize: "0.95rem" },
-    lg: { padding: "14px 30px", fontSize: "1.05rem" },
+    sm: { padding: "8px 16px", fontSize: "0.82rem", textTransform: "uppercase", letterSpacing: "1px", borderRadius: "0px" },
+    md: { padding: "12px 24px", fontSize: "0.88rem", textTransform: "uppercase", letterSpacing: "1.2px", borderRadius: "0px" },
+    lg: { padding: "14px 30px", fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "1.4px", borderRadius: "0px" },
   };
 
   return (
