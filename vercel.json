@@ -20,13 +20,11 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "@vite_api_url",
-    "VITE_STRIPE_PUBLISHABLE_KEY": "@vite_stripe_publishable_key"
+    "VITE_API_URL": "@vite_api_url"
   },
   "build": {
     "env": {
-      "VITE_API_URL": "@vite_api_url",
-      "VITE_STRIPE_PUBLISHABLE_KEY": "@vite_stripe_publishable_key"
+      "VITE_API_URL": "@vite_api_url"
     }
   },
   "buildCommand": "cd frontend && npm install && npm run build",
