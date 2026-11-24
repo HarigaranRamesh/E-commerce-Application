@@ -15,86 +15,6 @@ const categories = [
   { name: "Shirts & Trousers", slug: "shirts", image: "/images/shirt13.jpeg", count: "Timeless Essentials" },
 ];
 
-const FlashSaleBanner = React.memo(function FlashSaleBanner({ offer, onCtaClick }) {
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 14,
-    minutes: 22,
-    seconds: 45,
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: 59, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        }
-        return { hours: 24, minutes: 0, seconds: 0 };
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const badgeText = offer?.badge || "LIMITED TIME OFFER";
-  const titleText = offer?.title || "Mid-Season Flash Sale - Up to 60% OFF";
-  const descText = offer?.description || "Grab our trending wardrobe essentials at unbeatable prices. Extra 20% off on checkout with code SUPER20.";
-  const ctaText = offer?.cta_text || "Shop Flash Deals Now";
-
-  return (
-    <div className="container">
-      <div className="countdown-banner">
-        <div className="countdown-info">
-          <span
-            style={{
-              display: "inline-block",
-              background: "rgba(56, 189, 248, 0.15)",
-              color: "#38bdf8",
-              fontWeight: "700",
-              fontSize: "0.85rem",
-              padding: "4px 12px",
-              borderRadius: "20px",
-              marginBottom: "12px",
-            }}
-          >
-            {badgeText}
-          </span>
-          <h3>{titleText}</h3>
-          <p>
-            {descText}
-          </p>
-          <div className="timer-boxes">
-            <div className="timer-box">
-              <span className="timer-num">
-                {String(timeLeft.hours).padStart(2, "0")}
-              </span>
-              <span className="timer-lbl">Hours</span>
-            </div>
-            <div className="timer-box">
-              <span className="timer-num">
-                {String(timeLeft.minutes).padStart(2, "0")}
-              </span>
-              <span className="timer-lbl">Mins</span>
-            </div>
-            <div className="timer-box">
-              <span className="timer-num">
-                {String(timeLeft.seconds).padStart(2, "0")}
-              </span>
-              <span className="timer-lbl">Secs</span>
-            </div>
-          </div>
-        </div>
-        <button className="countdown-cta" onClick={onCtaClick}>
-          {ctaText}
-        </button>
-      </div>
-    </div>
-  );
-});
-
 function Home() {
   const navigate = useNavigate();
   const [copiedCode, setCopiedCode] = useState(null);
@@ -116,8 +36,6 @@ function Home() {
       isMounted = false;
     };
   }, []);
-
-  const flashSaleOffer = offers.find((o) => o.is_flash_sale) || offers[0];
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -306,12 +224,6 @@ function Home() {
           )}
         </div>
       </div>
-
-      {/* Flash Sale Banner with Countdown */}
-      <FlashSaleBanner
-        offer={flashSaleOffer}
-        onCtaClick={() => navigate(flashSaleOffer?.cta_link || "/search?discount=true")}
-      />
 
       {/* Recently Viewed Products */}
       {recentlyViewed && recentlyViewed.length > 0 && (
