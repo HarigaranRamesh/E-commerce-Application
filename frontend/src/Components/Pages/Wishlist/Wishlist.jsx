@@ -210,6 +210,13 @@ const Wishlist = () => {
                         </>
                       )}
                     </div>
+
+                    {/* Under-price Offer Line */}
+                    <div className="wishlist-offer-line">
+                      <span className="offer-tag-label">Offer Price:</span>
+                      <span className="offer-tag-price">₹{Math.round(price * 0.8).toLocaleString("en-IN")}</span>
+                      <span className="offer-tag-code">| With SUPER20</span>
+                    </div>
                   </div>
                 </div>
               );
