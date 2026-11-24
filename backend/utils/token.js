@@ -1,15 +1,62 @@
 import jwt from 'jsonwebtoken';
 
-export const generateToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-        expiresIn: '30d',
-    });
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_access_secret_menshub_2026';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || `${JWT_SECRET}_refresh_key_2026`;
+
+/**
+ * Generate short-lived access token (15 minutes)
+ */
+export const generateAccessToken = (userId, role = 'user') => {
+    return jwt.sign(
+        { id: userId, role },
+        JWT_SECRET,
+        { expiresIn: '15m' }
+    );
 };
 
-export const verifyToken = (token) => {
+/**
+ * Generate long-lived refresh token (7 days)
+ */
+export const generateRefreshToken = (userId) => {
+    return jwt.sign(
+        { id: userId, type: 'refresh' },
+        JWT_REFRESH_SECRET,
+        { expiresIn: '7d' }
+    );
+};
+
+/**
+ * Legacy token generation for backwards compatibility (defaults to 15m or 30d if specified)
+ */
+export const generateToken = (userId, role = 'user') => {
+    return generateAccessToken(userId, role);
+};
+
+/**
+ * Verify access token
+ */
+export const verifyAccessToken = (token) => {
     try {
-        return jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
+        return jwt.verify(token, JWT_SECRET);
+    } catch {
         return null;
     }
+};
+
+/**
+ * Verify refresh token
+ */
+export const verifyRefreshToken = (token) => {
+    try {
+        return jwt.verify(token, JWT_REFRESH_SECRET);
+    } catch {
+        return null;
+    }
+};
+
+/**
+ * Legacy verify token alias
+ */
+export const verifyToken = (token) => {
+    return verifyAccessToken(token);
 };
