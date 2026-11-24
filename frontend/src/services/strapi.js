@@ -144,18 +144,18 @@ export const fetchGlobalSettings = async () => {
     } catch (err) {
         console.warn('Could not fetch global settings from Strapi, using defaults:', err.message);
         return {
-            site_name: "Mens Hub",
+            site_name: "Clothings Store",
             tagline: "Quality products, Fresh Choices",
             logoUrl: null,
             announcement_banner: "",
-            about_text: "At Mens Hub, we believe in delivering premium quality products with an effortless shopping experience. We bring you an exclusive selection curated with care.",
+            about_text: "At Clothings Store, we believe in delivering premium quality products with an effortless shopping experience. We bring you an exclusive selection curated with care.",
             phone: "+91 97826260723",
             email: "harigaran925@gmail.com",
             address: "Kotagiri, Nilgiris, Tamil Nadu, India.",
             twitter_url: "https://twitter.com",
             instagram_url: "https://instagram.com",
             facebook_url: "https://facebook.com",
-            copyright_text: "© Copyright 2025 Mens Hub. All rights reserved.",
+            copyright_text: "© Copyright 2025 Clothings Store. All rights reserved.",
             free_shipping_threshold: 999,
             footer_links: [
                 { label: "F.A.Q", url: "/faq" },
