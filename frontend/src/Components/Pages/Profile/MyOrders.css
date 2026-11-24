@@ -1,12 +1,12 @@
 /* ==========================================================================
-   AJIO MY ORDERS STYLES
+   Luxury MY ORDERS STYLES
    ========================================================================== */
 
 .my-orders-container {
     padding: 0;
     max-width: 100%;
     margin: 0;
-    font-family: var(--ajio-font-primary, 'Source Sans 3', sans-serif);
+    font-family: var(--luxury-font-primary, 'Source Sans 3', sans-serif);
 }
 
 .my-orders-container h2 {
@@ -14,10 +14,10 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--ajio-navy, #2c4152);
+    color: var(--luxury-navy, #2c4152);
     margin: 0 0 20px 0;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--ajio-border, #ededed);
+    border-bottom: 1px solid var(--luxury-border, #ededed);
 }
 
 .orders-list {
@@ -29,7 +29,7 @@
 .order-card {
     background: #ffffff;
     border-radius: 0px;
-    border: 1px solid var(--ajio-border, #ededed);
+    border: 1px solid var(--luxury-border, #ededed);
     overflow: hidden;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -62,14 +62,14 @@
 
 .order-id {
     font-weight: 700;
-    color: var(--ajio-navy, #2c4152);
+    color: var(--luxury-navy, #2c4152);
     font-size: 0.92rem;
     letter-spacing: 0.5px;
 }
 
 .order-date {
     font-size: 0.82rem;
-    color: var(--ajio-text-muted, #666666);
+    color: var(--luxury-text-muted, #666666);
 }
 
 .order-status {
@@ -91,7 +91,7 @@
 .order-total {
     font-weight: 700;
     font-size: 0.98rem;
-    color: var(--ajio-charcoal, #2c2c2c);
+    color: var(--luxury-charcoal, #2c2c2c);
 }
 
 .order-details {
@@ -131,7 +131,7 @@
     height: 60px;
     object-fit: cover;
     border-radius: 0px;
-    border: 1px solid var(--ajio-border, #ededed);
+    border: 1px solid var(--luxury-border, #ededed);
 }
 
 .item-info {
@@ -142,24 +142,24 @@
     margin: 0 0 3px 0;
     font-size: 0.92rem;
     font-weight: 600;
-    color: var(--ajio-navy, #2c4152);
+    color: var(--luxury-navy, #2c4152);
 }
 
 .item-info p {
     margin: 0 0 2px 0;
     font-size: 0.82rem;
-    color: var(--ajio-text-muted, #666666);
+    color: var(--luxury-text-muted, #666666);
 }
 
 .item-price {
     font-weight: 700;
     font-size: 0.95rem;
-    color: var(--ajio-charcoal, #2c2c2c);
+    color: var(--luxury-charcoal, #2c2c2c);
 }
 
 .order-shipping {
     padding-top: 14px;
-    border-top: 1px dashed var(--ajio-border, #ededed);
+    border-top: 1px dashed var(--luxury-border, #ededed);
 }
 
 .order-shipping h4 {
@@ -167,14 +167,14 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    color: var(--ajio-navy, #2c4152);
+    color: var(--luxury-navy, #2c4152);
     margin: 0 0 8px 0;
 }
 
 .order-shipping p {
     margin: 2px 0;
     font-size: 0.85rem;
-    color: var(--ajio-text-muted, #666666);
+    color: var(--luxury-text-muted, #666666);
 }
 
 .empty-orders {
@@ -190,23 +190,23 @@
     margin: 6px 0 0 0;
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--ajio-navy, #2c4152);
+    color: var(--luxury-navy, #2c4152);
 }
 
 .empty-orders p {
     font-size: 0.92rem;
-    color: var(--ajio-text-muted, #666666);
+    color: var(--luxury-text-muted, #666666);
     margin: 0;
 }
 
 .shop-now-btn {
     margin-top: 12px;
     padding: 12px 30px;
-    background: var(--ajio-gold, #d5a249);
+    background: var(--luxury-gold, #d5a249);
     color: #ffffff;
     border: none;
     border-radius: 0px;
-    font-family: var(--ajio-font-primary, sans-serif);
+    font-family: var(--luxury-font-primary, sans-serif);
     font-weight: 700;
     font-size: 0.85rem;
     text-transform: uppercase;
@@ -216,7 +216,7 @@
 }
 
 .shop-now-btn:hover {
-    background: var(--ajio-gold-hover, #c29037);
+    background: var(--luxury-gold-hover, #c29037);
 }
 
 @media (max-width: 576px) {

@@ -9,7 +9,7 @@ export default function Footer() {
 
   return (
     <footer className="footer">
-      {/* AJIO Trust Bar */}
+      {/* Luxury Trust Bar */}
       <div className="footer-trust-bar">
         <div className="footer-trust-container">
           <div className="trust-item">
@@ -44,7 +44,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Main AJIO Navy Footer Body */}
+      {/* Main Luxury Navy Footer Body */}
       <div className="footer-main">
         <div className="footer-container">
           <div className="footer-section brand">
@@ -103,7 +103,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* AJIO Deep Subfooter Bar */}
+      {/* Luxury Deep Subfooter Bar */}
       <div className="footer-bottom">
         <div className="footer-bottom-container">
           <p className="copyright-text">{settings?.copyright_text || "© Copyright 2025 Mens Hub. All rights reserved."}</p>

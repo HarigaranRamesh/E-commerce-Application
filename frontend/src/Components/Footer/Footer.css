@@ -1,19 +1,19 @@
 /* ==========================================================================
-   AJIO OFFICIAL FOOTER STYLING
-   Primary Color: #2c4152 (AJIO Slate Navy)
+   Luxury OFFICIAL FOOTER STYLING
+   Primary Color: #2c4152 (Luxury Slate Navy)
    Subfooter Color: #1f2e3a (Deep Slate Navy)
-   Accent Color: #d5a249 (AJIO Gold)
+   Accent Color: #d5a249 (Luxury Gold)
    Typography: Source Sans 3
    ========================================================================== */
 
 .footer {
   width: 100%;
   margin-top: 60px;
-  font-family: var(--ajio-font-primary, 'Source Sans 3', sans-serif);
+  font-family: var(--luxury-font-primary, 'Source Sans 3', sans-serif);
 }
 
 /* --------------------------------------------------------------------------
-   1. AJIO Trust Promise Strip
+   1. Luxury Trust Promise Strip
    -------------------------------------------------------------------------- */
 .footer-trust-bar {
   background-color: #ffffff;
@@ -43,12 +43,12 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: var(--ajio-gold-subtle, #fbf8f2);
+  background: var(--luxury-gold-subtle, #fbf8f2);
   border: 1px solid rgba(213, 162, 73, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ajio-gold, #d5a249);
+  color: var(--luxury-gold, #d5a249);
   flex-shrink: 0;
 }
 

@@ -202,7 +202,7 @@
   color: #ffffff !important;
   border: 1px solid #d5a249;
   border-radius: 0px !important;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-weight: 700;
   font-size: 0.92rem;
   text-transform: uppercase;
@@ -225,7 +225,7 @@
   color: #2c4152 !important;
   border: 1px solid #2c4152 !important;
   border-radius: 0px !important;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-weight: 700;
   font-size: 0.92rem;
   text-transform: uppercase;
@@ -616,7 +616,7 @@
   color: #ffffff !important;
   border: 1px solid #2c4152;
   border-radius: 0px !important;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-weight: 700;
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -773,7 +773,7 @@
   color: #ffffff !important;
   border: 1px solid #d5a249;
   border-radius: 0px !important;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-size: 0.95rem;
   font-weight: 700;
   text-transform: uppercase;

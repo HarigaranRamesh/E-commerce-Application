@@ -1,8 +1,8 @@
-/* Dynamic CMS Top Announcement Bar - AJIO Slate Header */
+/* Dynamic CMS Top Announcement Bar - Luxury Slate Header */
 .top-announcement-bar {
   background: #2c4152;
   color: #ffffff;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 1.1px;
@@ -14,7 +14,7 @@
   text-overflow: ellipsis;
 }
 
-/* AJIO Clean Luxury Navbar Base */
+/* Luxury Clean Luxury Navbar Base */
 .navbar {
   background: #ffffff;
   padding: 0.75rem 0;
@@ -182,14 +182,14 @@
   justify-content: center;
 }
 
-/* AJIO Exact Bag & Wishlist Number Badge */
+/* Luxury Exact Bag & Wishlist Number Badge */
 .badge {
   position: absolute;
   top: -6px;
   right: -8px;
   background: #d5a249 !important;
   color: #ffffff !important;
-  font-family: var(--ajio-font-primary, 'Source Sans 3', sans-serif);
+  font-family: var(--luxury-font-primary, 'Source Sans 3', sans-serif);
   font-size: 10px;
   font-weight: 700;
   min-width: 17px;
@@ -243,7 +243,7 @@
   border-radius: 0px !important;
   background: transparent;
   color: #2c4152;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-weight: 700;
   font-size: 0.82rem;
   text-transform: uppercase;
@@ -264,7 +264,7 @@
   padding: 8px 20px;
   border-radius: 0px !important;
   border: 1px solid #d5a249;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-weight: 700;
   font-size: 0.82rem;
   text-transform: uppercase;
@@ -302,7 +302,7 @@
   cursor: pointer;
   padding: 6px 14px;
   border-radius: 0px !important;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-weight: 700;
   font-size: 0.8rem;
   text-transform: uppercase;

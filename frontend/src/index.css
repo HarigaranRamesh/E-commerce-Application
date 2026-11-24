@@ -1,35 +1,35 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Assistant:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
 :root {
-  /* AJIO Typography Tokens */
-  --ajio-font-primary: 'Source Sans 3', 'Source Sans Pro', 'Assistant', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --ajio-font-serif: 'Lora', Georgia, serif;
+  /* Luxury Typography Tokens */
+  --luxury-font-primary: 'Source Sans 3', 'Source Sans Pro', 'Assistant', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --luxury-font-serif: 'Lora', Georgia, serif;
 
-  /* AJIO Official Color Palette */
-  --ajio-gold: #d5a249;
-  --ajio-gold-hover: #c29037;
-  --ajio-gold-active: #b38228;
-  --ajio-gold-subtle: #fbf8f2;
-  --ajio-navy: #2c4152;
-  --ajio-navy-hover: #1f2e3a;
-  --ajio-navy-dark: #152029;
-  --ajio-charcoal: #2c2c2c;
-  --ajio-dark: #1e1e1e;
-  --ajio-text-muted: #666666;
-  --ajio-text-light: #999999;
-  --ajio-border: #ededed;
-  --ajio-border-dark: #d1d5db;
-  --ajio-bg: #ffffff;
-  --ajio-bg-subtle: #f8f8f8;
-  --ajio-teal: #3cb998;
-  --ajio-coral: #ef4444;
+  /* Luxury Official Color Palette */
+  --luxury-gold: #d5a249;
+  --luxury-gold-hover: #c29037;
+  --luxury-gold-active: #b38228;
+  --luxury-gold-subtle: #fbf8f2;
+  --luxury-navy: #2c4152;
+  --luxury-navy-hover: #1f2e3a;
+  --luxury-navy-dark: #152029;
+  --luxury-charcoal: #2c2c2c;
+  --luxury-dark: #1e1e1e;
+  --luxury-text-muted: #666666;
+  --luxury-text-light: #999999;
+  --luxury-border: #ededed;
+  --luxury-border-dark: #d1d5db;
+  --luxury-bg: #ffffff;
+  --luxury-bg-subtle: #f8f8f8;
+  --luxury-teal: #3cb998;
+  --luxury-coral: #ef4444;
 
-  /* AJIO Button Geometry Tokens */
-  --ajio-btn-radius: 0px;
-  --ajio-btn-radius-sm: 2px;
-  --ajio-btn-tracking: 1.25px;
-  --ajio-btn-tracking-wide: 1.5px;
-  --ajio-btn-weight: 700;
+  /* Luxury Button Geometry Tokens */
+  --luxury-btn-radius: 0px;
+  --luxury-btn-radius-sm: 2px;
+  --luxury-btn-tracking: 1.25px;
+  --luxury-btn-tracking-wide: 1.5px;
+  --luxury-btn-weight: 700;
 
   /* Backward Compatibility Mappings */
   --accent-primary: #d5a249;
@@ -48,7 +48,7 @@
   --bg-secondary: #f8f8f8;
   --bg-tertiary: #ededed;
 
-  /* Radius Tokens - Mapped to AJIO Flat Aesthetic */
+  /* Radius Tokens - Mapped to Luxury Flat Aesthetic */
   --radius-sm: 2px;
   --radius-md: 2px;
   --radius-lg: 2px;
@@ -72,9 +72,9 @@ html {
 }
 
 body {
-  font-family: var(--ajio-font-primary);
-  background: var(--ajio-bg);
-  color: var(--ajio-charcoal);
+  font-family: var(--luxury-font-primary);
+  background: var(--luxury-bg);
+  color: var(--luxury-charcoal);
   line-height: 1.5;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -83,27 +83,27 @@ body {
 }
 
 /* ==========================================================================
-   AJIO EXACT BUTTON STYLES & UI TOKENS
+   Luxury EXACT BUTTON STYLES & UI TOKENS
    ========================================================================== */
 
-/* Primary CTA - Iconic AJIO Gold Button ("ADD TO BAG", "PROCEED TO DELIVER", "BUY NOW") */
+/* Primary CTA - Iconic Luxury Gold Button ("ADD TO BAG", "PROCEED TO DELIVER", "BUY NOW") */
 .btn-glass-primary,
-.ajio-btn-primary,
+.luxury-btn-primary,
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: var(--ajio-font-primary);
+  font-family: var(--luxury-font-primary);
   font-weight: 700;
   font-size: 0.88rem;
   line-height: 1;
   text-transform: uppercase;
-  letter-spacing: var(--ajio-btn-tracking);
+  letter-spacing: var(--luxury-btn-tracking);
   padding: 14px 28px;
-  border-radius: var(--ajio-btn-radius) !important;
-  border: 1px solid var(--ajio-gold) !important;
-  background: var(--ajio-gold) !important;
+  border-radius: var(--luxury-btn-radius) !important;
+  border: 1px solid var(--luxury-gold) !important;
+  background: var(--luxury-gold) !important;
   color: #ffffff !important;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -113,19 +113,19 @@ body {
 }
 
 .btn-glass-primary:hover,
-.ajio-btn-primary:hover,
+.luxury-btn-primary:hover,
 .btn-primary:hover {
-  background: var(--ajio-gold-hover) !important;
-  border-color: var(--ajio-gold-hover) !important;
+  background: var(--luxury-gold-hover) !important;
+  border-color: var(--luxury-gold-hover) !important;
   color: #ffffff !important;
   transform: none !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
 }
 
 .btn-glass-primary:active,
-.ajio-btn-primary:active {
-  background: var(--ajio-gold-active) !important;
-  border-color: var(--ajio-gold-active) !important;
+.luxury-btn-primary:active {
+  background: var(--luxury-gold-active) !important;
+  border-color: var(--luxury-gold-active) !important;
 }
 
 .btn-glass-primary::after {
@@ -133,7 +133,7 @@ body {
 }
 
 .btn-glass-primary:disabled,
-.ajio-btn-primary:disabled,
+.luxury-btn-primary:disabled,
 .btn-primary:disabled {
   background: #e2e8f0 !important;
   border-color: #cbd5e1 !important;
@@ -142,80 +142,80 @@ body {
   box-shadow: none !important;
 }
 
-/* Secondary CTA - AJIO Outline / Save to Wishlist Button */
+/* Secondary CTA - Luxury Outline / Save to Wishlist Button */
 .btn-glass,
-.ajio-btn-secondary,
+.luxury-btn-secondary,
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: var(--ajio-font-primary);
+  font-family: var(--luxury-font-primary);
   font-weight: 700;
   font-size: 0.88rem;
   line-height: 1;
   text-transform: uppercase;
-  letter-spacing: var(--ajio-btn-tracking);
+  letter-spacing: var(--luxury-btn-tracking);
   padding: 13px 26px;
-  border-radius: var(--ajio-btn-radius) !important;
-  border: 1px solid var(--ajio-navy) !important;
+  border-radius: var(--luxury-btn-radius) !important;
+  border: 1px solid var(--luxury-navy) !important;
   background: #ffffff !important;
-  color: var(--ajio-navy) !important;
+  color: var(--luxury-navy) !important;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: none !important;
 }
 
 .btn-glass:hover,
-.ajio-btn-secondary:hover,
+.luxury-btn-secondary:hover,
 .btn-secondary:hover {
-  background: var(--ajio-gold-subtle) !important;
-  border-color: var(--ajio-gold) !important;
-  color: var(--ajio-gold) !important;
+  background: var(--luxury-gold-subtle) !important;
+  border-color: var(--luxury-gold) !important;
+  color: var(--luxury-gold) !important;
   transform: none !important;
 }
 
-/* AJIO Navy CTA Button ("APPLY", "PLACE ORDER", "LOGIN") */
-.ajio-btn-navy,
+/* Luxury Navy CTA Button ("APPLY", "PLACE ORDER", "LOGIN") */
+.luxury-btn-navy,
 .btn-navy {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: var(--ajio-font-primary);
+  font-family: var(--luxury-font-primary);
   font-weight: 700;
   font-size: 0.88rem;
   line-height: 1;
   text-transform: uppercase;
-  letter-spacing: var(--ajio-btn-tracking);
+  letter-spacing: var(--luxury-btn-tracking);
   padding: 13px 26px;
-  border-radius: var(--ajio-btn-radius) !important;
-  border: 1px solid var(--ajio-navy) !important;
-  background: var(--ajio-navy) !important;
+  border-radius: var(--luxury-btn-radius) !important;
+  border: 1px solid var(--luxury-navy) !important;
+  background: var(--luxury-navy) !important;
   color: #ffffff !important;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: none !important;
 }
 
-.ajio-btn-navy:hover,
+.luxury-btn-navy:hover,
 .btn-navy:hover {
-  background: var(--ajio-navy-hover) !important;
-  border-color: var(--ajio-navy-hover) !important;
+  background: var(--luxury-navy-hover) !important;
+  border-color: var(--luxury-navy-hover) !important;
   color: #ffffff !important;
 }
 
-/* AJIO Flat Inputs */
+/* Luxury Flat Inputs */
 .glass-input,
-.ajio-input {
+.luxury-input {
   width: 100%;
   padding: 11px 16px;
-  border-radius: var(--ajio-btn-radius) !important;
-  border: 1px solid var(--ajio-border-dark) !important;
+  border-radius: var(--luxury-btn-radius) !important;
+  border: 1px solid var(--luxury-border-dark) !important;
   background: #ffffff !important;
-  font-family: var(--ajio-font-primary);
+  font-family: var(--luxury-font-primary);
   font-size: 0.92rem;
-  color: var(--ajio-charcoal);
+  color: var(--luxury-charcoal);
   transition: border-color 0.2s ease;
   outline: none;
   backdrop-filter: none !important;
@@ -223,17 +223,17 @@ body {
 }
 
 .glass-input:focus,
-.ajio-input:focus {
-  border-color: var(--ajio-navy) !important;
+.luxury-input:focus {
+  border-color: var(--luxury-navy) !important;
   box-shadow: none !important;
 }
 
-/* AJIO Clean Surface & Panels */
+/* Luxury Clean Surface & Panels */
 .glass-panel,
 .glass-card {
   background: #ffffff !important;
-  border: 1px solid var(--ajio-border) !important;
-  border-radius: var(--ajio-btn-radius) !important;
+  border: 1px solid var(--luxury-border) !important;
+  border-radius: var(--luxury-btn-radius) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -243,32 +243,32 @@ body {
 .glass-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
   transform: translateY(-2px) !important;
-  border-color: var(--ajio-border-dark) !important;
+  border-color: var(--luxury-border-dark) !important;
 }
 
 .glass-card::before {
   display: none !important;
 }
 
-/* AJIO Minimal Lucide Icon Styling */
+/* Luxury Minimal Lucide Icon Styling */
 .lucide {
   stroke-width: 1.6px;
 }
 
-/* AJIO Badges & Discount Tags */
+/* Luxury Badges & Discount Tags */
 .glass-badge,
 .badge-discount,
-.ajio-badge {
-  font-family: var(--ajio-font-primary);
+.luxury-badge {
+  font-family: var(--luxury-font-primary);
   font-weight: 700;
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  border-radius: var(--ajio-btn-radius) !important;
+  border-radius: var(--luxury-btn-radius) !important;
   padding: 3px 8px;
   background: #ffffff !important;
-  border: 1px solid var(--ajio-teal) !important;
-  color: var(--ajio-teal) !important;
+  border: 1px solid var(--luxury-teal) !important;
+  color: var(--luxury-teal) !important;
   backdrop-filter: none !important;
   box-shadow: none !important;
 }

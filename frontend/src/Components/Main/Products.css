@@ -10,7 +10,7 @@
   min-height: 450px;
 }
 
-/* Product Card - AJIO High-Fashion Clean Design */
+/* Product Card - Luxury High-Fashion Clean Design */
 .product-card {
   position: relative;
   display: flex;
@@ -52,14 +52,14 @@
   transform: scale(1.08);
 }
 
-/* Badges - AJIO Discount & Stock */
+/* Badges - Luxury Discount & Stock */
 .badge-discount {
   position: absolute;
   top: 10px;
   left: 10px;
   background: #3cb998 !important;
   color: #fff;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-size: 0.72rem;
   font-weight: 700;
   padding: 3px 8px;
@@ -79,7 +79,7 @@
   position: absolute;
   bottom: 10px;
   left: 10px;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;

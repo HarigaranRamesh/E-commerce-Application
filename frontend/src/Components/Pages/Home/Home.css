@@ -358,7 +358,7 @@
   color: #ffffff !important;
   padding: 14px 34px;
   border-radius: 0px !important;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-weight: 700;
   font-size: 0.95rem;
   text-transform: uppercase;
@@ -492,7 +492,7 @@
   border: 1px solid #2c4152;
   padding: 13px 28px;
   border-radius: 0px !important;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-weight: 700;
   font-size: 0.88rem;
   text-transform: uppercase;

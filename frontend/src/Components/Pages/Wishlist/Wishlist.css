@@ -39,7 +39,7 @@
 }
 
 .wishlist-title {
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-size: 0.95rem;
   font-weight: 700;
   margin: 8px 0 4px;
@@ -50,7 +50,7 @@
 }
 
 .wishlist-price {
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-size: 1.1rem;
   font-weight: 700;
   color: #2c2c2c;
@@ -62,7 +62,7 @@
   color: #ffffff !important;
   border: 1px solid #d5a249;
   padding: 12px 18px;
-  font-family: var(--ajio-font-primary, sans-serif);
+  font-family: var(--luxury-font-primary, sans-serif);
   font-size: 0.85rem;
   font-weight: 700;
   text-transform: uppercase;

@@ -474,7 +474,7 @@
     border-radius: 0px !important;
     border: 1px solid #d1d5db;
     background: #ffffff;
-    font-family: var(--ajio-font-primary, sans-serif);
+    font-family: var(--luxury-font-primary, sans-serif);
     font-weight: 700;
     font-size: 0.88rem;
     color: #2c2c2c;
@@ -576,7 +576,7 @@
 }
 
 .qty-value {
-    font-family: var(--ajio-font-primary, sans-serif);
+    font-family: var(--luxury-font-primary, sans-serif);
     font-weight: 700;
     font-size: 0.95rem;
     padding: 0 14px;
@@ -594,7 +594,7 @@
     color: #ffffff !important;
     border: 1px solid #d5a249;
     border-radius: 0px !important;
-    font-family: var(--ajio-font-primary, sans-serif);
+    font-family: var(--luxury-font-primary, sans-serif);
     font-size: 0.92rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -850,7 +850,7 @@
     color: #fff !important;
     padding: 12px 28px;
     border-radius: 0px !important;
-    font-family: var(--ajio-font-primary, sans-serif);
+    font-family: var(--luxury-font-primary, sans-serif);
     font-weight: 700;
     font-size: 0.88rem;
     text-transform: uppercase;
