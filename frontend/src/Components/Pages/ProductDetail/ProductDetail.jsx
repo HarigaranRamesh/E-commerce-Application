@@ -399,6 +399,17 @@ const ProductDetail = () => {
                         <span className="taxes-note">Inclusive of all taxes & free delivery eligible</span>
                     </div>
 
+                    {/* Instant Promo / Offer Banner */}
+                    <div className="detail-offer-box">
+                        <div className="detail-offer-header">
+                            <span className="detail-offer-badge">SPECIAL OFFER</span>
+                            <span className="detail-offer-code">CODE: SUPER20</span>
+                        </div>
+                        <p className="detail-offer-desc">
+                            Get this item for <strong>₹{Math.round(price * 0.8).toLocaleString("en-IN")}</strong> with extra 20% instant discount at checkout.
+                        </p>
+                    </div>
+
                     <p className="detail-description">{product.description}</p>
 
                     {/* Size Selector */}
