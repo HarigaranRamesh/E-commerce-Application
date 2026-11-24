@@ -100,8 +100,14 @@ function Home() {
   const navigate = useNavigate();
   const [copiedCode, setCopiedCode] = useState(null);
   const [activeTab, setActiveTab] = useState("featured");
+  const [visitedTabs, setVisitedTabs] = useState({ featured: true });
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [newsletterEmail, setNewsletterEmail] = useState("");
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setVisitedTabs((prev) => (prev[tab] ? prev : { ...prev, [tab]: true }));
+  };
 
   // Load recently viewed products
   useEffect(() => {
@@ -231,28 +237,28 @@ function Home() {
         <div className="home-tabs-container">
           <button
             className={`home-tab-btn ${activeTab === "featured" ? "active" : ""}`}
-            onClick={() => setActiveTab("featured")}
+            onClick={() => handleTabChange("featured")}
           >
             <Sparkles size={16} style={{ display: "inline", marginRight: "6px" }} />
             Featured
           </button>
           <button
             className={`home-tab-btn ${activeTab === "trending" ? "active" : ""}`}
-            onClick={() => setActiveTab("trending")}
+            onClick={() => handleTabChange("trending")}
           >
             <Flame size={16} style={{ display: "inline", marginRight: "6px" }} />
             Trending Now
           </button>
           <button
             className={`home-tab-btn ${activeTab === "bestsellers" ? "active" : ""}`}
-            onClick={() => setActiveTab("bestsellers")}
+            onClick={() => handleTabChange("bestsellers")}
           >
             <Award size={16} style={{ display: "inline", marginRight: "6px" }} />
             Best Sellers
           </button>
           <button
             className={`home-tab-btn ${activeTab === "newarrivals" ? "active" : ""}`}
-            onClick={() => setActiveTab("newarrivals")}
+            onClick={() => handleTabChange("newarrivals")}
           >
             <Zap size={16} style={{ display: "inline", marginRight: "6px" }} />
             New Arrivals
@@ -260,10 +266,26 @@ function Home() {
         </div>
 
         {/* Dynamic Product Showcase */}
-        {activeTab === "featured" && <ProductList featured={true} limit={8} />}
-        {activeTab === "trending" && <ProductList sort="views" limit={8} />}
-        {activeTab === "bestsellers" && <ProductList minRating={4.5} sort="rating" limit={8} />}
-        {activeTab === "newarrivals" && <ProductList sort="newest" limit={8} />}
+        <div className="home-collection-showcase">
+          <div className="tab-pane" style={{ display: activeTab === "featured" ? "block" : "none" }}>
+            <ProductList featured={true} limit={8} />
+          </div>
+          {visitedTabs.trending && (
+            <div className="tab-pane" style={{ display: activeTab === "trending" ? "block" : "none" }}>
+              <ProductList sort="views" limit={8} />
+            </div>
+          )}
+          {visitedTabs.bestsellers && (
+            <div className="tab-pane" style={{ display: activeTab === "bestsellers" ? "block" : "none" }}>
+              <ProductList minRating={4.5} sort="rating" limit={8} />
+            </div>
+          )}
+          {visitedTabs.newarrivals && (
+            <div className="tab-pane" style={{ display: activeTab === "newarrivals" ? "block" : "none" }}>
+              <ProductList sort="newest" limit={8} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Flash Sale Banner with Countdown */}
