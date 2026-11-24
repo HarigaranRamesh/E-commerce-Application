@@ -1,5 +1,5 @@
 import User from '../models/User.js';
-import { generateToken } from '../utils/token.js';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken, generateToken } from '../utils/token.js';
 
 /**
  * @desc    Register a new user
@@ -36,12 +36,17 @@ export const registerUser = async (req, res) => {
         });
 
         if (user) {
+            const accessToken = generateAccessToken(user._id, user.role);
+            const refreshToken = generateRefreshToken(user._id);
+
             res.status(201).json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                token: generateToken(user._id),
+                token: accessToken,
+                accessToken,
+                refreshToken,
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
@@ -72,6 +77,9 @@ export const loginUser = async (req, res) => {
         const user = await User.findOne({ email }).select('+password');
 
         if (user && (await user.comparePassword(password))) {
+            const accessToken = generateAccessToken(user._id, user.role);
+            const refreshToken = generateRefreshToken(user._id);
+
             res.json({
                 _id: user._id,
                 name: user.name,
@@ -81,7 +89,9 @@ export const loginUser = async (req, res) => {
                 address: user.address,
                 gender: user.gender,
                 dob: user.dob,
-                token: generateToken(user._id),
+                token: accessToken,
+                accessToken,
+                refreshToken,
             });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
@@ -89,6 +99,53 @@ export const loginUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+
+/**
+ * @desc    Refresh access token using refresh token
+ * @route   POST /api/auth/refresh
+ * @access  Public
+ */
+export const refreshTokenHandler = async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(401).json({ message: 'Refresh token is required' });
+        }
+
+        const decoded = verifyRefreshToken(refreshToken);
+
+        if (!decoded || !decoded.id) {
+            return res.status(401).json({ message: 'Invalid or expired refresh token' });
+        }
+
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+            return res.status(401).json({ message: 'User not found' });
+        }
+
+        const newAccessToken = generateAccessToken(user._id, user.role);
+        const newRefreshToken = generateRefreshToken(user._id);
+
+        res.json({
+            token: newAccessToken,
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @desc    Logout user & invalidate session
+ * @route   POST /api/auth/logout
+ * @access  Public
+ */
+export const logoutUser = async (req, res) => {
+    res.json({ message: 'Logged out successfully' });
 };
 
 /**
