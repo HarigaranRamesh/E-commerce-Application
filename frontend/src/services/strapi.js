@@ -126,11 +126,19 @@ export const fetchOffers = async () => {
  */
 export const fetchGlobalSettings = async () => {
     try {
-        const res = await fetch(`${STRAPI_BASE_URL}/api/global-settings`);
+        const res = await fetch(`${STRAPI_BASE_URL}/api/global-settings?populate=*`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         if (Array.isArray(json.data) && json.data.length > 0) {
-            return json.data[0];
+            const raw = json.data[0];
+            const attrs = raw.attributes || raw;
+            const logoMedia = attrs.logo || raw.logo;
+            const logoUrl = logoMedia ? getStrapiMedia(logoMedia) : (attrs.logo_url ? getStrapiMedia(attrs.logo_url) : null);
+            return {
+                id: raw.id,
+                ...attrs,
+                logoUrl,
+            };
         }
         return null;
     } catch (err) {
@@ -138,6 +146,7 @@ export const fetchGlobalSettings = async () => {
         return {
             site_name: "Mens Hub",
             tagline: "Quality products, Fresh Choices",
+            logoUrl: null,
             announcement_banner: "🔥 FREE EXPRESS DELIVERY ON ORDERS OVER ₹999 | USE CODE SUPER20 FOR 20% OFF | 7-DAY EASY RETURNS",
             about_text: "At Mens Hub, we believe in delivering premium quality products with an effortless shopping experience. We bring you an exclusive selection curated with care.",
             phone: "+91 97826260723",

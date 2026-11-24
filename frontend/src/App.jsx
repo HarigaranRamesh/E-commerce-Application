@@ -31,13 +31,15 @@ const AdminRoute = lazy(() => import("./Components/Admin/AdminRoute"));
 import { AuthProvider } from "./Context/AuthContext";
 import { CartProvider } from "./Context/CartContext";
 import { WishlistProvider } from "./Context/WishlistContext";
+import { SiteProvider } from "./Context/SiteContext";
 import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
+    <SiteProvider>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
           <Toaster
             position="top-right"
             toastOptions={{
@@ -98,6 +100,7 @@ function App() {
         </WishlistProvider>
       </CartProvider>
     </AuthProvider>
+    </SiteProvider>
   );
 }
 

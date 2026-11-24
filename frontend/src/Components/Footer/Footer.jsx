@@ -1,50 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./Footer.css";
 import { Twitter, Instagram, Facebook, Phone, Mail, MapPin } from "lucide-react";
 import logo from "../../assets/mens_hub_logo.png";
-import { fetchGlobalSettings } from "../../services/strapi";
+import { useSite } from "../../Context/SiteContext";
 
 export default function Footer() {
-  const [settings, setSettings] = useState({
-    site_name: "Mens Hub",
-    tagline: "Quality products, Fresh Choices",
-    about_text: "At Mens Hub, we believe in delivering premium quality products with an effortless shopping experience. We bring you an exclusive selection curated with care.",
-    phone: "+91 97826260723",
-    email: "harigaran925@gmail.com",
-    address: "Kotagiri, Nilgiris, Tamil Nadu, India.",
-    twitter_url: "https://twitter.com",
-    instagram_url: "https://instagram.com",
-    facebook_url: "https://facebook.com",
-    copyright_text: "© Copyright 2025 Mens Hub. All rights reserved.",
-    footer_links: [
-      { label: "F.A.Q", url: "#" },
-      { label: "Privacy Policy", url: "#" },
-      { label: "Terms & Conditions", url: "#" },
-    ],
-  });
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchGlobalSettings().then((data) => {
-      if (isMounted && data) {
-        setSettings((prev) => ({
-          ...prev,
-          ...data,
-        }));
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const { siteName, siteLogo, settings } = useSite();
 
   return (
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-section brand">
           <div className="footer-logo-container">
-            <img src={logo} alt="Brand Logo" className="footer-logo-img" />
-            <h2 className="footer-logo-text">{settings.site_name || "Mens Hub"}</h2>
+            <img src={siteLogo || logo} alt={siteName || "Brand Logo"} className="footer-logo-img" />
+            <h2 className="footer-logo-text">{siteName || settings?.site_name || "Mens Hub"}</h2>
           </div>
           <p className="footer-tagline">“{settings.tagline || "Quality products, Fresh Choices"}”</p>
           <p className="footer-about">{settings.about_text}</p>

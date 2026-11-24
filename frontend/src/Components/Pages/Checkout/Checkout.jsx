@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { AuthContext } from "../../../Context/AuthContext";
 import { CartContext } from "../../../Context/CartContext";
+import { useSite } from "../../../Context/SiteContext";
 import { ordersAPI, paymentAPI, couponsAPI } from "../../../services/api";
 import "./CheckoutStyles.css";
 
@@ -42,6 +43,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const { cart: contextCart, clearCart } = useContext(CartContext);
+  const { siteName, siteLogo } = useSite();
 
   useEffect(() => {
     if (!user) {
@@ -170,9 +172,9 @@ const Checkout = () => {
             key: keyId,
             amount: amount,
             currency: currency || "INR",
-            name: "Men's Hub Luxury Apparel",
+            name: siteName || "Men's Hub Luxury Apparel",
             description: `Order Payment #${String(orderId).substring(0, 8).toUpperCase()}`,
-            image: "/assets/mens_hub_logo.png",
+            image: siteLogo || "/assets/mens_hub_logo.png",
             order_id: razorpayOrderId,
             handler: async function (response) {
               try {

@@ -3,6 +3,7 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import { CartContext } from "../../Context/CartContext";
 import { AuthContext } from "../../Context/AuthContext";
 import { WishlistContext } from "../../Context/WishlistContext";
+import { useSite } from "../../Context/SiteContext";
 import { ShoppingBag, Heart, User, Search, Menu, X, ArrowRight } from "lucide-react";
 import { productsAPI } from "../../services/api";
 import { fetchGlobalSettings } from "../../services/strapi";
@@ -15,27 +16,16 @@ export default function Navbar() {
   const { cart } = useContext(CartContext);
   const { user, logout } = useContext(AuthContext);
   const { wishlist } = useContext(WishlistContext);
+  const { siteName, siteLogo, announcement: siteAnnouncement } = useSite();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [announcement, setAnnouncement] = useState("");
   const searchContainerRef = useRef(null);
   const navigate = useNavigate();
 
-  // Load dynamic announcement from Strapi CMS
-  useEffect(() => {
-    let isMounted = true;
-    fetchGlobalSettings().then((settings) => {
-      if (isMounted && settings?.announcement_banner) {
-        setAnnouncement(settings.announcement_banner);
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const announcement = siteAnnouncement;
 
   const totalItems = cart?.reduce((total, item) => total + item.quantity, 0) || 0;
   const wishlistCount = wishlist?.length || 0;
@@ -110,10 +100,10 @@ export default function Navbar() {
         </div>
       )}
       <div className="navbar-container container">
-        {/* Logo */}
+        {/* Dynamic Logo & Title from CMS */}
         <Link to="/" className="logo">
-          <img src={logo} alt="Logo" className="logo-img" />
-          <span className="logo-text">Mens Hub</span>
+          <img src={siteLogo || logo} alt={siteName || "Logo"} className="logo-img" />
+          <span className="logo-text">{siteName || "Mens Hub"}</span>
         </Link>
 
         {/* Live Search Bar */}

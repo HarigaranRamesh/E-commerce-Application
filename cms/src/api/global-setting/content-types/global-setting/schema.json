@@ -5,7 +5,7 @@
     "singularName": "global-setting",
     "pluralName": "global-settings",
     "displayName": "Global Site & Footer Settings",
-    "description": "Dynamic Site Announcements, Contacts, and Footer Content"
+    "description": "Dynamic Site Announcements, Brand Name, Logo, Contacts, and Footer Content"
   },
   "options": {
     "draftAndPublish": false
@@ -18,6 +18,17 @@
     "tagline": {
       "type": "string",
       "default": "Quality products, Fresh Choices"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "logo_url": {
+      "type": "string"
     },
     "announcement_banner": {
       "type": "string",
