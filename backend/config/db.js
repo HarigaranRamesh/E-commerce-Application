@@ -113,7 +113,40 @@ const createTables = async () => {
         ADD COLUMN IF NOT EXISTS timeline JSONB DEFAULT '[]'::jsonb,
         ADD COLUMN IF NOT EXISTS tracking_number VARCHAR(100),
         ADD COLUMN IF NOT EXISTS carrier VARCHAR(50),
-        ADD COLUMN IF NOT EXISTS invoice_number VARCHAR(50);
+        ADD COLUMN IF NOT EXISTS invoice_number VARCHAR(50),
+        ADD COLUMN IF NOT EXISTS payment_status VARCHAR(50) DEFAULT 'pending',
+        ADD COLUMN IF NOT EXISTS razorpay_order_id VARCHAR(255);
+    `);
+
+    // Payments table for Razorpay and Multi-Gateway transactions
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS payments (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+            user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+            razorpay_order_id VARCHAR(255) UNIQUE,
+            razorpay_payment_id VARCHAR(255) UNIQUE,
+            razorpay_signature VARCHAR(512),
+            payment_method VARCHAR(50) DEFAULT 'razorpay',
+            amount NUMERIC(10, 2) NOT NULL,
+            currency VARCHAR(10) DEFAULT 'INR',
+            status VARCHAR(50) DEFAULT 'created',
+            is_signature_verified BOOLEAN DEFAULT FALSE,
+            failure_reason TEXT,
+            metadata JSONB DEFAULT '{}'::jsonb,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+    `);
+
+    // Webhook events table for idempotent event processing
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS webhook_events (
+            id VARCHAR(255) PRIMARY KEY,
+            event_type VARCHAR(100) NOT NULL,
+            payload JSONB NOT NULL,
+            processed_at TIMESTAMPTZ DEFAULT NOW()
+        );
     `);
 
     // Coupons table
@@ -151,6 +184,11 @@ const createTables = async () => {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons(code);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_order_id ON payments(order_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_razorpay_order_id ON payments(razorpay_order_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_razorpay_payment_id ON payments(razorpay_payment_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_webhook_events_id ON webhook_events(id);`);
 };
 
 const connectDB = async () => {
