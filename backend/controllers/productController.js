@@ -9,6 +9,7 @@ export const getProducts = async (req, res) => {
     try {
         const {
             category,
+            gender,
             search,
             keyword,
             featured,
@@ -24,6 +25,7 @@ export const getProducts = async (req, res) => {
 
         const query = {
             category,
+            gender,
             search,
             keyword,
             featured,
