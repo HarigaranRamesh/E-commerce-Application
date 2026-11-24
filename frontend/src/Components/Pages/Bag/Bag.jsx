@@ -1,25 +1,46 @@
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { CartContext } from "../../../Context/CartContext";
 import { AuthContext } from "../../../Context/AuthContext";
+import { WishlistContext } from "../../../Context/WishlistContext";
 import { couponsAPI } from "../../../services/api";
 import { toast } from "react-hot-toast";
-import { Trash2, Tag, CheckCircle, Truck, X } from "lucide-react";
+import {
+  Trash2,
+  Tag,
+  CheckCircle,
+  Truck,
+  X,
+  ShoppingBag,
+  ArrowRight,
+  ShieldCheck,
+  RotateCcw,
+  Sparkles,
+  Heart,
+  Plus,
+  Minus,
+  Check,
+  Lock,
+} from "lucide-react";
 import "./Bag.css";
 
 const FREE_SHIPPING_THRESHOLD = 999;
 const STANDARD_SHIPPING_FEE = 60;
 
 const Bag = () => {
-  const { cart, removeFromCart, updateQuantity } = useContext(CartContext);
+  const { cart, removeFromCart, updateQuantity, clearCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
+  const { addToWishlist } = useContext(WishlistContext);
   const navigate = useNavigate();
 
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
 
-  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = cart.reduce(
+    (acc, item) => acc + (Number(item.price) || 0) * (item.quantity || 1),
+    0
+  );
 
   // Free shipping calculation
   const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
@@ -29,24 +50,26 @@ const Bag = () => {
 
   // Discount calculation
   const discountAmount = appliedCoupon ? appliedCoupon.discount : 0;
-  const taxPrice = Math.round((subtotal - discountAmount) * 0.05); // 5% GST
-  const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee + taxPrice);
+  const taxableAmount = Math.max(0, subtotal - discountAmount);
+  const taxPrice = Math.round(taxableAmount * 0.05); // 5% GST
+  const grandTotal = Math.max(0, taxableAmount + shippingFee + taxPrice);
 
-  const handleApplyCoupon = async (e) => {
-    e.preventDefault();
-    if (!couponCode.trim()) {
+  const handleApplyCoupon = async (codeToApply) => {
+    const code = (codeToApply || couponCode).trim().toUpperCase();
+    if (!code) {
       toast.error("Please enter a coupon code");
       return;
     }
 
     setValidatingCoupon(true);
     try {
-      const { data } = await couponsAPI.validate(couponCode.trim(), subtotal);
+      const { data } = await couponsAPI.validate(code, subtotal);
       if (data.valid) {
         setAppliedCoupon(data);
-        toast.success(data.message || `Coupon ${data.code} applied!`);
+        toast.success(`Coupon ${data.coupon?.code || code} applied! Saved ₹${data.discount} 🎉`);
+        setCouponCode("");
       } else {
-        toast.error(data.message || "Invalid coupon");
+        toast.error(data.message || "Invalid coupon code");
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Invalid or expired coupon code");
@@ -61,6 +84,19 @@ const Bag = () => {
     toast("Coupon removed", { icon: "ℹ️" });
   };
 
+  const handleMoveToWishlist = async (item) => {
+    const success = await addToWishlist(item);
+    if (success) {
+      removeFromCart(item.itemKey);
+      toast.success(`Moved ${item.name} to Wishlist ❤️`);
+    }
+  };
+
+  const handleRemove = (itemKey) => {
+    removeFromCart(itemKey);
+    toast.success("Item removed from bag");
+  };
+
   const handleCheckout = () => {
     if (!user) {
       toast.error("Please sign in to proceed to checkout");
@@ -73,7 +109,7 @@ const Bag = () => {
         cart,
         subtotal,
         discountAmount,
-        couponCode: appliedCoupon?.code || null,
+        couponCode: appliedCoupon?.coupon?.code || appliedCoupon?.code || null,
         shippingFee,
         taxPrice,
         grandTotal,
@@ -81,165 +117,396 @@ const Bag = () => {
     });
   };
 
-  const handleRemove = (id) => {
-    removeFromCart(id);
-    toast.success("Removed from bag");
-  };
+  // State: Not Logged In
+  if (!user) {
+    return (
+      <div className="bag-page">
+        <div className="bag-auth-prompt-card">
+          <div className="bag-empty-icon-circle">
+            <Lock size={44} color="#01579b" />
+          </div>
+          <span className="bag-empty-eyebrow">AUTHENTICATION REQUIRED</span>
+          <h2>Sign In to View Your Bag</h2>
+          <p>
+            Your personal shopping bag is securely saved to your account. Sign in now to view
+            saved items, apply special discount coupons, and complete your order.
+          </p>
+          <div className="bag-empty-actions">
+            <button
+              className="btn-bag-primary"
+              onClick={() => navigate("/Login", { state: { redirect: "/bag" } })}
+            >
+              Sign In to Your Account <ArrowRight size={18} />
+            </button>
+            <button className="btn-bag-secondary" onClick={() => navigate("/Category")}>
+              Explore Menswear Collections
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // State: Empty Bag
+  if (cart.length === 0) {
+    return (
+      <div className="bag-page">
+        <div className="bag-stepper-wrap">
+          <div className="bag-step active">
+            <div className="bag-step-badge">1</div>
+            <span className="bag-step-text">Shopping Bag</span>
+          </div>
+          <div className="bag-stepper-line"></div>
+          <div className="bag-step">
+            <div className="bag-step-badge">2</div>
+            <span className="bag-step-text">Shipping & Delivery</span>
+          </div>
+          <div className="bag-stepper-line"></div>
+          <div className="bag-step">
+            <div className="bag-step-badge">3</div>
+            <span className="bag-step-text">Payment</span>
+          </div>
+        </div>
+
+        <div className="bag-empty-card">
+          <div className="bag-empty-icon-circle">
+            <ShoppingBag size={48} color="#01579b" />
+          </div>
+          <span className="bag-empty-eyebrow">YOUR SHOPPING BAG</span>
+          <h2>Your Bag is Currently Empty</h2>
+          <p>
+            Explore our curated selection of luxury menswear, shirts, chinos, and streetwear to
+            elevate your wardrobe today.
+          </p>
+          <div className="bag-empty-actions">
+            <button className="btn-bag-primary" onClick={() => navigate("/Category")}>
+              Explore Collections <ArrowRight size={18} />
+            </button>
+            <button className="btn-bag-secondary" onClick={() => navigate("/Wishlist")}>
+              View Saved Wishlist
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const totalItemsCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
   return (
     <div className="bag-page">
-      <div className="bag-header">
-        <h1 className="bag-title">SHOPPING BAG</h1>
+      {/* Stepper Progress Bar */}
+      <div className="bag-stepper-wrap">
+        <div className="bag-step active">
+          <div className="bag-step-badge">1</div>
+          <span className="bag-step-text">Shopping Bag ({totalItemsCount})</span>
+        </div>
+        <div className="bag-stepper-line"></div>
+        <div className="bag-step">
+          <div className="bag-step-badge">2</div>
+          <span className="bag-step-text">Shipping & Delivery</span>
+        </div>
+        <div className="bag-stepper-line"></div>
+        <div className="bag-step">
+          <div className="bag-step-badge">3</div>
+          <span className="bag-step-text">Payment</span>
+        </div>
       </div>
 
       {/* Free Shipping Progress Indicator */}
-      <div className="free-shipping-meter">
+      <div className="free-shipping-card">
         <div className="meter-label">
-          <Truck size={18} />
-          {isFreeShipping ? (
-            <span>You've unlocked <strong>FREE Express Delivery</strong>! 🎉</span>
-          ) : (
-            <span>Add <strong>₹{amountNeededForFreeShipping.toLocaleString("en-IN")}</strong> more to get FREE Delivery!</span>
-          )}
+          <div className="meter-icon-box">
+            <Truck size={20} color="#01579b" />
+          </div>
+          <div className="meter-text-wrap">
+            {isFreeShipping ? (
+              <span>
+                🎉 Congratulations! You have unlocked <strong>FREE Express Delivery</strong>!
+              </span>
+            ) : (
+              <span>
+                Add <strong>₹{amountNeededForFreeShipping.toLocaleString("en-IN")}</strong> more to unlock{" "}
+                <strong>FREE Express Delivery</strong> (Threshold: ₹999)
+              </span>
+            )}
+          </div>
         </div>
         <div className="meter-bar">
-          <div className="meter-fill" style={{ width: `${progressToFreeShipping}%` }}></div>
+          <div
+            className="meter-fill"
+            style={{ width: `${progressToFreeShipping}%` }}
+          ></div>
         </div>
       </div>
 
-      {!user ? (
-        <div className="bag-empty-grid">
-          <div className="empty-message glass-card" style={{ maxWidth: "520px", margin: "2rem auto", padding: "3rem 2rem" }}>
-            <h3>PLEASE SIGN IN TO VIEW YOUR BAG</h3>
-            <p>You must be signed in to manage your shopping bag and place orders.</p>
-            <button className="btn-explore btn-shimmer" onClick={() => navigate("/Login")}>
-              SIGN IN NOW
+      {/* Main Bag Grid */}
+      <div className="bag-grid">
+        {/* Left Column: Cart Items List */}
+        <div className="bag-items-column">
+          <div className="bag-items-header">
+            <div>
+              <h2>Shopping Bag</h2>
+              <p className="bag-subtitle">Review your items, adjust quantities, or save to wishlist</p>
+            </div>
+            <button
+              type="button"
+              className="btn-clear-bag"
+              onClick={() => {
+                if (window.confirm("Are you sure you want to clear your shopping bag?")) {
+                  clearCart();
+                  toast("Shopping bag cleared", { icon: "🧹" });
+                }
+              }}
+            >
+              Clear Bag
             </button>
           </div>
-        </div>
-      ) : cart.length === 0 ? (
-        <div className="bag-empty-grid">
-          <div className="empty-message">
-            <h3>YOUR SHOPPING BAG IS EMPTY.</h3>
-            <p>Explore our premium shirts, trousers, and streetwear collection.</p>
-            <button className="btn-explore" onClick={() => navigate("/Category")}>
-              EXPLORE CATALOG
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="active-cart-grid">
-          {/* Cart Items List */}
-          <div className="cart-items-section">
-            <ul className="cart-items-list">
-              {cart.map((item) => (
-                <li key={item.itemKey} className="cart-item">
-                  <div className="item-image-col">
-                    <img src={item.image} alt={item.name} className="cart-image" />
-                  </div>
-                  <div className="item-info">
-                    <h3>{item.name}</h3>
-                    <div className="item-meta">Size: <strong>{item.size || "M"}</strong></div>
-                    {item.selectedColor && (
-                      <div className="item-meta">Color: <strong>{item.selectedColor}</strong></div>
-                    )}
-                    <div className="item-meta">Price: ₹{Number(item.price).toLocaleString("en-IN")}</div>
 
-                    <div className="quantity-controls">
+          <div className="bag-items-list">
+            {cart.map((item) => {
+              const itemTotal = (Number(item.price) || 0) * (item.quantity || 1);
+              const productId = item.id || item.product || item._id;
+
+              return (
+                <div key={item.itemKey} className="bag-item-card">
+                  {/* Thumbnail */}
+                  <Link to={`/product/${productId}`} className="bag-item-image-wrap">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      onError={(e) => {
+                        e.target.src = "/images/placeholder.png";
+                      }}
+                    />
+                  </Link>
+
+                  {/* Details */}
+                  <div className="bag-item-details">
+                    <div className="item-title-row">
+                      <Link to={`/product/${productId}`} className="item-name-link">
+                        {item.name}
+                      </Link>
                       <button
-                        className="qty-btn"
-                        onClick={() => updateQuantity(item.itemKey, item.quantity - 1)}
-                        disabled={item.quantity <= 1}
+                        type="button"
+                        className="btn-remove-item"
+                        title="Remove from bag"
+                        onClick={() => handleRemove(item.itemKey)}
                       >
-                        -
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button
-                        className="qty-btn"
-                        onClick={() => updateQuantity(item.itemKey, item.quantity + 1)}
-                      >
-                        +
+                        <Trash2 size={18} />
                       </button>
                     </div>
+
+                    <div className="item-tags-row">
+                      <span className="item-badge">Size: {item.size || "M"}</span>
+                      {item.selectedColor && (
+                        <span className="item-badge">Color: {item.selectedColor}</span>
+                      )}
+                      <span className="item-stock-tag">In Stock</span>
+                    </div>
+
+                    {/* Bottom row: Quantity + Actions + Price */}
+                    <div className="item-footer-row">
+                      <div className="qty-and-actions">
+                        {/* Stepper */}
+                        <div className="quantity-stepper">
+                          <button
+                            type="button"
+                            className="qty-btn"
+                            disabled={item.quantity <= 1}
+                            onClick={() => updateQuantity(item.itemKey, item.quantity - 1)}
+                            title="Decrease quantity"
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span className="qty-number">{item.quantity}</span>
+                          <button
+                            type="button"
+                            className="qty-btn"
+                            onClick={() => updateQuantity(item.itemKey, item.quantity + 1)}
+                            title="Increase quantity"
+                          >
+                            <Plus size={14} />
+                          </button>
+                        </div>
+
+                        {/* Move to Wishlist */}
+                        <button
+                          type="button"
+                          className="btn-move-wishlist"
+                          onClick={() => handleMoveToWishlist(item)}
+                        >
+                          <Heart size={14} />
+                          <span>Save to Wishlist</span>
+                        </button>
+                      </div>
+
+                      <div className="item-price-block">
+                        <span className="item-unit-price">
+                          ₹{Number(item.price).toLocaleString("en-IN")} each
+                        </span>
+                        <span className="item-total-price">
+                          ₹{itemTotal.toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="item-price-col">
-                    <button className="remove-link" onClick={() => handleRemove(item.itemKey)}>
-                      <Trash2 size={16} style={{ marginRight: "4px" }} />
-                      Remove
-                    </button>
-                    <div className="item-subtotal">₹{(item.price * item.quantity).toLocaleString("en-IN")}</div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                </div>
+              );
+            })}
           </div>
 
-          {/* Order Summary & Coupon Sidebar */}
-          <div className="bag-sidebar">
-            {/* Coupon Code Section */}
-            <div className="coupon-card">
-              <h4><Tag size={16} /> Have a Promo Code?</h4>
+          {/* Continue Shopping Link */}
+          <div className="continue-shopping-wrap">
+            <Link to="/Category" className="link-continue-shopping">
+              ← Continue Shopping Menswear
+            </Link>
+          </div>
+        </div>
+
+        {/* Right Column: Order Summary Sidebar */}
+        <div className="bag-sidebar">
+          <div className="bag-summary-card">
+            <div className="summary-card-header">
+              <h3>Order Summary</h3>
+              <span className="summary-item-pill">{totalItemsCount} Items</span>
+            </div>
+
+            {/* Promo Code Box */}
+            <div className="bag-coupon-section">
+              <span className="coupon-label">
+                <Tag size={15} /> Have a Promotional Voucher?
+              </span>
+
               {appliedCoupon ? (
-                <div className="applied-coupon-pill">
-                  <div className="coupon-details">
-                    <CheckCircle size={16} color="#10b981" />
-                    <span><strong>{appliedCoupon.code}</strong> (-₹{appliedCoupon.discount})</span>
+                <div className="applied-coupon-box">
+                  <div className="applied-coupon-info">
+                    <CheckCircle size={18} color="#10b981" />
+                    <div>
+                      <strong>{appliedCoupon.coupon?.code || appliedCoupon.code}</strong>
+                      <span>Saved ₹{discountAmount.toLocaleString("en-IN")}</span>
+                    </div>
                   </div>
-                  <button type="button" className="remove-coupon-btn" onClick={handleRemoveCoupon}>
+                  <button
+                    type="button"
+                    className="btn-remove-applied-coupon"
+                    onClick={handleRemoveCoupon}
+                    title="Remove coupon"
+                  >
                     <X size={16} />
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleApplyCoupon} className="coupon-form">
-                  <input
-                    type="text"
-                    placeholder="e.g. WELCOME10, SUPER20"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                  />
-                  <button type="submit" disabled={validatingCoupon}>
-                    {validatingCoupon ? "..." : "APPLY"}
-                  </button>
-                </form>
+                <>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleApplyCoupon();
+                    }}
+                    className="bag-coupon-form"
+                  >
+                    <input
+                      type="text"
+                      placeholder="ENTER CODE"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    />
+                    <button type="submit" disabled={validatingCoupon || !couponCode.trim()}>
+                      {validatingCoupon ? "..." : "APPLY"}
+                    </button>
+                  </form>
+
+                  {/* Promo Suggestions */}
+                  <div className="coupon-suggestions">
+                    <span className="suggestion-text">Available Deals:</span>
+                    <button
+                      type="button"
+                      className="suggested-coupon-chip"
+                      onClick={() => handleApplyCoupon("SUPER20")}
+                    >
+                      SUPER20 (20% OFF)
+                    </button>
+                    <button
+                      type="button"
+                      className="suggested-coupon-chip"
+                      onClick={() => handleApplyCoupon("WELCOME10")}
+                    >
+                      WELCOME10 (10% OFF)
+                    </button>
+                  </div>
+                </>
               )}
             </div>
 
-            {/* Financial Breakdown */}
-            <div className="summary-section">
-              <div className="summary-row">
-                <span>Order Subtotal</span>
+            {/* Price Calculations */}
+            <div className="bag-price-breakdown">
+              <div className="price-row">
+                <span>Bag Subtotal</span>
                 <span>₹{subtotal.toLocaleString("en-IN")}</span>
               </div>
 
-              {appliedCoupon && (
-                <div className="summary-row discount-row">
-                  <span>Discount ({appliedCoupon.code})</span>
+              {discountAmount > 0 && (
+                <div className="price-row discount">
+                  <span>Coupon Savings</span>
                   <span>-₹{discountAmount.toLocaleString("en-IN")}</span>
                 </div>
               )}
 
-              <div className="summary-row">
+              <div className="price-row">
                 <span>Estimated Shipping</span>
-                <span>{shippingFee === 0 ? <strong className="text-green">FREE</strong> : `₹${shippingFee}`}</span>
+                <span>
+                  {shippingFee === 0 ? (
+                    <strong className="shipping-free-badge">FREE</strong>
+                  ) : (
+                    `₹${shippingFee}`
+                  )}
+                </span>
               </div>
 
-              <div className="summary-row">
-                <span>Estimated Taxes (GST)</span>
+              <div className="price-row">
+                <span>Estimated GST (5%)</span>
                 <span>₹{taxPrice.toLocaleString("en-IN")}</span>
               </div>
 
-              <div className="summary-row total-row">
-                <span>ESTIMATED TOTAL</span>
-                <span>₹{grandTotal.toLocaleString("en-IN")}</span>
+              <div className="price-total-row">
+                <span>Estimated Total</span>
+                <span className="grand-total-glow">
+                  ₹{grandTotal.toLocaleString("en-IN")}
+                </span>
               </div>
             </div>
 
-            <button className="checkout-btn-black" onClick={handleCheckout}>
-              PROCEED TO CHECKOUT
-            </button>
+            {/* Checkout Action */}
+            <div className="checkout-action-wrap">
+              <button className="btn-proceed-checkout" onClick={handleCheckout}>
+                <span>PROCEED TO CHECKOUT</span>
+                <ArrowRight size={18} />
+              </button>
+
+              <div className="bag-ssl-assurance">
+                <ShieldCheck size={16} color="#10b981" />
+                <span>256-Bit SSL Encrypted • Razorpay Certified</span>
+              </div>
+            </div>
+
+            {/* Trust Grid */}
+            <div className="bag-trust-grid">
+              <div className="trust-pill">
+                <Truck size={16} color="#01579b" />
+                <span>Express Delivery</span>
+              </div>
+              <div className="trust-pill">
+                <RotateCcw size={16} color="#01579b" />
+                <span>7-Day Return Policy</span>
+              </div>
+              <div className="trust-pill">
+                <Sparkles size={16} color="#01579b" />
+                <span>100% Genuine Apparel</span>
+              </div>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
