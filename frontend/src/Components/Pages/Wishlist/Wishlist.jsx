@@ -4,26 +4,28 @@ import { Link, useNavigate } from "react-router-dom";
 import { WishlistContext } from "../../../Context/WishlistContext";
 import { CartContext } from "../../../Context/CartContext";
 import { AuthContext } from "../../../Context/AuthContext";
-import { ShoppingBag, X, ArrowRight, Heart, User } from "lucide-react";
+import { ShoppingBag, Trash2, ArrowRight, Heart, User } from "lucide-react";
 import "./Wishlist.css";
 
 const SIZES = ["S", "M", "L", "XL"];
 
 const Wishlist = () => {
-  const { wishlist, removeFromWishlist, clearWishlist } = useContext(WishlistContext);
+  const { wishlist, removeFromWishlist } = useContext(WishlistContext);
   const { addToCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // Selected sizes for each item in wishlist (defaults to 'M')
   const [selectedSizes, setSelectedSizes] = useState({});
+  // Size picker popup active item ID
+  const [activeSizePopup, setActiveSizePopup] = useState(null);
 
   const handleSizeChange = (itemId, size) => {
     setSelectedSizes((prev) => ({ ...prev, [itemId]: size }));
   };
 
-  const handleMoveToCart = (item) => {
-    const size = selectedSizes[item.id] || "M";
+  const handleMoveToCart = (item, chosenSize = null) => {
+    const size = chosenSize || selectedSizes[item.id] || "M";
     const stock = Number(item.stock ?? item.countInStock ?? 20);
 
     if (stock <= 0) {
@@ -33,24 +35,8 @@ const Wishlist = () => {
 
     addToCart(item, size);
     removeFromWishlist(item.id);
-    toast.success(`Moved ${item.name} (${size}) to Bag! 🛍️`);
-  };
-
-  const handleMoveAllToCart = () => {
-    if (wishlist.length === 0) return;
-
-    let movedCount = 0;
-    wishlist.forEach((item) => {
-      const stock = Number(item.stock ?? item.countInStock ?? 20);
-      if (stock > 0) {
-        const size = selectedSizes[item.id] || "M";
-        addToCart(item, size);
-        movedCount++;
-      }
-    });
-
-    clearWishlist();
-    toast.success(`Moved ${movedCount} items to your Bag! 🛍️`);
+    setActiveSizePopup(null);
+    toast.success(`Moved to Bag (${size})! 🛍️`);
   };
 
   if (!user) {
@@ -80,34 +66,8 @@ const Wishlist = () => {
   return (
     <div className="wishlist-page-wrapper">
       <div className="wishlist-container">
-        {/* Header Section */}
-        <div className="wishlist-header">
-          <div className="wishlist-header-title">
-            <h1>
-              My Wishlist <span className="wishlist-count-badge">({wishlist.length} {wishlist.length === 1 ? "Item" : "Items"})</span>
-            </h1>
-          </div>
-
-          {wishlist.length > 0 && (
-            <div className="wishlist-header-actions">
-              <button
-                onClick={handleMoveAllToCart}
-                className="wishlist-header-btn move-all"
-              >
-                <ShoppingBag size={16} /> Move All to Bag
-              </button>
-              <button
-                onClick={() => {
-                  clearWishlist();
-                  toast("Wishlist cleared", { icon: "🗑️" });
-                }}
-                className="wishlist-header-btn clear-all"
-              >
-                Clear All
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Centered Serif Title as shown in screenshot */}
+        <h1 className="wishlist-main-title">My Wishlist</h1>
 
         {/* Empty State */}
         {wishlist.length === 0 ? (
@@ -117,7 +77,7 @@ const Wishlist = () => {
             </div>
             <h2>YOUR WISHLIST IS EMPTY</h2>
             <p>
-              Explore our curated collections and save your favourite items to shop anytime.
+              Explore our fresh menswear collections and save your favourite items to shop anytime.
             </p>
             <Link to="/Category" className="start-shopping-btn">
               Explore Collections <ArrowRight size={17} />
@@ -129,7 +89,6 @@ const Wishlist = () => {
             {wishlist.map((item) => {
               const stock = Number(item.stock ?? item.countInStock ?? 20);
               const isOutOfStock = stock <= 0;
-              const currentSize = selectedSizes[item.id] || "M";
               const price = Number(item.price || 0);
               const originalPrice = item.originalPrice
                 ? Number(item.originalPrice)
@@ -139,96 +98,118 @@ const Wishlist = () => {
                 : 0;
 
               return (
-                <div key={item.id} className="wishlist-item-card">
-                  {/* Remove Button */}
-                  <button
-                    onClick={() => {
-                      removeFromWishlist(item.id);
-                      toast.error(`${item.name} removed from Wishlist`);
-                    }}
-                    className="wishlist-close-btn"
-                    title="Remove from wishlist"
-                    aria-label="Remove item"
-                  >
-                    <X size={16} />
-                  </button>
-
-                  {/* Product Image Box */}
-                  <div
-                    onClick={() => navigate(`/product/${item.id}`)}
-                    className="wishlist-image-box"
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="wishlist-image"
-                      onError={(e) => {
-                        e.target.src = "/images/placeholder.png";
+                <div key={item.id} className="wishlist-product-card">
+                  {/* Image Box */}
+                  <div className="wishlist-image-container">
+                    {/* Top Right: Minimalist Trash Icon */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        removeFromWishlist(item.id);
+                        toast.error(`${item.name} removed from Wishlist`);
                       }}
-                    />
+                      className="wishlist-trash-btn"
+                      title="Remove from wishlist"
+                      aria-label="Remove item"
+                    >
+                      <Trash2 size={16} strokeWidth={1.75} />
+                    </button>
+
+                    {/* Product Image */}
+                    <div
+                      onClick={() => navigate(`/product/${item.id}`)}
+                      className="image-click-area"
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className={`wishlist-product-img ${isOutOfStock ? "out-of-stock-img" : ""}`}
+                        onError={(e) => {
+                          e.target.src = "/images/placeholder.png";
+                        }}
+                      />
+                    </div>
+
+                    {/* Out of Stock Centered Text */}
                     {isOutOfStock && (
-                      <div className="wishlist-oos-overlay">
-                        OUT OF STOCK
+                      <div className="out-of-stock-banner">
+                        PRODUCT IS OUT OF STOCK
+                      </div>
+                    )}
+
+                    {/* Bottom Left: Circular Ochre/Gold Shopping Bag Icon Button */}
+                    {!isOutOfStock && (
+                      <div className="bag-btn-relative-wrap">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (activeSizePopup === item.id) {
+                              setActiveSizePopup(null);
+                            } else {
+                              setActiveSizePopup(item.id);
+                            }
+                          }}
+                          className="wishlist-bag-circle-btn"
+                          title="Add to bag"
+                          aria-label="Add to bag"
+                        >
+                          <ShoppingBag size={15} color="#ffffff" strokeWidth={2} />
+                        </button>
+
+                        {/* Quick Size Popup when Bag Icon Clicked */}
+                        {activeSizePopup === item.id && (
+                          <div className="quick-size-popup">
+                            <span className="quick-size-title">Select Size:</span>
+                            <div className="quick-size-options">
+                              {SIZES.map((sz) => (
+                                <button
+                                  key={sz}
+                                  type="button"
+                                  onClick={() => handleMoveToCart(item, sz)}
+                                  className="quick-size-btn"
+                                >
+                                  {sz}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
 
-                  {/* Product Information */}
-                  <div className="wishlist-info-box">
-                    <span className="wishlist-brand-label">
-                      {item.brand || item.category || "MENS HUB"}
+                  {/* Centered Product Information */}
+                  <div className="wishlist-product-info">
+                    {/* Brand Name in Gold/Ochre */}
+                    <span className="wishlist-brand-text">
+                      {item.brand || item.category || "Teamspirit"}
                     </span>
+
+                    {/* Product Title in Serif Font */}
                     <h3
                       onClick={() => navigate(`/product/${item.id}`)}
-                      className="wishlist-product-title"
+                      className="wishlist-serif-title"
                       title={item.name}
                     >
                       {item.name}
                     </h3>
 
-                    {/* Price Block */}
-                    <div className="wishlist-price-block">
-                      <span className="wishlist-price-current">
+                    {/* Price & Discount Row */}
+                    <div className="wishlist-price-line">
+                      <span className="price-bold">
                         ₹{price.toLocaleString("en-IN")}
                       </span>
                       {originalPrice > price && (
                         <>
-                          <span className="wishlist-price-mrp">
+                          <span className="price-struck">
                             ₹{originalPrice.toLocaleString("en-IN")}
                           </span>
-                          <span className="wishlist-discount-tag">
-                            ({discountPercent}% OFF)
+                          <span className="discount-ochre">
+                            ({discountPercent}% off)
                           </span>
                         </>
                       )}
                     </div>
-
-                    {/* Size Selector */}
-                    <div className="wishlist-size-section">
-                      <span className="wishlist-size-label">Select Size:</span>
-                      <div className="wishlist-size-pills">
-                        {SIZES.map((sz) => (
-                          <button
-                            key={sz}
-                            type="button"
-                            onClick={() => handleSizeChange(item.id, sz)}
-                            className={`size-pill ${currentSize === sz ? "active" : ""}`}
-                          >
-                            {sz}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Move to Bag Action */}
-                    <button
-                      onClick={() => handleMoveToCart(item)}
-                      disabled={isOutOfStock}
-                      className={`wishlist-move-bag-btn ${isOutOfStock ? "disabled" : ""}`}
-                    >
-                      <ShoppingBag size={16} />
-                      {isOutOfStock ? "Out of Stock" : "MOVE TO BAG"}
-                    </button>
                   </div>
                 </div>
               );
