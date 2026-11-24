@@ -16,51 +16,33 @@ const CATEGORY_MENUS = [
     name: "MEN",
     slug: "men",
     items: [
-      { label: "All Men's Wear", link: "/Category" },
-      { label: "Shirts", link: "/category/shirts" },
-      { label: "T-Shirts", link: "/category/t-shirts" },
-      { label: "Pants & Trousers", link: "/category/pants" },
-      { label: "Hoodies & Sweatshirts", link: "/category/hoodies" },
+      { label: "All Men's Wear", link: "/category/men" },
+      { label: "Shirts", link: "/category/shirts?gender=men" },
+      { label: "T-Shirts", link: "/category/t-shirts?gender=men" },
+      { label: "Pants & Trousers", link: "/category/pants?gender=men" },
+      { label: "Hoodies & Sweatshirts", link: "/category/hoodies?gender=men" },
     ],
   },
   {
-    name: "SHIRTS",
-    slug: "shirts",
+    name: "WOMEN",
+    slug: "women",
     items: [
-      { label: "All Shirts", link: "/category/shirts" },
-      { label: "Casual Shirts", link: "/category/shirts" },
-      { label: "Formal Shirts", link: "/category/shirts" },
-      { label: "Printed Shirts", link: "/category/shirts" },
+      { label: "All Women's Wear", link: "/category/women" },
+      { label: "Dresses & Gowns", link: "/category/dresses?gender=women" },
+      { label: "Tops & Shirts", link: "/category/tops?gender=women" },
+      { label: "Jeans & Trousers", link: "/category/pants?gender=women" },
+      { label: "Ethnic & Kurtas", link: "/category/ethnic?gender=women" },
     ],
   },
   {
-    name: "T-SHIRTS",
-    slug: "t-shirts",
+    name: "KIDS",
+    slug: "kids",
     items: [
-      { label: "All T-Shirts", link: "/category/t-shirts" },
-      { label: "Crew Neck Tees", link: "/category/t-shirts" },
-      { label: "Oversized Tees", link: "/category/t-shirts" },
-      { label: "Polo T-Shirts", link: "/category/t-shirts" },
-    ],
-  },
-  {
-    name: "PANTS",
-    slug: "pants",
-    items: [
-      { label: "All Pants", link: "/category/pants" },
-      { label: "Chinos", link: "/category/pants" },
-      { label: "Cargo Pants", link: "/category/pants" },
-      { label: "Slim Fit Trousers", link: "/category/pants" },
-    ],
-  },
-  {
-    name: "HOODIES",
-    slug: "hoodies",
-    items: [
-      { label: "All Hoodies", link: "/category/hoodies" },
-      { label: "Pullover Hoodies", link: "/category/hoodies" },
-      { label: "Zip Hoodies", link: "/category/hoodies" },
-      { label: "Winter Sweatshirts", link: "/category/hoodies" },
+      { label: "All Kids Wear", link: "/category/kids" },
+      { label: "Boys Clothing", link: "/category/boys?gender=kids" },
+      { label: "Girls Clothing", link: "/category/girls?gender=kids" },
+      { label: "T-Shirts & Tops", link: "/category/kids?gender=kids" },
+      { label: "Pants & Dungarees", link: "/category/pants?gender=kids" },
     ],
   },
 ];
@@ -231,7 +213,7 @@ export default function Navbar() {
             ) : (
               <img src={logo} alt={siteName || "Logo"} className="brand-logo-img" />
             )}
-            <span className="brand-logo-text">{siteName || "MENS HUB"}</span>
+            <span className="brand-logo-text">{siteName || "CLOTHINGS STORE"}</span>
           </Link>
 
           {/* Category Dropdowns Navigation */}
