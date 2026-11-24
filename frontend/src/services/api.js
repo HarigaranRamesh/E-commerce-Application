@@ -67,6 +67,27 @@ export const productsAPI = {
 };
 
 /**
+ * Cart API Service
+ */
+export const cartAPI = {
+    getCart: () => api.get('/cart'),
+    addToCart: (item) => api.post('/cart', item),
+    updateQuantity: (itemKey, quantity) => api.put('/cart', { itemKey, quantity }),
+    removeFromCart: (itemKey) => api.delete(`/cart/${encodeURIComponent(itemKey)}`),
+    clearCart: () => api.delete('/cart'),
+};
+
+/**
+ * Wishlist API Service
+ */
+export const wishlistAPI = {
+    getWishlist: () => api.get('/wishlist'),
+    addToWishlist: (product) => api.post('/wishlist', product),
+    removeFromWishlist: (id) => api.delete(`/wishlist/${id}`),
+    clearWishlist: () => api.delete('/wishlist'),
+};
+
+/**
  * Orders API Service
  */
 export const ordersAPI = {

@@ -1,5 +1,7 @@
 import { createContext, useReducer, useEffect, useContext } from "react";
 import { AuthContext } from "./AuthContext";
+import { cartAPI } from "../services/api";
+import { toast } from "react-hot-toast";
 
 export const CartContext = createContext();
 
@@ -8,7 +10,6 @@ const cartReducer = (state, action) => {
     case "ADD_TO_CART": {
       const { id, size, stock, countInStock } = action.payload;
       const availableStock = Number(stock ?? countInStock ?? 99);
-      // Unique item key combines ID and Size (e.g., "1-M")
       const itemKey = size ? `${id}-${size}` : `${id}`;
 
       const existingItem = state.find((item) => item.itemKey === itemKey);
@@ -57,80 +58,101 @@ export const CartProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [cart, dispatch] = useReducer(cartReducer, []);
 
-  // Load and merge cart on mount or user state change
+  // Sync cart with backend and user session
   useEffect(() => {
     if (user && user.email) {
       const userKey = `cart_${user.email}`;
-      let userCart = [];
+      let cached = [];
       try {
-        userCart = JSON.parse(localStorage.getItem(userKey)) || [];
+        cached = JSON.parse(localStorage.getItem(userKey)) || [];
       } catch {
-        userCart = [];
+        cached = [];
+      }
+      if (cached.length > 0) {
+        dispatch({ type: "LOAD_CART", payload: cached });
       }
 
-      // Check if there was a guest cart to merge
-      let guestCart = [];
-      try {
-        guestCart = JSON.parse(localStorage.getItem("cart_guest")) || [];
-      } catch {
-        guestCart = [];
-      }
-
-      if (guestCart.length > 0) {
-        // Merge guest cart items into user cart
-        guestCart.forEach((guestItem) => {
-          const existingIdx = userCart.findIndex((i) => i.itemKey === guestItem.itemKey);
-          if (existingIdx > -1) {
-            userCart[existingIdx].quantity += guestItem.quantity;
-          } else {
-            userCart.push(guestItem);
+      // Fetch official cart from backend
+      cartAPI.getCart()
+        .then((res) => {
+          if (Array.isArray(res.data)) {
+            dispatch({ type: "LOAD_CART", payload: res.data });
+            localStorage.setItem(userKey, JSON.stringify(res.data));
           }
+        })
+        .catch(() => {
+          // If offline or network error, fallback to cached
         });
-        localStorage.removeItem("cart_guest");
-        localStorage.setItem(userKey, JSON.stringify(userCart));
-      }
-
-      dispatch({ type: "LOAD_CART", payload: userCart });
     } else {
-      // Guest mode
-      let guestCart = [];
-      try {
-        guestCart = JSON.parse(localStorage.getItem("cart_guest")) || [];
-      } catch {
-        guestCart = [];
-      }
-      dispatch({ type: "LOAD_CART", payload: guestCart });
+      // Unauthenticated users have NO cart access
+      dispatch({ type: "LOAD_CART", payload: [] });
+      localStorage.removeItem("cart_guest");
     }
   }, [user]);
 
-  // Persist cart whenever it changes
+  // Persist cart to local storage when logged in
   useEffect(() => {
     if (user && user.email) {
       localStorage.setItem(`cart_${user.email}`, JSON.stringify(cart));
-    } else {
-      localStorage.setItem("cart_guest", JSON.stringify(cart));
     }
   }, [cart, user]);
 
   // Actions
-  const addToCart = (product, size = "M", quantity = 1) => {
-    dispatch({ type: "ADD_TO_CART", payload: { ...product, size, quantity } });
+  const addToCart = async (product, size = "M", quantity = 1) => {
+    if (!user) {
+      toast.error("Please sign in to add items to your cart");
+      return false;
+    }
+
+    const payload = { ...product, size, quantity };
+    dispatch({ type: "ADD_TO_CART", payload });
+
+    try {
+      await cartAPI.addToCart({
+        id: product.id || product._id,
+        size,
+        quantity,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+        stock: product.stock,
+      });
+    } catch (err) {
+      console.warn("Backend cart sync error:", err.message);
+    }
+    return true;
   };
 
-  const removeFromCart = (itemKey) => {
+  const removeFromCart = async (itemKey) => {
+    if (!user) return;
     dispatch({ type: "REMOVE_FROM_CART", payload: itemKey });
+    try {
+      await cartAPI.removeFromCart(itemKey);
+    } catch (err) {
+      console.warn("Backend cart remove error:", err.message);
+    }
   };
 
-  const updateQuantity = (itemKey, quantity) => {
+  const updateQuantity = async (itemKey, quantity) => {
+    if (!user) return;
     dispatch({ type: "UPDATE_QUANTITY", payload: { itemKey, quantity } });
+    try {
+      await cartAPI.updateQuantity(itemKey, quantity);
+    } catch (err) {
+      console.warn("Backend cart update error:", err.message);
+    }
   };
 
-  const clearCart = () => {
+  const clearCart = async () => {
     dispatch({ type: "CLEAR_CART" });
     if (user && user.email) {
       localStorage.removeItem(`cart_${user.email}`);
-    } else {
-      localStorage.removeItem("cart_guest");
+      try {
+        await cartAPI.clearCart();
+      } catch (err) {
+        console.warn("Backend cart clear error:", err.message);
+      }
     }
   };
 
@@ -141,6 +163,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const isInCart = (id, size) => {
+    if (!user) return false;
     const itemKey = size ? `${id}-${size}` : `${id}`;
     return cart.some((item) => item.itemKey === itemKey || item.id === id);
   };
