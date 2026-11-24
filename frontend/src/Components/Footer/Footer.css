@@ -1,13 +1,12 @@
-/* Glassmorphic Footer */
+/* AJIO Luxury Clean Footer */
 .footer {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  color: var(--text-primary);
+  background: #fdfdfd;
+  color: #2c2c2c;
   padding: 60px 20px 30px;
-  border-top: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.02);
+  border-top: 1px solid #ededed;
+  box-shadow: none;
   margin-top: 40px;
+  font-family: var(--ajio-font-primary, sans-serif);
 }
 
 .footer-container {
@@ -25,10 +24,12 @@
 }
 
 .footer-section h3 {
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   margin-bottom: 16px;
-  color: var(--text-primary);
+  color: #2c4152;
   position: relative;
   display: inline-block;
 }
@@ -38,10 +39,9 @@
   position: absolute;
   bottom: -4px;
   left: 0;
-  width: 32px;
-  height: 3px;
-  background: var(--accent-gradient);
-  border-radius: 2px;
+  width: 28px;
+  height: 2px;
+  background: #d5a249;
 }
 
 .footer-section p {
