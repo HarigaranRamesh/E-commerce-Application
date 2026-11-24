@@ -65,6 +65,21 @@
   gap: 8px;
   cursor: pointer;
   transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.promo-coupon-badge::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: buttonShimmer 4.5s ease-in-out infinite;
 }
 
 .promo-coupon-badge:hover {
@@ -329,6 +344,21 @@
   transition: all var(--transition-fast);
   white-space: nowrap;
   box-shadow: 0 8px 25px rgba(56, 189, 248, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.countdown-cta::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: buttonShimmer 3.6s ease-in-out infinite;
 }
 
 .countdown-cta:hover {
