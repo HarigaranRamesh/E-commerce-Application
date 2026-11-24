@@ -87,7 +87,8 @@ const Checkout = () => {
   };
 
   const handleApplyCoupon = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (processingPayment) return;
     if (!inputCoupon.trim()) return;
 
     setApplyingCoupon(true);
