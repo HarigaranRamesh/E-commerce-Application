@@ -113,8 +113,8 @@ export const CartProvider = ({ children }) => {
   }, [cart, user]);
 
   // Actions
-  const addToCart = (product, size = "M") => {
-    dispatch({ type: "ADD_TO_CART", payload: { ...product, size } });
+  const addToCart = (product, size = "M", quantity = 1) => {
+    dispatch({ type: "ADD_TO_CART", payload: { ...product, size, quantity } });
   };
 
   const removeFromCart = (itemKey) => {
