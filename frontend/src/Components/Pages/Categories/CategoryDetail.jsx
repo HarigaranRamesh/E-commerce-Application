@@ -7,6 +7,16 @@ import { productsAPI } from "../../../services/api";
 import staticProducts from "../../../assets/data/products";
 import { toast } from "react-hot-toast";
 
+const deduplicateProducts = (items) => {
+  const seen = new Set();
+  return (items || []).filter((p) => {
+    const id = String(p.id || p._id);
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+};
+
 const CategoryDetail = () => {
   const { categoryName } = useParams();
   const navigate = useNavigate();
@@ -46,7 +56,7 @@ const CategoryDetail = () => {
 
         if (isMounted) {
           if (dataList && dataList.length > 0) {
-            setProducts(dataList);
+            setProducts(deduplicateProducts(dataList));
           } else {
             // Fallback filter
             let filtered = staticProducts.filter((p) => {
@@ -66,7 +76,7 @@ const CategoryDetail = () => {
               filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
             }
 
-            setProducts(filtered);
+            setProducts(deduplicateProducts(filtered));
           }
         }
       } catch {
@@ -75,7 +85,7 @@ const CategoryDetail = () => {
             if (categoryName.toLowerCase() === "mens") return true;
             return p.category?.toLowerCase() === categoryName.toLowerCase();
           });
-          setProducts(filtered);
+          setProducts(deduplicateProducts(filtered));
         }
       } finally {
         if (isMounted) setLoading(false);

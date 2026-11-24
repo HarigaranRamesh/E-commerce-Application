@@ -55,7 +55,14 @@ function Home() {
   useEffect(() => {
     try {
       const items = JSON.parse(localStorage.getItem("recently_viewed") || "[]");
-      setRecentlyViewed(items.slice(0, 5));
+      const seen = new Set();
+      const unique = (items || []).filter((item) => {
+        const id = String(item.id);
+        if (!id || seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      });
+      setRecentlyViewed(unique.slice(0, 5));
     } catch {
       setRecentlyViewed([]);
     }
@@ -245,17 +252,6 @@ function Home() {
             Shop Flash Deals Now
           </button>
         </div>
-      </div>
-
-      {/* Recommended For You */}
-      <div className="container home-section">
-        <div className="section-header-row">
-          <div className="section-title-wrap">
-            <h2>Recommended For You</h2>
-            <p className="section-subtitle">Selected based on popular styles and trends</p>
-          </div>
-        </div>
-        <ProductList limit={4} />
       </div>
 
       {/* Recently Viewed Products */}

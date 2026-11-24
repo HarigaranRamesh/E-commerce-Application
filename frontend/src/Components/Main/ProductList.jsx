@@ -7,7 +7,17 @@ import { productsAPI } from "../../services/api";
 import staticProducts from "../../assets/data/products";
 import { toast } from "react-hot-toast";
 
-const ProductList = ({ category, featured, sort, limit, minRating }) => {
+const deduplicateProducts = (items) => {
+  const seen = new Set();
+  return (items || []).filter((p) => {
+    const id = String(p.id || p._id);
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+};
+
+const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = [] }) => {
   const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
   const navigate = useNavigate();
 
@@ -31,24 +41,44 @@ const ProductList = ({ category, featured, sort, limit, minRating }) => {
         const dataList = res.data?.products || (Array.isArray(res.data) ? res.data : []);
 
         if (isMounted) {
-          if (dataList && dataList.length > 0) {
-            setProducts(limit ? dataList.slice(0, limit) : dataList);
-          } else {
-            // Apply fallback filtering from static data
+          let list = deduplicateProducts(dataList);
+
+          // If backend had no matching items, use static fallback
+          if (!list || list.length === 0) {
             let fallbackList = [...staticProducts];
             if (category && category !== "All" && category !== "Mens") {
               fallbackList = fallbackList.filter(
                 (p) => p.category?.toLowerCase() === category.toLowerCase()
               );
             }
+            if (featured) {
+              const featuredItems = fallbackList.filter((p) => p.featured === true);
+              if (featuredItems.length > 0) fallbackList = featuredItems;
+            }
             if (minRating) {
               fallbackList = fallbackList.filter((p) => (p.rating || 4.5) >= minRating);
             }
-            if (limit) {
-              fallbackList = fallbackList.slice(0, limit);
+            if (sort === "newest") {
+              fallbackList = [...fallbackList].sort((a, b) => (b.id || 0) - (a.id || 0));
+            } else if (sort === "views") {
+              fallbackList = [...fallbackList].sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
+            } else if (sort === "rating") {
+              fallbackList = [...fallbackList].sort((a, b) => (b.rating || 0) - (a.rating || 0));
             }
-            setProducts(fallbackList);
+            list = deduplicateProducts(fallbackList);
           }
+
+          // Filter out excluded IDs to prevent duplicate products across sections
+          if (excludeIds && excludeIds.length > 0) {
+            const excludeSet = new Set(excludeIds.map(String));
+            list = list.filter((p) => !excludeSet.has(String(p.id || p._id)));
+          }
+
+          if (limit) {
+            list = list.slice(0, limit);
+          }
+
+          setProducts(list);
         }
       } catch {
         if (isMounted) {
@@ -58,10 +88,30 @@ const ProductList = ({ category, featured, sort, limit, minRating }) => {
               (p) => p.category?.toLowerCase() === category.toLowerCase()
             );
           }
-          if (limit) {
-            fallbackList = fallbackList.slice(0, limit);
+          if (featured) {
+            const featuredItems = fallbackList.filter((p) => p.featured === true);
+            if (featuredItems.length > 0) fallbackList = featuredItems;
           }
-          setProducts(fallbackList);
+          if (minRating) {
+            fallbackList = fallbackList.filter((p) => (p.rating || 4.5) >= minRating);
+          }
+          if (sort === "newest") {
+            fallbackList = [...fallbackList].sort((a, b) => (b.id || 0) - (a.id || 0));
+          } else if (sort === "views") {
+            fallbackList = [...fallbackList].sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
+          }
+
+          let list = deduplicateProducts(fallbackList);
+
+          if (excludeIds && excludeIds.length > 0) {
+            const excludeSet = new Set(excludeIds.map(String));
+            list = list.filter((p) => !excludeSet.has(String(p.id || p._id)));
+          }
+
+          if (limit) {
+            list = list.slice(0, limit);
+          }
+          setProducts(list);
         }
       } finally {
         if (isMounted) setLoading(false);
@@ -73,7 +123,7 @@ const ProductList = ({ category, featured, sort, limit, minRating }) => {
     return () => {
       isMounted = false;
     };
-  }, [category, featured, sort, limit, minRating]);
+  }, [category, featured, sort, limit, minRating, excludeIds]);
 
   const isWishlisted = (productId) => {
     return wishlist.some((item) => String(item.id) === String(productId));
