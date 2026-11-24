@@ -122,6 +122,7 @@ function Home() {
       <div className="container home-section">
         <div className="section-header-row">
           <div className="section-title-wrap">
+            <span className="section-eyebrow">CURATED WARDROBE</span>
             <h2>Shop by Category</h2>
             <p className="section-subtitle">Explore our handpicked collection for every occasion</p>
           </div>
@@ -146,8 +147,14 @@ function Home() {
                 }}
               />
               <div className="home-category-overlay">
-                <h3 className="home-category-name">{cat.name}</h3>
-                <span className="home-category-count">{cat.count}</span>
+                <div className="home-category-info">
+                  <h3 className="home-category-name">{cat.name}</h3>
+                  <span className="home-category-count">{cat.count}</span>
+                </div>
+                <div className="home-category-cta">
+                  <span>Explore</span>
+                  <ArrowRight size={14} />
+                </div>
               </div>
             </div>
           ))}
@@ -157,11 +164,14 @@ function Home() {
       {/* Curated Product Collections with Tabs */}
       <div className="container home-section">
         <div className="text-center">
-          <h2 style={{ fontSize: "2rem", fontWeight: "800", margin: "0 0 8px 0" }}>
+          <span className="section-eyebrow" style={{ display: "inline-block", marginBottom: "8px" }}>
+            PREMIUM SELECTION
+          </span>
+          <h2 style={{ fontSize: "2.1rem", fontWeight: "800", margin: "0 0 8px 0", letterSpacing: "-0.5px" }}>
             Curated Collections
           </h2>
           <p className="section-subtitle">
-            Premium menswear designed for maximum comfort and unmatched style
+            Premium menswear designed for maximum comfort, versatility, and modern aesthetics
           </p>
         </div>
 
