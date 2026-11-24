@@ -1,14 +1,14 @@
 .hero-section {
     position: relative;
-    height: 85vh;
-    min-height: 600px;
+    height: 82vh;
+    min-height: 580px;
     width: 100%;
     display: flex;
     align-items: center;
     overflow: hidden;
     margin-top: -64px;
     padding-top: 64px;
-    background-color: #f5f5f5;
+    background-color: #f1f5f9;
 }
 
 .hero-bg-img {
@@ -19,8 +19,13 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
-    /* Adjusted for general model shots */
     z-index: 0;
+    filter: brightness(0.96);
+    transition: transform 10s ease;
+}
+
+.hero-section:hover .hero-bg-img {
+    transform: scale(1.03);
 }
 
 .hero-overlay {
@@ -29,11 +34,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-    /* Subtle gradient to ensure text readability without obscuring the image too much */
-    background: linear-gradient(to right,
-            rgba(0, 0, 0, 0.4) 0%,
-            rgba(0, 0, 0, 0.2) 50%,
-            rgba(0, 0, 0, 0) 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(15, 23, 42, 0.5) 0%,
+        rgba(15, 23, 42, 0.25) 50%,
+        transparent 100%
+    );
     z-index: 1;
 }
 
@@ -51,16 +57,24 @@
 
 .hero-text-wrapper {
     margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 2.5rem 3rem;
+    border-radius: var(--radius-xl);
+    display: inline-block;
+    max-width: 580px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    animation: fadeInUp 0.7s var(--transition-base);
 }
 
 .hero-sale-title {
-    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    font-family: inherit;
     font-weight: 900;
-    line-height: 0.9;
+    line-height: 0.95;
     text-transform: uppercase;
-    color: #e60000;
-    /* Bold Red */
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .d-block {
@@ -69,149 +83,75 @@
 
 .text-sale {
     font-size: 3.5rem;
-    /* Reduced from 4.5rem */
     letter-spacing: -1px;
-    color: #fff;
+    color: #ffffff;
 }
 
 .text-upto {
     font-size: 3.5rem;
-    /* Reduced from 4.5rem */
     letter-spacing: -1px;
-    color: #fff;
+    color: #ffffff;
 }
 
 .text-percentage {
-    font-size: 5rem;
-    /* Base size */
+    font-size: 5.5rem;
     letter-spacing: -2px;
-    color: #e60000;
-}
-
-/* Responsive Font Sizes */
-@media (min-width: 768px) {
-    .text-sale {
-        font-size: 5rem;
-        /* Reduced from 7rem */
-    }
-
-    .text-upto {
-        font-size: 5rem;
-        /* Reduced from 7rem */
-    }
-
-    .text-percentage {
-        font-size: 6.5rem;
-        /* Reduced from 7rem */
-    }
-}
-
-@media (min-width: 1024px) {
-    .text-sale {
-        font-size: 6rem;
-        /* Reduced from 9rem */
-    }
-
-    .text-upto {
-        font-size: 6rem;
-        /* Reduced from 9rem */
-    }
-
-    .text-percentage {
-        font-size: 7.5rem;
-        /* Reduced from 9rem */
-    }
+    background: linear-gradient(135deg, #38bdf8 0%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 12px rgba(56, 189, 248, 0.4));
 }
 
 .hero-buttons {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
 }
 
 .btn-primary {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background-color: #000000;
-    /* Black background */
+    gap: 0.75rem;
+    background: var(--accent-gradient);
     color: #ffffff;
-    /* White text */
-    padding: 1rem 2.5rem;
-    border-radius: 9999px;
-    /* Pill shape */
+    padding: 1.1rem 2.75rem;
+    border-radius: var(--radius-full);
     font-weight: 700;
     font-size: 1.1rem;
-    transition: all 0.3s ease;
-    border: none;
+    transition: all var(--transition-base);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     text-decoration: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(1, 87, 155, 0.4);
+    backdrop-filter: blur(10px);
 }
 
 .btn-primary:hover {
-    background-color: #333333;
-    /* Dark Grey */
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 16px 40px rgba(1, 87, 155, 0.5);
     color: #ffffff;
 }
 
+@media (min-width: 768px) {
+    .text-sale { font-size: 4.5rem; }
+    .text-upto { font-size: 4.5rem; }
+    .text-percentage { font-size: 6.5rem; }
+}
+
 @media (max-width: 768px) {
-    .hero-bg-img {
-        object-position: 65% center;
-        /* Shift slightly to show model on narrow screens */
-        opacity: 0.8;
+    .hero-text-wrapper {
+        padding: 1.75rem 2rem;
+        max-width: 90%;
     }
-
-    .hero-content {
-        align-items: flex-start;
-        /* Left align on mobile usually looks better for this style */
-        text-align: left;
-        padding: 0 1.5rem;
-    }
-
-    .text-sale,
-    .text-upto {
-        font-size: 3rem;
-        /* Slightly smaller for tablets */
-    }
-
-    .text-percentage {
-        font-size: 4.5rem;
+    .text-sale, .text-upto { font-size: 2.8rem; }
+    .text-percentage { font-size: 4.2rem; }
+    .btn-primary {
+        padding: 0.95rem 2.2rem;
+        font-size: 1rem;
     }
 }
 
 @media (max-width: 480px) {
-    .hero-section {
-        min-height: 500px;
-        /* Ensure enough height on mobile */
-    }
-
-    .hero-bg-img {
-        object-position: 70% center;
-    }
-
-    .hero-content {
-        padding: 0 1.25rem;
-        justify-content: center;
-    }
-
-    .hero-text-wrapper {
-        margin-bottom: 1.5rem;
-    }
-
-    .text-sale,
-    .text-upto {
-        font-size: 2.5rem;
-        /* Better fit for small mobile screens (iPhone SE etc) */
-        letter-spacing: -0.5px;
-    }
-
-    .text-percentage {
-        font-size: 4rem;
-        letter-spacing: -1px;
-    }
-
-    .btn-primary {
-        padding: 0.875rem 2rem;
-        font-size: 1rem;
-    }
+    .hero-section { min-height: 480px; }
+    .hero-text-wrapper { padding: 1.25rem 1.5rem; }
+    .text-sale, .text-upto { font-size: 2.2rem; }
+    .text-percentage { font-size: 3.5rem; }
+    .btn-primary { width: 100%; justify-content: center; }
 }
