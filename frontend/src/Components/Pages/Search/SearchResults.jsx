@@ -7,6 +7,16 @@ import { WishlistContext } from "../../../Context/WishlistContext";
 import { toast } from "react-hot-toast";
 import "../../../Components/Main/Products.css";
 
+const deduplicateProducts = (items) => {
+    const seen = new Set();
+    return (items || []).filter((p) => {
+        const id = String(p.id || p._id);
+        if (!id || seen.has(id)) return false;
+        seen.add(id);
+        return true;
+    });
+};
+
 const SearchResults = () => {
     const [searchParams] = useSearchParams();
     const query = searchParams.get("q") || "";
@@ -35,7 +45,7 @@ const SearchResults = () => {
                 };
                 const { data } = await productsAPI.getAll(params);
                 const results = Array.isArray(data) ? data : data.products || [];
-                setProducts(results);
+                setProducts(deduplicateProducts(results));
             } catch {
                 // Client-side fallback if backend request fails
                 let list = [...staticProducts];
@@ -59,7 +69,7 @@ const SearchResults = () => {
                 if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
                 if (sort === "rating") list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
-                setProducts(list);
+                setProducts(deduplicateProducts(list));
             } finally {
                 setLoading(false);
             }
