@@ -97,7 +97,30 @@ const OrderDetail = () => {
         window.print();
     };
 
-    if (loading) return <div className="loading" style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}><div className="loader"></div></div>;
+    if (loading) {
+        return (
+            <div className="order-detail-container" style={{ minHeight: "75vh" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2rem" }}>
+                    <div className="skeleton-line" style={{ width: "140px", height: "24px" }}></div>
+                    <div className="skeleton-box" style={{ width: "160px", height: "36px", borderRadius: "var(--radius-full)" }}></div>
+                </div>
+                <div className="order-card skeleton-card" style={{ padding: "30px", borderRadius: "var(--radius-xl)", marginBottom: "24px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
+                        <div className="skeleton-line" style={{ width: "220px", height: "28px" }}></div>
+                        <div className="skeleton-box" style={{ width: "110px", height: "30px", borderRadius: "20px" }}></div>
+                    </div>
+                    <div className="skeleton-box" style={{ height: "60px", borderRadius: "var(--radius-md)", marginBottom: "24px" }}></div>
+                    <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                        <div className="skeleton-box" style={{ width: "80px", height: "80px", borderRadius: "12px", flexShrink: 0 }}></div>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
+                            <div className="skeleton-line" style={{ width: "65%", height: "18px" }}></div>
+                            <div className="skeleton-line" style={{ width: "35%", height: "16px" }}></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (!order) return <div className="error" style={{ textAlign: "center", padding: "6rem 1rem" }}>Order not found</div>;
 
