@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Heart, ChevronRight, SlidersHorizontal, Star, Eye } from "lucide-react";
 import "../../Main/Products.css";
 import { WishlistContext } from "../../../Context/WishlistContext";
+import { AuthContext } from "../../../Context/AuthContext";
 import { productsAPI } from "../../../services/api";
 import staticProducts from "../../../assets/data/products";
 import { toast } from "react-hot-toast";
