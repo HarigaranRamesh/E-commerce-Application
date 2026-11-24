@@ -3,7 +3,7 @@ import { fetchGlobalSettings } from "../services/strapi";
 import defaultLogo from "../assets/mens_hub_logo.png";
 
 export const SiteContext = createContext({
-  siteName: "Mens Hub",
+  siteName: "Clothings Store",
   siteLogo: defaultLogo,
   tagline: "Quality products, Fresh Choices",
   announcement: "",
@@ -14,7 +14,7 @@ export const SiteContext = createContext({
 
 export const SiteProvider = ({ children }) => {
   const [settings, setSettings] = useState({
-    site_name: "Mens Hub",
+    site_name: "Clothings Store",
     tagline: "Quality products, Fresh Choices",
     announcement_banner: "",
     logoUrl: null,
@@ -56,7 +56,7 @@ export const SiteProvider = ({ children }) => {
     loadSettings();
   }, [loadSettings]);
 
-  const siteName = settings?.site_name || "Mens Hub";
+  const siteName = settings?.site_name || "Clothings Store";
   const siteLogo = settings?.logoUrl || defaultLogo;
   const tagline = settings?.tagline || "Quality products, Fresh Choices";
   const announcement = settings?.announcement_banner || "";
