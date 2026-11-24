@@ -18,19 +18,30 @@ const deduplicateProducts = (items) => {
   });
 };
 
+// Global in-memory cache to prevent layout shift and shimmer flicker on repeat views
+const productCache = new Map();
+
 const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = [] }) => {
   const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Stabilize excludeIds to avoid new reference on every render
+  const excludeIdsKey = Array.isArray(excludeIds) ? excludeIds.join(",") : "";
+  const cacheKey = `${category || ""}|${featured ? "1" : "0"}|${sort || ""}|${limit || ""}|${minRating || ""}|${excludeIdsKey}`;
+
+  const cachedProducts = productCache.get(cacheKey);
+  const [products, setProducts] = useState(cachedProducts || []);
+  const [loading, setLoading] = useState(!cachedProducts);
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchProducts = async () => {
-      setLoading(true);
+      // Only show skeleton loading state if we do not already have cached items
+      if (!productCache.has(cacheKey)) {
+        setLoading(true);
+      }
       try {
         const params = {};
         if (category && category !== "All" && category !== "Mens") params.category = category;
@@ -80,6 +91,7 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
             list = list.slice(0, limit);
           }
 
+          productCache.set(cacheKey, list);
           setProducts(list);
         }
       } catch {
@@ -113,6 +125,7 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
           if (limit) {
             list = list.slice(0, limit);
           }
+          productCache.set(cacheKey, list);
           setProducts(list);
         }
       } finally {
@@ -125,7 +138,8 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
     return () => {
       isMounted = false;
     };
-  }, [category, featured, sort, limit, minRating, excludeIds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, featured, sort, limit, minRating, excludeIdsKey, cacheKey]);
 
   const isWishlisted = (productId) => {
     return wishlist.some((item) => String(item.id) === String(productId));
@@ -262,4 +276,4 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
   );
 };
 
-export default ProductList;
+export default React.memo(ProductList);
