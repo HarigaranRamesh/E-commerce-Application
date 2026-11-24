@@ -487,36 +487,32 @@
 }
 
 .newsletter-btn {
-  background: var(--accent-gradient);
-  color: #fff;
-  border: none;
-  padding: 14px 30px;
-  border-radius: var(--radius-full);
+  background: #2c4152 !important;
+  color: #fff !important;
+  border: 1px solid #2c4152;
+  padding: 13px 28px;
+  border-radius: 0px !important;
+  font-family: var(--ajio-font-primary, sans-serif);
   font-weight: 700;
-  font-size: 0.96rem;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
   cursor: pointer;
   transition: all var(--transition-fast);
-  box-shadow: 0 8px 24px rgba(1, 87, 155, 0.25);
+  box-shadow: none !important;
   position: relative;
   overflow: hidden;
 }
 
 .newsletter-btn::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -120%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transform: skewX(-20deg);
-  pointer-events: none;
-  animation: buttonShimmer 4s ease-in-out infinite;
+  display: none !important;
 }
 
 .newsletter-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(1, 87, 155, 0.35);
+  background: #1e2e3b !important;
+  border-color: #1e2e3b !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* Responsive adjustments */
