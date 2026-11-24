@@ -52,85 +52,79 @@
   transform: scale(1.08);
 }
 
-/* Badges */
+/* Badges - AJIO Discount & Stock */
 .badge-discount {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  top: 10px;
+  left: 10px;
+  background: #3cb998 !important;
   color: #fff;
-  font-size: 0.75rem;
-  font-weight: 800;
-  padding: 5px 10px;
-  border-radius: var(--radius-full);
+  font-family: var(--ajio-font-primary, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 0px !important;
   z-index: 4;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  overflow: hidden;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 .badge-discount::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -120%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
-  transform: skewX(-20deg);
-  pointer-events: none;
-  animation: buttonShimmer 3.2s ease-in-out infinite;
+  display: none !important;
 }
 
 .badge-stock {
   position: absolute;
-  bottom: 14px;
-  left: 14px;
-  font-size: 0.72rem;
+  bottom: 10px;
+  left: 10px;
+  font-family: var(--ajio-font-primary, sans-serif);
+  font-size: 0.7rem;
   font-weight: 700;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 0px !important;
   z-index: 4;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .badge-stock.low {
-  background: rgba(245, 158, 11, 0.85);
-  color: #fff;
+  background: #fff8e6;
+  color: #d97706;
+  border-color: #fde68a;
 }
 
 .badge-stock.out {
-  background: rgba(15, 23, 42, 0.85);
+  background: #2c2c2c;
   color: #fff;
 }
 
 /* Wishlist Icon Button */
 .wishlist-btn-icon {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 10px;
+  right: 10px;
   z-index: 5;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  padding: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ededed;
+  padding: 7px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: all var(--transition-fast);
 }
 
 .wishlist-btn-icon:hover {
-  transform: scale(1.15);
+  transform: scale(1.08);
   background: #ffffff;
-  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 /* Hover Quick View Overlay */
