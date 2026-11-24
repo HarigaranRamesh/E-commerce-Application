@@ -5,6 +5,7 @@ import { AuthContext } from "../../Context/AuthContext";
 import { WishlistContext } from "../../Context/WishlistContext";
 import { ShoppingBag, Heart, User, Search, Menu, X, ArrowRight } from "lucide-react";
 import { productsAPI } from "../../services/api";
+import { throttle } from "../../utils/performance";
 import toast from "react-hot-toast";
 import logo from "../../assets/mens_hub_logo.png";
 import "./Navbar.css";
@@ -25,9 +26,9 @@ export default function Navbar() {
   const wishlistCount = wishlist?.length || 0;
 
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       setScrolled(window.scrollY > 20);
-    };
+    }, 120);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);

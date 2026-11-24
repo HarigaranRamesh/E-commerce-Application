@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
 
   // Load user from localStorage on refresh
   useEffect(() => {
-    const loggedInUser = localStorage.getItem("currentUser"); // use "currentUser" as key
+    const loggedInUser = localStorage.getItem("currentUser");
     if (loggedInUser) {
       try {
         setUser(JSON.parse(loggedInUser));
@@ -15,6 +15,23 @@ export const AuthProvider = ({ children }) => {
         setUser(loggedInUser);
       }
     }
+
+    const handleTokenRefreshed = (e) => {
+      if (e.detail) {
+        setUser(e.detail);
+      }
+    };
+    const handleRemoteLogout = () => {
+      setUser(null);
+    };
+
+    window.addEventListener("auth:token-refreshed", handleTokenRefreshed);
+    window.addEventListener("auth:logout", handleRemoteLogout);
+
+    return () => {
+      window.removeEventListener("auth:token-refreshed", handleTokenRefreshed);
+      window.removeEventListener("auth:logout", handleRemoteLogout);
+    };
   }, []);
 
   // Login function
