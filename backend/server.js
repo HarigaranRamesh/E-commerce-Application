@@ -10,6 +10,7 @@ import wishlistRoutes from './routes/wishlistRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
+import strapiRoutes from './routes/strapiRoutes.js';
 import seedAdmin from './utils/seeder.js';
 
 dotenv.config();
@@ -40,6 +41,7 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/strapi', strapiRoutes);
 
 // Root route
 app.get('/', (req, res) => {
