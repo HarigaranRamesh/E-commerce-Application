@@ -1,158 +1,110 @@
+/* Category Page Glassmorphic */
 .category-page {
   text-align: center;
   padding: 120px 2rem 4rem;
-  /* Top padding to clear navbar */
   min-height: 100vh;
-  background-color: #fafafa;
+  background: transparent;
 }
 
-h2 {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 3rem;
-  letter-spacing: -0.02em;
-  color: #111;
+.category-page h2 {
+  font-size: 2.6rem;
+  font-weight: 900;
+  margin-bottom: 2.5rem;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #01579b 0%, #0284c7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   position: relative;
   display: inline-block;
-}
-
-h2::after {
-  content: '';
-  display: block;
-  width: 60px;
-  height: 4px;
-  background-color: #000;
-  margin: 1rem auto 0;
-  border-radius: 2px;
 }
 
 .category-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2.5rem;
-  max-width: 1400px;
+  gap: 2.2rem;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 0 1rem;
 }
 
 .category-card {
   position: relative;
-  background: #fff;
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-xl);
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  aspect-ratio: 3/4;
-  /* Vertical fashion card ratio */
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  aspect-ratio: 3 / 4;
   display: flex;
   flex-direction: column;
 }
 
 .category-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 45px rgba(1, 87, 155, 0.18);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .category-image-wrapper {
-  height: 85%;
+  height: 82%;
   width: 100%;
   overflow: hidden;
   position: relative;
+  background: #f1f5f9;
 }
 
 .category-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .category-card:hover .category-image {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .category-info {
-  padding: 1rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 15%;
-  background-color: #fff;
+  height: 18%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
   z-index: 2;
-  transition: background-color 0.3s ease;
+  transition: background var(--transition-fast);
 }
 
 .category-card:hover .category-info {
-  background-color: #000;
+  background: var(--accent-gradient);
 }
 
 .category-card h3 {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0 0 2px 0;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #111;
-  transition: color 0.3s ease;
-}
-
-.shop-link {
-  font-size: 0.8rem;
-  margin-top: 4px;
-  color: #666;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+  transition: color var(--transition-fast);
 }
 
 .category-card:hover h3 {
-  color: #fff;
+  color: #ffffff;
+}
+
+.shop-link {
+  font-size: 0.85rem;
+  color: var(--accent-secondary);
+  font-weight: 600;
+  transition: color var(--transition-fast);
 }
 
 .category-card:hover .shop-link {
-  opacity: 1;
-  transform: translateY(0);
-  color: #ccc;
-  height: 0;
-  /* Cheat to keep layout identical but show text, or keep it visible */
-  display: none;
-  /* Actually simplify - just changing text color is classy enough */
-}
-
-/* Responsive Design */
-@media (max-width: 992px) {
-  .category-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .category-page {
-    padding: 100px 1rem 3rem;
-  }
-
-  h2 {
-    font-size: 2rem;
-  }
-
-  /* On mobile, maybe 2 columns is too tight if cards are small, but standard ecommerce is 2 cols */
-  .category-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .category-card {
-    border-radius: 12px;
-  }
-
-  .category-card h3 {
-    font-size: 0.9rem;
-  }
+  color: rgba(255, 255, 255, 0.9);
 }

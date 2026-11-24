@@ -1,21 +1,24 @@
 
 .order-detail-container {
     max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+    margin: 0 auto;
+    padding: 120px 1rem 60px;
 }
 
 .back-link {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #666;
+    color: var(--text-secondary);
     text-decoration: none;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
 }
 
 .back-link:hover {
-    color: #333;
+    color: var(--accent-primary);
+    transform: translateX(-3px);
 }
 
 .order-header-detail {
@@ -26,48 +29,31 @@
 }
 
 .order-header-detail h1 {
-    font-size: 1.8rem;
-    color: #333;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .order-date {
-    color: #888;
+    color: var(--text-tertiary);
     margin-bottom: 2rem;
 }
 
-.status-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-transform: capitalize;
-}
-
-.status-pending { background-color: #fff3cd; color: #856404; }
-.status-processing { background-color: #cfe2ff; color: #084298; }
-.status-shipped { background-color: #e0cffc; color: #430BAF; }
-.status-delivered { background-color: #d1e7dd; color: #0f5132; }
-.status-cancelled { background-color: #f8d7da; color: #842029; }
-
-.order-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
-}
-
-@media (max-width: 768px) {
-    .order-content {
-        grid-template-columns: 1fr;
-    }
-}
-
 .card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 24px;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.85);
     margin-bottom: 1.5rem;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.card:hover {
+    box-shadow: 0 16px 36px rgba(1, 87, 155, 0.1);
 }
 
 .card h3 {
