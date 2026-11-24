@@ -279,6 +279,38 @@
   font-weight: 600;
 }
 
+.wishlist-offer-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 2px 6px;
+  background: #f0fdf4;
+  border: 1px dashed #86efac;
+  border-radius: 2px;
+  width: fit-content;
+  max-width: 95%;
+}
+
+.wishlist-offer-line .offer-tag-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.wishlist-offer-line .offer-tag-price {
+  font-size: 12px;
+  font-weight: 800;
+  color: #15803d;
+}
+
+.wishlist-offer-line .offer-tag-code {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+}
+
 /* --------------------------------------------------------------------------
    5. Empty & Auth States
    -------------------------------------------------------------------------- */
