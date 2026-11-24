@@ -207,14 +207,22 @@ export const couponsAPI = {
 };
 
 /**
- * Payment API Service
+ * Payment API Service (Razorpay & Multi-Gateway)
  */
 export const paymentAPI = {
+    createRazorpayOrder: (orderPayload) =>
+        api.post('/payments/create-order', orderPayload),
+    verifyRazorpayPayment: (verificationPayload) =>
+        api.post('/payments/verify', verificationPayload),
+    getPaymentStatus: (paymentId) =>
+        api.get(`/payments/${paymentId}/status`),
+    getInvoice: (orderId) =>
+        api.get(`/payments/invoice/${orderId}`),
+    // Legacy support
     createIntent: (amount, currency = 'inr', orderId) =>
         api.post('/payment/create-intent', { amount, currency, orderId }),
     verify: (paymentIntentId, orderId) =>
         api.post('/payment/verify', { paymentIntentId, orderId }),
-    getInvoice: (orderId) => api.get(`/payment/invoice/${orderId}`),
 };
 
 /**

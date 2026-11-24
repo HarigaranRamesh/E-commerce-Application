@@ -163,6 +163,15 @@
   background: #f1f5f9;
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 @media (max-width: 900px) {
   .checkout-container {
     grid-template-columns: 1fr;

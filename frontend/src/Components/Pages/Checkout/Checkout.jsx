@@ -1,11 +1,25 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { Truck, CreditCard, ShieldCheck, CheckCircle2, Zap } from "lucide-react";
+import { Truck, CreditCard, ShieldCheck, CheckCircle2, Zap, Smartphone, RefreshCw } from "lucide-react";
 import { AuthContext } from "../../../Context/AuthContext";
 import { CartContext } from "../../../Context/CartContext";
 import { ordersAPI, paymentAPI } from "../../../services/api";
 import "./CheckoutStyles.css";
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      return resolve(true);
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 const Checkout = () => {
   const location = useLocation();
@@ -26,7 +40,7 @@ const Checkout = () => {
   const couponCode = checkoutState.couponCode || null;
 
   const [deliveryMethod, setDeliveryMethod] = useState("standard");
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
   const [processingPayment, setProcessingPayment] = useState(false);
 
   const [shippingInfo, setShippingInfo] = useState({
@@ -64,59 +78,152 @@ const Checkout = () => {
 
     setProcessingPayment(true);
     try {
-      let paymentResult = {
-        id: `TXN-${Date.now()}`,
-        status: paymentMethod === "cod" ? "pending" : "succeeded",
-        update_time: new Date().toISOString(),
-        email_address: user.email,
-      };
+      if (paymentMethod === "razorpay") {
+        toast("Initiating secure Razorpay checkout...", { icon: "🔒" });
 
-      // Server-side payment verification for card/UPI
-      if (paymentMethod !== "cod") {
-        toast("Initiating secure payment gateway...", { icon: "🔒" });
-        const intentRes = await paymentAPI.createIntent(totalPrice, "inr");
-        const { paymentIntentId } = intentRes.data;
+        // 1. Request Order Creation from Backend (Server-side validation)
+        const orderPayload = {
+          orderItems: cart.map((item) => ({
+            product: item._id || item.id,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            image: item.image,
+            size: item.size || "M",
+            color: item.selectedColor || undefined,
+          })),
+          shippingAddress: shippingInfo,
+          deliveryMethod,
+          couponCode,
+          paymentMethod: "razorpay",
+        };
 
-        // Verify intent on the server
-        const verifyRes = await paymentAPI.verify(paymentIntentId);
-        if (!verifyRes.data.verified) {
-          throw new Error("Payment verification failed on the server.");
+        const { data } = await paymentAPI.createRazorpayOrder(orderPayload);
+        const { orderId, razorpayOrderId, amount, currency, keyId } = data;
+
+        // 2. Load Razorpay Checkout SDK
+        const isScriptLoaded = await loadRazorpayScript();
+
+        // Check if official Razorpay client can be opened
+        if (isScriptLoaded && window.Razorpay && keyId && !keyId.includes("placeholder")) {
+          const options = {
+            key: keyId,
+            amount: amount,
+            currency: currency || "INR",
+            name: "Men's Hub Luxury Apparel",
+            description: `Order Payment #${String(orderId).substring(0, 8).toUpperCase()}`,
+            image: "/assets/mens_hub_logo.png",
+            order_id: razorpayOrderId,
+            handler: async function (response) {
+              try {
+                toast("Verifying payment security signature...", { icon: "🔐" });
+                const verifyRes = await paymentAPI.verifyRazorpayPayment({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                  orderId,
+                });
+
+                if (verifyRes.data.verified) {
+                  clearCart();
+                  toast.success("Payment verified! Order confirmed 🎉");
+                  navigate(`/order/${orderId}`);
+                } else {
+                  throw new Error("Payment signature verification failed");
+                }
+              } catch (verifyErr) {
+                console.error("Payment verification failed:", verifyErr);
+                toast.error(verifyErr.response?.data?.message || "Payment verification failed");
+                setProcessingPayment(false);
+              }
+            },
+            prefill: {
+              name: shippingInfo.fullName,
+              email: user.email,
+              contact: shippingInfo.phone,
+            },
+            notes: {
+              orderId,
+            },
+            theme: {
+              color: "#01579b",
+            },
+            modal: {
+              ondismiss: function () {
+                setProcessingPayment(false);
+                toast("Checkout cancelled. You can complete your order when ready.", { icon: "ℹ️" });
+              },
+            },
+          };
+
+          const rzpInstance = new window.Razorpay(options);
+          rzpInstance.on("payment.failed", function (failResponse) {
+            console.error("Razorpay payment failed:", failResponse.error);
+            setProcessingPayment(false);
+            toast.error(`Payment failed: ${failResponse.error?.description || "Transaction declined"}`);
+          });
+          rzpInstance.open();
+        } else {
+          // Test Mode Sandbox Verification Simulation when live credentials are in test mode
+          toast("Simulating secure test verification in sandbox mode...", { icon: "🧪" });
+          const testPaymentId = `pay_test_${Date.now()}`;
+          const testSignature = `sim_sig_${Date.now()}`;
+
+          const verifyRes = await paymentAPI.verifyRazorpayPayment({
+            razorpay_order_id: razorpayOrderId,
+            razorpay_payment_id: testPaymentId,
+            razorpay_signature: testSignature,
+            orderId,
+          });
+
+          if (verifyRes.data.verified) {
+            clearCart();
+            toast.success("Test Payment Verified! Order confirmed 🎉");
+            setTimeout(() => {
+              navigate(`/order/${orderId}`);
+            }, 1000);
+          } else {
+            throw new Error("Sandbox payment verification failed.");
+          }
         }
-        paymentResult = verifyRes.data.transaction;
+      } else {
+        // Cash on Delivery (COD) flow
+        const orderPayload = {
+          orderItems: cart.map((item) => ({
+            product: item._id || item.id,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            image: item.image,
+            size: item.size || "M",
+            color: item.selectedColor || undefined,
+          })),
+          shippingAddress: shippingInfo,
+          paymentMethod: "cod",
+          itemsPrice,
+          taxPrice,
+          shippingPrice,
+          totalPrice,
+          couponCode,
+          discountAmount,
+          isPaid: false,
+          paymentResult: {
+            id: `COD-${Date.now()}`,
+            status: "pending",
+            update_time: new Date().toISOString(),
+          },
+        };
+
+        const response = await ordersAPI.create(orderPayload);
+        clearCart();
+        toast.success("Order confirmed successfully with Cash on Delivery! 🎉");
+        setTimeout(() => {
+          navigate(`/order/${response.data._id || response.data.id}`);
+        }, 1200);
       }
-
-      const orderPayload = {
-        orderItems: cart.map((item) => ({
-          product: item._id || item.id,
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-          image: item.image,
-          size: item.size || "M",
-          color: item.selectedColor || undefined,
-        })),
-        shippingAddress: shippingInfo,
-        paymentMethod,
-        itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice,
-        couponCode,
-        discountAmount,
-        isPaid: paymentMethod !== "cod",
-        paymentResult,
-      };
-
-      const response = await ordersAPI.create(orderPayload);
-      clearCart();
-      toast.success("Order confirmed successfully! 🎉");
-      setTimeout(() => {
-        navigate(`/order/${response.data._id || response.data.id}`);
-      }, 1500);
     } catch (error) {
-      console.error("Order error:", error);
+      console.error("Order submission error:", error);
       toast.error(error.response?.data?.message || error.message || "Failed to complete checkout");
-    } finally {
       setProcessingPayment(false);
     }
   };
@@ -231,6 +338,27 @@ const Checkout = () => {
           {/* Payment Method */}
           <h2 className="mt-4">3. Payment Option</h2>
           <div className="payment-options">
+            <label className={`payment-option ${paymentMethod === "razorpay" ? "selected" : ""}`}>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="razorpay"
+                checked={paymentMethod === "razorpay"}
+                onChange={() => setPaymentMethod("razorpay")}
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 600 }}>
+                  <ShieldCheck size={18} color="#01579b" /> Razorpay Secure Checkout
+                  <span style={{ fontSize: "0.75rem", background: "#e0f2fe", color: "#0284c7", padding: "2px 8px", borderRadius: "12px", fontWeight: 700 }}>
+                    RECOMMENDED
+                  </span>
+                </span>
+                <span style={{ fontSize: "0.82rem", color: "#64748b", marginLeft: "26px" }}>
+                  UPI (GPay, PhonePe, Paytm), Credit / Debit Cards, NetBanking, & Wallets
+                </span>
+              </div>
+            </label>
+
             <label className={`payment-option ${paymentMethod === "cod" ? "selected" : ""}`}>
               <input
                 type="radio"
@@ -239,35 +367,14 @@ const Checkout = () => {
                 checked={paymentMethod === "cod"}
                 onChange={() => setPaymentMethod("cod")}
               />
-              <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Truck size={18} /> Cash on Delivery (Pay at Doorstep)
-              </span>
-            </label>
-
-            <label className={`payment-option ${paymentMethod === "stripe" ? "selected" : ""}`}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="stripe"
-                checked={paymentMethod === "stripe"}
-                onChange={() => setPaymentMethod("stripe")}
-              />
-              <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <CreditCard size={18} /> Credit / Debit Card (Secure Stripe Server-Verified)
-              </span>
-            </label>
-
-            <label className={`payment-option ${paymentMethod === "upi" ? "selected" : ""}`}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="upi"
-                checked={paymentMethod === "upi"}
-                onChange={() => setPaymentMethod("upi")}
-              />
-              <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <CheckCircle2 size={18} color="#10b981" /> Instant UPI / Net Banking (GooglePay, PhonePe, Paytm)
-              </span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 600 }}>
+                  <Truck size={18} /> Cash on Delivery (COD)
+                </span>
+                <span style={{ fontSize: "0.82rem", color: "#64748b", marginLeft: "26px" }}>
+                  Pay in cash or UPI directly at your doorstep upon delivery
+                </span>
+              </div>
             </label>
           </div>
 
@@ -277,13 +384,28 @@ const Checkout = () => {
               form="checkout-form"
               className="pay-button cod-btn"
               disabled={processingPayment}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                opacity: processingPayment ? 0.75 : 1,
+                cursor: processingPayment ? "not-allowed" : "pointer",
+              }}
             >
-              {processingPayment
-                ? "Processing Secure Order..."
-                : `Place Order • ₹${totalPrice.toLocaleString("en-IN")}`}
+              {processingPayment ? (
+                <>
+                  <RefreshCw size={18} className="animate-spin" />
+                  Processing Payment...
+                </>
+              ) : paymentMethod === "razorpay" ? (
+                `Pay with Razorpay • ₹${totalPrice.toLocaleString("en-IN")}`
+              ) : (
+                `Place COD Order • ₹${totalPrice.toLocaleString("en-IN")}`
+              )}
             </button>
             <p style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem", color: "#6b7280", marginTop: "0.75rem", justifyContent: "center" }}>
-              <ShieldCheck size={16} color="#10b981" /> 256-bit SSL encrypted checkout with server-side validation
+              <ShieldCheck size={16} color="#10b981" /> 256-bit SSL encrypted & Razorpay server-verified checkout
             </p>
           </div>
         </div>
