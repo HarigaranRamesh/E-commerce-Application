@@ -3,9 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import ProductList from "../../Main/ProductList";
 import Hero from "../../Main/Hero";
 import ServiceFeatures from "../../Main/ServiceFeatures";
-import { Tag, Copy, Check, ArrowRight, Sparkles, Flame, Award, Zap, History } from "lucide-react";
+import { ArrowRight, Sparkles, Flame, Award, Zap, History } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { fetchOffers } from "../../../services/strapi";
 import "./Home.css";
 
 const categories = [
@@ -17,25 +16,10 @@ const categories = [
 
 function Home() {
   const navigate = useNavigate();
-  const [copiedCode, setCopiedCode] = useState(null);
   const [activeTab, setActiveTab] = useState("featured");
   const [visitedTabs, setVisitedTabs] = useState({ featured: true });
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [offers, setOffers] = useState([]);
-
-  // Fetch dynamic promotional offers from Strapi CMS
-  useEffect(() => {
-    let isMounted = true;
-    fetchOffers().then((data) => {
-      if (isMounted && Array.isArray(data) && data.length > 0) {
-        setOffers(data);
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -59,13 +43,6 @@ function Home() {
     }
   }, []);
 
-  const handleCopyCoupon = (code) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    toast.success(`Coupon code ${code} copied!`);
-    setTimeout(() => setCopiedCode(null), 3000);
-  };
-
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
     if (!newsletterEmail.trim()) {
@@ -80,35 +57,6 @@ function Home() {
     <div className="home-page">
       {/* Hero Section */}
       <Hero />
-
-      {/* Interactive Voucher Bar */}
-      <div className="promo-bar">
-        <div className="container promo-bar-inner">
-          <div className="promo-bar-title">
-            <Tag size={20} />
-            <span>Exclusive Deals & Promo Codes</span>
-          </div>
-          <div className="promo-coupons-rail">
-            {(offers && offers.length > 0 ? offers : [
-              { code: "WELCOME10", discount: "10% OFF", description: "10% OFF on 1st Order" },
-              { code: "SUPER20", discount: "20% OFF", description: "20% OFF Orders over ₹1500" },
-              { code: "FREESHIP", discount: "FREE SHIPPING", description: "Free Express Shipping" },
-            ]).map((c) => (
-              <div
-                key={c.code || c.id}
-                className="promo-coupon-badge"
-                onClick={() => handleCopyCoupon(c.code)}
-                title="Click to copy coupon code"
-              >
-                <span className="coupon-code-text">{c.code}</span>
-                <span>•</span>
-                <span>{c.discount || c.desc || c.description}</span>
-                {copiedCode === c.code ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* Service Highlights */}
       <ServiceFeatures />
