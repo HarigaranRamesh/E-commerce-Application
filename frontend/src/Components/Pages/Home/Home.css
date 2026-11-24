@@ -480,6 +480,21 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   box-shadow: 0 8px 24px rgba(1, 87, 155, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.newsletter-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: buttonShimmer 4s ease-in-out infinite;
 }
 
 .newsletter-btn:hover {
