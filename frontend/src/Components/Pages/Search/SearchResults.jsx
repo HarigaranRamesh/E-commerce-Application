@@ -200,8 +200,17 @@ const SearchResults = () => {
 
             {/* Results Grid */}
             {loading ? (
-                <div style={{ display: "flex", justifyContent: "center", padding: "4rem 0" }}>
-                    <div className="loader"></div>
+                <div className="product-container" style={{ padding: 0 }}>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                        <div key={n} className="product-card skeleton-card">
+                            <div className="product-image-wrapper skeleton-box" style={{ height: "280px" }}></div>
+                            <div style={{ padding: "14px 10px" }}>
+                                <div className="skeleton-line" style={{ width: "30%", height: "12px", marginBottom: "8px" }}></div>
+                                <div className="skeleton-line" style={{ width: "85%", height: "16px", marginBottom: "10px" }}></div>
+                                <div className="skeleton-line" style={{ width: "45%", height: "18px" }}></div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             ) : products.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "4rem 1rem", background: "#f9fafb", borderRadius: "12px" }}>
