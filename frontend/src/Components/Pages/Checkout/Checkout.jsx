@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Truck, CreditCard, ShieldCheck, CheckCircle2, Zap } from "lucide-react";
@@ -12,6 +12,13 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const { clearCart } = useContext(CartContext);
+
+  useEffect(() => {
+    if (!user) {
+      toast.error("Please log in to proceed with checkout");
+      navigate("/Login", { state: { redirect: "/checkout" } });
+    }
+  }, [user, navigate]);
 
   const checkoutState = location.state || {};
   const cart = checkoutState.cart || [];
