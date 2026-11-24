@@ -21,6 +21,25 @@ const deduplicateProducts = (items) => {
 // Global in-memory cache to prevent layout shift and shimmer flicker on repeat views
 const productCache = new Map();
 
+const filterByCat = (items, cat) => {
+  if (!cat || cat === "All") return items;
+  const c = cat.toLowerCase();
+  return items.filter((p) => {
+    const pCat = (p.category || "").toLowerCase();
+    const pGen = (p.gender || "men").toLowerCase();
+    if (c === "men" || c === "mens") {
+      return pGen === "men" || ["shirts", "pants", "hoodies", "t-shirts"].includes(pCat);
+    }
+    if (c === "women" || c === "womens") {
+      return pGen === "women" || ["dresses", "tops", "ethnic", "skirts"].includes(pCat);
+    }
+    if (c === "kids" || c === "kid") {
+      return pGen === "kids" || ["boys", "girls"].includes(pCat);
+    }
+    return pCat === c;
+  });
+};
+
 const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = [] }) => {
   const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
   const { user } = useContext(AuthContext);
@@ -44,7 +63,7 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
       }
       try {
         const params = {};
-        if (category && category !== "All" && category !== "Mens") params.category = category;
+        if (category && category !== "All") params.category = category;
         if (featured) params.featured = true;
         if (sort) params.sort = sort;
         if (limit) params.limit = limit;
@@ -58,12 +77,7 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
 
           // If backend had no matching items, use static fallback
           if (!list || list.length === 0) {
-            let fallbackList = [...staticProducts];
-            if (category && category !== "All" && category !== "Mens") {
-              fallbackList = fallbackList.filter(
-                (p) => p.category?.toLowerCase() === category.toLowerCase()
-              );
-            }
+            let fallbackList = filterByCat([...staticProducts], category);
             if (featured) {
               const featuredItems = fallbackList.filter((p) => p.featured === true);
               if (featuredItems.length > 0) fallbackList = featuredItems;
@@ -96,12 +110,7 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
         }
       } catch {
         if (isMounted) {
-          let fallbackList = [...staticProducts];
-          if (category && category !== "All" && category !== "Mens") {
-            fallbackList = fallbackList.filter(
-              (p) => p.category?.toLowerCase() === category.toLowerCase()
-            );
-          }
+          let fallbackList = filterByCat([...staticProducts], category);
           if (featured) {
             const featuredItems = fallbackList.filter((p) => p.featured === true);
             if (featuredItems.length > 0) fallbackList = featuredItems;
