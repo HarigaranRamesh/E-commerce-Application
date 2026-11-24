@@ -32,13 +32,13 @@ const MyOrders = () => {
     };
 
     const getStatusColor = (status) => {
-        switch (status) {
-            case 'pending': return 'orange';
-            case 'processing': return 'blue';
-            case 'shipped': return 'indigo';
-            case 'delivered': return 'green';
-            case 'cancelled': return 'red';
-            default: return 'gray';
+        switch (status?.toLowerCase()) {
+            case 'pending': return '#d5a249';
+            case 'processing': return '#2c4152';
+            case 'shipped': return '#1d70b8';
+            case 'delivered': return '#2e7d32';
+            case 'cancelled': return '#c62828';
+            default: return '#666666';
         }
     };
 
