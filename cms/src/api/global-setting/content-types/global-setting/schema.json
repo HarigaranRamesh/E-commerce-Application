@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "global_settings",
+  "info": {
+    "singularName": "global-setting",
+    "pluralName": "global-settings",
+    "displayName": "Global Site & Footer Settings",
+    "description": "Dynamic Site Announcements, Contacts, and Footer Content"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "site_name": {
+      "type": "string",
+      "default": "Mens Hub"
+    },
+    "tagline": {
+      "type": "string",
+      "default": "Quality products, Fresh Choices"
+    },
+    "announcement_banner": {
+      "type": "string",
+      "default": "🔥 FREE EXPRESS SHIPPING ON ORDERS OVER ₹999 | USE CODE SUPER20 FOR 20% OFF | 7-DAY EASY RETURNS"
+    },
+    "about_text": {
+      "type": "text"
+    },
+    "phone": {
+      "type": "string",
+      "default": "+91 97826260723"
+    },
+    "email": {
+      "type": "string",
+      "default": "harigaran925@gmail.com"
+    },
+    "address": {
+      "type": "string",
+      "default": "Kotagiri, Nilgiris, Tamil Nadu, India."
+    },
+    "twitter_url": {
+      "type": "string",
+      "default": "https://twitter.com"
+    },
+    "instagram_url": {
+      "type": "string",
+      "default": "https://instagram.com"
+    },
+    "facebook_url": {
+      "type": "string",
+      "default": "https://facebook.com"
+    },
+    "copyright_text": {
+      "type": "string",
+      "default": "© Copyright 2025 Mens Hub. All rights reserved."
+    },
+    "free_shipping_threshold": {
+      "type": "decimal",
+      "default": 999
+    },
+    "footer_links": {
+      "type": "json"
+    }
+  }
+}
