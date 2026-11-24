@@ -276,11 +276,90 @@ body {
 
 @keyframes shimmerEffect {
   0% {
-    background-position: -200% 0;
-  }
-  100% {
     background-position: 200% 0;
   }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes buttonShimmer {
+  0% {
+    left: -120%;
+  }
+  20%, 100% {
+    left: 140%;
+  }
+}
+
+@keyframes badgeShimmer {
+  0% {
+    background-position: -150% 0;
+  }
+  50%, 100% {
+    background-position: 250% 0;
+  }
+}
+
+/* Universal Skeleton Shimmer */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(226, 232, 240, 0.45) 0%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(226, 232, 240, 0.45) 100%
+  );
+  background-size: 250% 100%;
+  animation: shimmerEffect 1.8s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+/* Button Shimmer Sheen */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: buttonShimmer 4s ease-in-out infinite;
+}
+
+/* Badge Shimmer Sheen */
+.badge-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: buttonShimmer 3s ease-in-out infinite;
 }
 
 .animate-fade-in {
