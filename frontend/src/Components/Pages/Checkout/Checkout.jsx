@@ -1,10 +1,26 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { Truck, CreditCard, ShieldCheck, CheckCircle2, Zap, Smartphone, RefreshCw } from "lucide-react";
+import {
+  Truck,
+  CreditCard,
+  ShieldCheck,
+  CheckCircle2,
+  Zap,
+  RefreshCw,
+  ShoppingBag,
+  Tag,
+  ArrowRight,
+  Lock,
+  PackageCheck,
+  RotateCcw,
+  BadgePercent,
+  Check,
+  ChevronRight,
+} from "lucide-react";
 import { AuthContext } from "../../../Context/AuthContext";
 import { CartContext } from "../../../Context/CartContext";
-import { ordersAPI, paymentAPI } from "../../../services/api";
+import { ordersAPI, paymentAPI, couponsAPI } from "../../../services/api";
 import "./CheckoutStyles.css";
 
 const loadRazorpayScript = () => {
@@ -25,7 +41,7 @@ const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-  const { clearCart } = useContext(CartContext);
+  const { cart: contextCart, clearCart } = useContext(CartContext);
 
   useEffect(() => {
     if (!user) {
@@ -35,31 +51,67 @@ const Checkout = () => {
   }, [user, navigate]);
 
   const checkoutState = location.state || {};
-  const cart = checkoutState.cart || [];
-  const discountAmount = checkoutState.discountAmount || 0;
-  const couponCode = checkoutState.couponCode || null;
+  // Graceful fallback to contextCart if direct navigation or refresh occurs
+  const cart = (checkoutState.cart && checkoutState.cart.length > 0)
+    ? checkoutState.cart
+    : (contextCart || []);
 
   const [deliveryMethod, setDeliveryMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
   const [processingPayment, setProcessingPayment] = useState(false);
 
+  // Coupon state
+  const [inputCoupon, setInputCoupon] = useState("");
+  const [couponCode, setCouponCode] = useState(checkoutState.couponCode || null);
+  const [discountAmount, setDiscountAmount] = useState(checkoutState.discountAmount || 0);
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+
   const [shippingInfo, setShippingInfo] = useState({
     fullName: user?.name || "",
-    address: "",
-    city: "",
-    postalCode: "",
-    country: "India",
     phone: user?.phone || "",
+    address: user?.address?.street || user?.address?.address || "",
+    city: user?.address?.city || "",
+    postalCode: user?.address?.postalCode || user?.address?.zip || "",
+    country: "India",
   });
 
-  // Calculate pricing
-  const itemsPrice = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  // Calculate item subtotal
+  const itemsPrice = cart.reduce((acc, item) => acc + (Number(item.price) || 0) * (item.quantity || 1), 0);
   const shippingPrice = deliveryMethod === "express" ? 150 : itemsPrice >= 999 ? 0 : 60;
-  const taxPrice = Math.round((itemsPrice - discountAmount) * 0.05); // 5% GST
-  const totalPrice = Math.max(0, itemsPrice - discountAmount + shippingPrice + taxPrice);
+  const taxableAmount = Math.max(0, itemsPrice - discountAmount);
+  const taxPrice = Math.round(taxableAmount * 0.05); // 5% GST
+  const totalPrice = Math.max(0, taxableAmount + shippingPrice + taxPrice);
 
   const handleInputChange = (e) => {
     setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
+  };
+
+  const handleApplyCoupon = async (e) => {
+    e.preventDefault();
+    if (!inputCoupon.trim()) return;
+
+    setApplyingCoupon(true);
+    try {
+      const res = await couponsAPI.validate(inputCoupon.trim().toUpperCase(), itemsPrice);
+      if (res.data.valid) {
+        setCouponCode(res.data.coupon.code);
+        setDiscountAmount(res.data.discount);
+        toast.success(`Coupon ${res.data.coupon.code} applied! Saved ₹${res.data.discount} 🎉`);
+        setInputCoupon("");
+      } else {
+        toast.error(res.data.message || "Invalid coupon code");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to validate coupon");
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode(null);
+    setDiscountAmount(0);
+    toast("Coupon removed", { icon: "ℹ️" });
   };
 
   const handleOrderSubmission = async (e) => {
@@ -72,7 +124,13 @@ const Checkout = () => {
       return;
     }
 
-    if (!shippingInfo.fullName || !shippingInfo.address || !shippingInfo.city || !shippingInfo.postalCode || !shippingInfo.phone) {
+    if (
+      !shippingInfo.fullName ||
+      !shippingInfo.address ||
+      !shippingInfo.city ||
+      !shippingInfo.postalCode ||
+      !shippingInfo.phone
+    ) {
       toast.error("Please fill in all required shipping fields");
       return;
     }
@@ -227,232 +285,415 @@ const Checkout = () => {
     }
   };
 
-  if (cart.length === 0) {
+  // Glassmorphic Empty Cart View
+  if (!cart || cart.length === 0) {
     return (
-      <div className="checkout-page container text-center" style={{ paddingTop: "160px", minHeight: "60vh" }}>
-        <h2>Your Cart is Empty</h2>
-        <p>Please add products to your cart before proceeding to checkout.</p>
-        <button className="btn btn-primary mt-3" onClick={() => navigate("/Category")}>
-          Return to Shop
-        </button>
+      <div className="checkout-empty-container">
+        <div className="checkout-empty-card">
+          <div className="empty-icon-circle">
+            <ShoppingBag size={48} color="#01579b" />
+          </div>
+          <span className="empty-eyebrow">YOUR SHOPPING BAG</span>
+          <h2>Your Cart is Empty</h2>
+          <p>
+            It looks like you haven't added any luxury menswear essentials to your bag yet.
+            Explore our curated collections and discover the latest trending styles.
+          </p>
+          <div className="empty-actions">
+            <button className="btn-explore-shop" onClick={() => navigate("/Category")}>
+              Explore Collections <ArrowRight size={18} />
+            </button>
+            <button className="btn-view-wishlist" onClick={() => navigate("/Wishlist")}>
+              View Saved Wishlist
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="checkout-page">
+      {/* Checkout Progress Stepper */}
+      <div className="checkout-stepper-wrap">
+        <div className="checkout-step completed">
+          <div className="step-badge">
+            <Check size={14} />
+          </div>
+          <span className="step-text">Shopping Bag</span>
+        </div>
+        <div className="stepper-line active"></div>
+        <div className="checkout-step active">
+          <div className="step-badge">2</div>
+          <span className="step-text">Shipping & Delivery</span>
+        </div>
+        <div className="stepper-line"></div>
+        <div className="checkout-step">
+          <div className="step-badge">3</div>
+          <span className="step-text">Payment & Confirmation</span>
+        </div>
+      </div>
+
       <div className="checkout-container">
         {/* Left Section: Details & Methods */}
         <div className="checkout-left">
-          <h2>1. Shipping Address</h2>
-          <form id="checkout-form" onSubmit={handleOrderSubmission} className="shipping-form">
-            <input
-              type="text"
-              name="fullName"
-              placeholder="Full Name *"
-              value={shippingInfo.fullName}
-              onChange={handleInputChange}
-              required
-            />
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone Number (10 digits) *"
-              value={shippingInfo.phone}
-              onChange={handleInputChange}
-              required
-            />
-            <input
-              type="text"
-              name="address"
-              placeholder="Street Address, Apartment, Suite *"
-              value={shippingInfo.address}
-              onChange={handleInputChange}
-              required
-            />
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-              <input
-                type="text"
-                name="city"
-                placeholder="City *"
-                value={shippingInfo.city}
-                onChange={handleInputChange}
-                required
-              />
-              <input
-                type="text"
-                name="postalCode"
-                placeholder="Postal / PIN Code *"
-                value={shippingInfo.postalCode}
-                onChange={handleInputChange}
-                required
-              />
+          {/* Section 1: Shipping Address */}
+          <div className="checkout-section-box">
+            <div className="section-title-wrap">
+              <span className="section-number-pill">1</span>
+              <div>
+                <h2>Shipping & Delivery Address</h2>
+                <p className="section-subtext">Where should we deliver your order?</p>
+              </div>
             </div>
-            <input
-              type="text"
-              name="country"
-              placeholder="Country"
-              value={shippingInfo.country}
-              onChange={handleInputChange}
-              readOnly
-            />
-          </form>
 
-          {/* Delivery Options */}
-          <h2 className="mt-4">2. Delivery Speed</h2>
-          <div className="payment-options">
-            <label className={`payment-option ${deliveryMethod === "standard" ? "selected" : ""}`}>
-              <input
-                type="radio"
-                name="deliveryMethod"
-                value="standard"
-                checked={deliveryMethod === "standard"}
-                onChange={() => setDeliveryMethod("standard")}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Truck size={18} /> Standard Delivery (3-5 business days)
-                </span>
-                <strong>{itemsPrice >= 999 ? "FREE" : "₹60"}</strong>
+            <form id="checkout-form" onSubmit={handleOrderSubmission} className="shipping-form">
+              <div className="form-field full-width">
+                <label>Full Name *</label>
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder="e.g. Rahul Sharma"
+                  value={shippingInfo.fullName}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
-            </label>
 
-            <label className={`payment-option ${deliveryMethod === "express" ? "selected" : ""}`}>
-              <input
-                type="radio"
-                name="deliveryMethod"
-                value="express"
-                checked={deliveryMethod === "express"}
-                onChange={() => setDeliveryMethod("express")}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Zap size={18} color="#f59e0b" /> Express Priority Delivery (1-2 business days)
-                </span>
-                <strong>₹150</strong>
+              <div className="form-field">
+                <label>Phone Number (10 Digits) *</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="e.g. 9876543210"
+                  value={shippingInfo.phone}
+                  onChange={handleInputChange}
+                  pattern="[0-9]{10}"
+                  required
+                />
               </div>
-            </label>
+
+              <div className="form-field">
+                <label>PIN / Postal Code *</label>
+                <input
+                  type="text"
+                  name="postalCode"
+                  placeholder="e.g. 560001"
+                  value={shippingInfo.postalCode}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-field full-width">
+                <label>Street Address, Apartment, Suite *</label>
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Flat No, Building, Street Name, Area"
+                  value={shippingInfo.address}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-field">
+                <label>City *</label>
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="e.g. Bengaluru"
+                  value={shippingInfo.city}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-field">
+                <label>Country</label>
+                <input
+                  type="text"
+                  name="country"
+                  value={shippingInfo.country}
+                  readOnly
+                  className="read-only-field"
+                />
+              </div>
+            </form>
           </div>
 
-          {/* Payment Method */}
-          <h2 className="mt-4">3. Payment Option</h2>
-          <div className="payment-options">
-            <label className={`payment-option ${paymentMethod === "razorpay" ? "selected" : ""}`}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="razorpay"
-                checked={paymentMethod === "razorpay"}
-                onChange={() => setPaymentMethod("razorpay")}
-              />
-              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 600 }}>
-                  <ShieldCheck size={18} color="#01579b" /> Razorpay Secure Checkout
-                  <span style={{ fontSize: "0.75rem", background: "#e0f2fe", color: "#0284c7", padding: "2px 8px", borderRadius: "12px", fontWeight: 700 }}>
-                    RECOMMENDED
-                  </span>
-                </span>
-                <span style={{ fontSize: "0.82rem", color: "#64748b", marginLeft: "26px" }}>
-                  UPI (GPay, PhonePe, Paytm), Credit / Debit Cards, NetBanking, & Wallets
-                </span>
+          {/* Section 2: Delivery Speed */}
+          <div className="checkout-section-box mt-4">
+            <div className="section-title-wrap">
+              <span className="section-number-pill">2</span>
+              <div>
+                <h2>Select Delivery Speed</h2>
+                <p className="section-subtext">Choose your preferred shipping tier</p>
               </div>
-            </label>
+            </div>
 
-            <label className={`payment-option ${paymentMethod === "cod" ? "selected" : ""}`}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="cod"
-                checked={paymentMethod === "cod"}
-                onChange={() => setPaymentMethod("cod")}
-              />
-              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 600 }}>
-                  <Truck size={18} /> Cash on Delivery (COD)
-                </span>
-                <span style={{ fontSize: "0.82rem", color: "#64748b", marginLeft: "26px" }}>
-                  Pay in cash or UPI directly at your doorstep upon delivery
-                </span>
-              </div>
-            </label>
+            <div className="delivery-speed-options">
+              <label className={`speed-option-card ${deliveryMethod === "standard" ? "selected" : ""}`}>
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  value="standard"
+                  checked={deliveryMethod === "standard"}
+                  onChange={() => setDeliveryMethod("standard")}
+                />
+                <div className="speed-icon-box">
+                  <Truck size={22} color="#01579b" />
+                </div>
+                <div className="speed-info">
+                  <div className="speed-header">
+                    <h4>Standard Delivery</h4>
+                    <span className="speed-price">
+                      {itemsPrice >= 999 ? <span className="free-tag">FREE</span> : "₹60"}
+                    </span>
+                  </div>
+                  <p className="speed-desc">Estimated delivery in 3 to 5 business days</p>
+                </div>
+              </label>
+
+              <label className={`speed-option-card ${deliveryMethod === "express" ? "selected" : ""}`}>
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  value="express"
+                  checked={deliveryMethod === "express"}
+                  onChange={() => setDeliveryMethod("express")}
+                />
+                <div className="speed-icon-box express">
+                  <Zap size={22} color="#f59e0b" />
+                </div>
+                <div className="speed-info">
+                  <div className="speed-header">
+                    <h4 style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      Express Priority Delivery
+                      <span className="fast-tag">FAST</span>
+                    </h4>
+                    <span className="speed-price">₹150</span>
+                  </div>
+                  <p className="speed-desc">Next-day dispatch, delivered in 1 to 2 business days</p>
+                </div>
+              </label>
+            </div>
           </div>
 
-          <div className="mt-4">
-            <button
-              type="submit"
-              form="checkout-form"
-              className="pay-button cod-btn"
-              disabled={processingPayment}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                opacity: processingPayment ? 0.75 : 1,
-                cursor: processingPayment ? "not-allowed" : "pointer",
-              }}
-            >
-              {processingPayment ? (
-                <>
-                  <RefreshCw size={18} className="animate-spin" />
-                  Processing Payment...
-                </>
-              ) : paymentMethod === "razorpay" ? (
-                `Pay with Razorpay • ₹${totalPrice.toLocaleString("en-IN")}`
-              ) : (
-                `Place COD Order • ₹${totalPrice.toLocaleString("en-IN")}`
-              )}
-            </button>
-            <p style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem", color: "#6b7280", marginTop: "0.75rem", justifyContent: "center" }}>
-              <ShieldCheck size={16} color="#10b981" /> 256-bit SSL encrypted & Razorpay server-verified checkout
-            </p>
+          {/* Section 3: Payment Method */}
+          <div className="checkout-section-box mt-4">
+            <div className="section-title-wrap">
+              <span className="section-number-pill">3</span>
+              <div>
+                <h2>Payment Method</h2>
+                <p className="section-subtext">All transactions are 256-bit SSL encrypted</p>
+              </div>
+            </div>
+
+            <div className="payment-options-grid">
+              <label className={`payment-method-card ${paymentMethod === "razorpay" ? "selected" : ""}`}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="razorpay"
+                  checked={paymentMethod === "razorpay"}
+                  onChange={() => setPaymentMethod("razorpay")}
+                />
+                <div className="payment-card-body">
+                  <div className="payment-title-row">
+                    <span className="payment-name">
+                      <ShieldCheck size={20} color="#01579b" />
+                      Razorpay Secure Payment Gateway
+                    </span>
+                    <span className="badge-recommended">RECOMMENDED</span>
+                  </div>
+                  <p className="payment-subdesc">
+                    Instant UPI (GooglePay, PhonePe, Paytm, QR), Credit & Debit Cards, Net Banking, and Wallets
+                  </p>
+                  <div className="payment-supported-icons">
+                    <span className="support-pill">UPI</span>
+                    <span className="support-pill">Visa / Mastercard</span>
+                    <span className="support-pill">RuPay</span>
+                    <span className="support-pill">Net Banking</span>
+                  </div>
+                </div>
+              </label>
+
+              <label className={`payment-method-card ${paymentMethod === "cod" ? "selected" : ""}`}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cod"
+                  checked={paymentMethod === "cod"}
+                  onChange={() => setPaymentMethod("cod")}
+                />
+                <div className="payment-card-body">
+                  <div className="payment-title-row">
+                    <span className="payment-name">
+                      <Truck size={20} color="#475569" />
+                      Cash on Delivery (COD)
+                    </span>
+                  </div>
+                  <p className="payment-subdesc">
+                    Pay via cash or UPI directly to our delivery courier at your doorstep upon receiving your package
+                  </p>
+                </div>
+              </label>
+            </div>
           </div>
         </div>
 
-        {/* Right Section: Order Summary */}
+        {/* Right Section: Order Summary & Review */}
         <div className="checkout-right">
-          <h2>Order Summary ({cart.reduce((sum, item) => sum + item.quantity, 0)} items)</h2>
-          <div className="order-items">
-            {cart.map((item) => (
-              <div key={item.itemKey || item.id} className="order-item">
-                <img src={item.image} alt={item.name} />
-                <div style={{ flex: 1 }}>
-                  <h4>{item.name}</h4>
-                  <p style={{ fontSize: "0.82rem", color: "#6b7280" }}>
-                    Size: {item.size || "M"} • Qty: {item.quantity}
-                  </p>
+          <div className="order-summary-box">
+            <div className="summary-header">
+              <h3>Order Summary</h3>
+              <span className="summary-item-badge">
+                {cart.reduce((sum, item) => sum + item.quantity, 0)} Items
+              </span>
+            </div>
+
+            {/* Product items mini list */}
+            <div className="order-items-preview">
+              {cart.map((item) => (
+                <div key={item.itemKey || item.id || item._id} className="checkout-product-row">
+                  <div className="thumb-wrapper">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      onError={(e) => {
+                        e.target.src = "/images/placeholder.png";
+                      }}
+                    />
+                    <span className="qty-tag">{item.quantity}</span>
+                  </div>
+                  <div className="product-info-col">
+                    <h5 title={item.name}>{item.name}</h5>
+                    <div className="item-meta">
+                      <span>Size: {item.size || "M"}</span>
+                      {item.selectedColor && (
+                        <span> • Color: {item.selectedColor}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="product-price-col">
+                    <span>₹{((Number(item.price) || 0) * (item.quantity || 1)).toLocaleString("en-IN")}</span>
+                  </div>
                 </div>
-                <span>₹{(item.price * item.quantity).toLocaleString("en-IN")}</span>
+              ))}
+            </div>
+
+            {/* Coupon Code Box */}
+            <div className="checkout-coupon-wrap">
+              {couponCode ? (
+                <div className="applied-coupon-pill">
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Tag size={16} color="#16a34a" />
+                    <span>Coupon <strong>{couponCode}</strong> applied</span>
+                  </div>
+                  <button type="button" onClick={handleRemoveCoupon} className="btn-remove-coupon">
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApplyCoupon} className="coupon-input-group">
+                  <input
+                    type="text"
+                    placeholder="Enter Coupon Code (e.g. SUPER20)"
+                    value={inputCoupon}
+                    onChange={(e) => setInputCoupon(e.target.value)}
+                  />
+                  <button type="submit" disabled={applyingCoupon || !inputCoupon.trim()}>
+                    {applyingCoupon ? "..." : "Apply"}
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Price Calculations */}
+            <div className="pricing-breakdown">
+              <div className="pricing-row">
+                <span>Items Subtotal</span>
+                <span>₹{itemsPrice.toLocaleString("en-IN")}</span>
               </div>
-            ))}
-          </div>
 
-          <div className="summary-breakdown" style={{ marginTop: "1.5rem", borderTop: "1px solid #e5e7eb", paddingTop: "1rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-              <span style={{ color: "#4b5563" }}>Items Subtotal</span>
-              <span>₹{itemsPrice.toLocaleString("en-IN")}</span>
-            </div>
+              {discountAmount > 0 && (
+                <div className="pricing-row discount-row">
+                  <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <BadgePercent size={16} /> Discount ({couponCode})
+                  </span>
+                  <span>-₹{discountAmount.toLocaleString("en-IN")}</span>
+                </div>
+              )}
 
-            {discountAmount > 0 && (
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", color: "#16a34a" }}>
-                <span>Coupon Discount ({couponCode})</span>
-                <span>-₹{discountAmount.toLocaleString("en-IN")}</span>
+              <div className="pricing-row">
+                <span>Shipping ({deliveryMethod === "express" ? "Express Priority" : "Standard"})</span>
+                <span>
+                  {shippingPrice === 0 ? (
+                    <strong className="free-text">FREE</strong>
+                  ) : (
+                    `₹${shippingPrice}`
+                  )}
+                </span>
               </div>
-            )}
 
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-              <span style={{ color: "#4b5563" }}>Shipping ({deliveryMethod})</span>
-              <span>{shippingPrice === 0 ? <strong style={{ color: "#16a34a" }}>FREE</strong> : `₹${shippingPrice}`}</span>
+              <div className="pricing-row">
+                <span>Estimated Tax (5% GST)</span>
+                <span>₹{taxPrice.toLocaleString("en-IN")}</span>
+              </div>
+
+              <div className="pricing-total-row">
+                <span>Total Amount</span>
+                <span className="total-amount-glow">₹{totalPrice.toLocaleString("en-IN")}</span>
+              </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-              <span style={{ color: "#4b5563" }}>Estimated Tax (5% GST)</span>
-              <span>₹{taxPrice.toLocaleString("en-IN")}</span>
+            {/* Submit Button */}
+            <div className="submit-action-wrap">
+              <button
+                type="submit"
+                form="checkout-form"
+                className="btn-place-order"
+                disabled={processingPayment}
+              >
+                {processingPayment ? (
+                  <>
+                    <RefreshCw size={20} className="animate-spin" />
+                    <span>Processing Secure Gateway...</span>
+                  </>
+                ) : paymentMethod === "razorpay" ? (
+                  <>
+                    <Lock size={18} />
+                    <span>Pay with Razorpay • ₹{totalPrice.toLocaleString("en-IN")}</span>
+                  </>
+                ) : (
+                  <>
+                    <PackageCheck size={18} />
+                    <span>Place Order (COD) • ₹{totalPrice.toLocaleString("en-IN")}</span>
+                  </>
+                )}
+              </button>
+
+              <div className="security-notice">
+                <ShieldCheck size={16} color="#10b981" />
+                <span>256-bit Encrypted Checkout • Verified Server Signature</span>
+              </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid #e5e7eb", fontSize: "1.25rem", fontWeight: 700 }}>
-              <span>Total Payable</span>
-              <span style={{ color: "#10b981" }}>₹{totalPrice.toLocaleString("en-IN")}</span>
+            {/* Trust Assurances */}
+            <div className="checkout-trust-grid">
+              <div className="trust-item">
+                <ShieldCheck size={18} color="#01579b" />
+                <span>100% Genuine Apparel</span>
+              </div>
+              <div className="trust-item">
+                <RotateCcw size={18} color="#01579b" />
+                <span>7-Day Easy Returns</span>
+              </div>
+              <div className="trust-item">
+                <Truck size={18} color="#01579b" />
+                <span>Contactless Delivery</span>
+              </div>
             </div>
           </div>
         </div>

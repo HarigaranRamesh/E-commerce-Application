@@ -66,7 +66,9 @@ function App() {
                 />
                 <Route path="/search" element={<SearchResults />} />
                 <Route path="/Wishlist" element={<Wishlist />} />
+                <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/bag" element={<Bag />} />
+                <Route path="/checkout" element={<Checkout />} />
                 <Route path="/Checkout" element={<Checkout />} />
                 <Route path="/product/:productId" element={<ProductDetail />} />
                 <Route path="/login" element={<Login />} />
