@@ -299,7 +299,7 @@ const Bag = () => {
                     <div className="item-top-row">
                       <div className="item-brand-title">
                         <span className="item-brand-name">
-                          {item.brand || item.category || "MENS HUB"}
+                          {item.brand || item.category || "CLOTHINGS STORE"}
                         </span>
                         <Link to={`/product/${productId}`} className="item-name-link">
                           {item.name}
