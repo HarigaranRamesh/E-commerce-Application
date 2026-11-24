@@ -6,7 +6,7 @@ module.exports = {
   register(/*{ strapi }*/) {},
 
   async bootstrap({ strapi }) {
-    console.log("🚀 Strapi CMS Initializing for Men's Hub E-commerce...");
+    console.log("🚀 Strapi CMS Initializing for Clothings Store E-commerce...");
 
     try {
       // 1. Automatically configure Public permissions for all public content types
@@ -88,8 +88,8 @@ module.exports = {
               rating: Number(item.rating || 4.5),
               num_reviews: Number(item.numReviews || 0),
               featured: Boolean(item.featured),
-              brand: "Men's Hub Luxury",
-              sku: `MH-${item.category.toUpperCase().substring(0, 3)}-${String(item.id).padStart(4, '0')}`,
+              brand: "Clothings Store Luxury",
+              sku: `CS-${item.category.toUpperCase().substring(0, 3)}-${String(item.id).padStart(4, '0')}`,
               specifications: {
                 material: "100% Premium Combed Cotton",
                 fit: "Slim Fit",
@@ -99,7 +99,8 @@ module.exports = {
                 sizes: ["S", "M", "L", "XL", "XXL"],
                 colors: ["Classic Navy", "Charcoal Black", "Pure White"],
               },
-              tags: [item.category, "menswear", "luxury"],
+              tags: [item.category, item.gender || "menswear", "luxury"],
+              gender: item.gender || "men",
             };
 
             try {
@@ -136,17 +137,17 @@ module.exports = {
         if (globalCount === 0) {
           console.log('🌐 Seeding Global Site & Footer Settings into Strapi CMS...');
           const globalData = {
-            site_name: "Mens Hub",
+            site_name: "Clothings Store",
             tagline: "Quality products, Fresh Choices",
             announcement_banner: "",
-            about_text: "At Mens Hub, we believe in delivering premium quality products with an effortless shopping experience. We bring you an exclusive selection curated with care.",
+            about_text: "At Clothings Store, we believe in delivering premium quality products with an effortless shopping experience. We bring you an exclusive selection curated with care.",
             phone: "+91 97826260723",
             email: "harigaran925@gmail.com",
             address: "Kotagiri, Nilgiris, Tamil Nadu, India.",
             twitter_url: "https://twitter.com",
             instagram_url: "https://instagram.com",
             facebook_url: "https://facebook.com",
-            copyright_text: "© Copyright 2025 Mens Hub. All rights reserved.",
+            copyright_text: "© Copyright 2025 Clothings Store. All rights reserved.",
             free_shipping_threshold: 999,
             footer_links: [
               { label: "F.A.Q", url: "/faq" },
