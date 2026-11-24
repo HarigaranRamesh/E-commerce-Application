@@ -50,7 +50,7 @@ export default function Footer() {
           <div className="footer-section brand">
             <div className="footer-logo-container">
               <img src={siteLogo || logo} alt={siteName || "Brand Logo"} className="footer-logo-img" />
-              <h2 className="footer-logo-text">{siteName || settings?.site_name || "MENS HUB"}</h2>
+              <h2 className="footer-logo-text">{siteName || settings?.site_name || "CLOTHINGS STORE"}</h2>
             </div>
             <p className="footer-tagline">“{settings?.tagline || "Quality Products, Fresh Choices"}”</p>
             {settings?.about_text && <p className="footer-about">{settings.about_text}</p>}
@@ -106,7 +106,7 @@ export default function Footer() {
       {/* Luxury Deep Subfooter Bar */}
       <div className="footer-bottom">
         <div className="footer-bottom-container">
-          <p className="copyright-text">{settings?.copyright_text || "© Copyright 2025 Mens Hub. All rights reserved."}</p>
+          <p className="copyright-text">{settings?.copyright_text || "© Copyright 2025 Clothings Store. All rights reserved."}</p>
           <div className="footer-links">
             {settings?.footer_links && Array.isArray(settings.footer_links) ? (
               settings.footer_links.map((link, idx) => (
