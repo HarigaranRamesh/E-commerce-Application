@@ -13,7 +13,7 @@
   "attributes": {
     "site_name": {
       "type": "string",
-      "default": "Mens Hub"
+      "default": "Clothings Store"
     },
     "tagline": {
       "type": "string",
@@ -63,7 +63,7 @@
     },
     "copyright_text": {
       "type": "string",
-      "default": "© Copyright 2025 Mens Hub. All rights reserved."
+      "default": "© Copyright 2025 Clothings Store. All rights reserved."
     },
     "free_shipping_threshold": {
       "type": "decimal",

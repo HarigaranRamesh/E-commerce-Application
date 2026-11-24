@@ -35,10 +35,28 @@
         "t-shirts",
         "jackets",
         "accessories",
-        "shoes"
+        "shoes",
+        "dresses",
+        "tops",
+        "ethnic",
+        "boys",
+        "girls",
+        "men",
+        "women",
+        "kids"
       ],
       "default": "shirts",
       "required": true
+    },
+    "gender": {
+      "type": "enumeration",
+      "enum": [
+        "men",
+        "women",
+        "kids",
+        "unisex"
+      ],
+      "default": "men"
     },
     "image": {
       "type": "media",

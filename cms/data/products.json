@@ -9,7 +9,8 @@
     "rating": 4.5,
     "numReviews": 124,
     "stock": 50,
-    "featured": true
+    "featured": true,
+    "gender": "men"
   },
   {
     "id": 2,
@@ -20,7 +21,8 @@
     "description": "Add a pop of pattern to your wardrobe with this stylish check shirt. Soft fabric and a relaxed fit make it an everyday essential.",
     "rating": 4.2,
     "numReviews": 89,
-    "stock": 40
+    "stock": 40,
+    "gender": "men"
   },
   {
     "id": 3,
@@ -32,7 +34,8 @@
     "rating": 4.8,
     "numReviews": 210,
     "stock": 60,
-    "featured": true
+    "featured": true,
+    "gender": "men"
   },
   {
     "id": 4,
@@ -43,7 +46,8 @@
     "description": "Rugged yet refined, this denim chambray shirt pairs perfectly with chinos or jeans. Durable double-stitched seams.",
     "rating": 4.3,
     "numReviews": 76,
-    "stock": 35
+    "stock": 35,
+    "gender": "men"
   },
   {
     "id": 5,
@@ -55,7 +59,8 @@
     "rating": 4.6,
     "numReviews": 150,
     "stock": 25,
-    "featured": true
+    "featured": true,
+    "gender": "men"
   },
   {
     "id": 6,
@@ -66,7 +71,8 @@
     "description": "Elevate your office look with this vertical striped shirt. Tailored fit ensures a sharp silhouette.",
     "rating": 4.4,
     "numReviews": 92,
-    "stock": 45
+    "stock": 45,
+    "gender": "men"
   },
   {
     "id": 7,
@@ -77,7 +83,8 @@
     "description": "Retro-inspired print for those who like to stand out. Soft wash finish for a lived-in feel from day one.",
     "rating": 4.1,
     "numReviews": 45,
-    "stock": 30
+    "stock": 30,
+    "gender": "men"
   },
   {
     "id": 8,
@@ -88,7 +95,8 @@
     "description": "Sleek and versatile solid black shirt. A wardrobe staple that goes with everything.",
     "rating": 4.7,
     "numReviews": 180,
-    "stock": 55
+    "stock": 55,
+    "gender": "men"
   },
   {
     "id": 9,
@@ -99,7 +107,8 @@
     "description": "Deep navy hue in a modern slim silhouette. Perfect for evening outings.",
     "rating": 4.5,
     "numReviews": 110,
-    "stock": 40
+    "stock": 40,
+    "gender": "men"
   },
   {
     "id": 10,
@@ -110,7 +119,8 @@
     "description": "Neutral beige tone for a relaxed, earthy vibe. Comfortable cotton blend fabric.",
     "rating": 4.2,
     "numReviews": 65,
-    "stock": 35
+    "stock": 35,
+    "gender": "men"
   },
   {
     "id": 19,
@@ -122,7 +132,8 @@
     "rating": 4.4,
     "numReviews": 200,
     "stock": 60,
-    "featured": true
+    "featured": true,
+    "gender": "men"
   },
   {
     "id": 20,
@@ -133,7 +144,8 @@
     "description": "Timeless beige trousers with a straight leg fit. Essential for semi-formal attire.",
     "rating": 4.3,
     "numReviews": 140,
-    "stock": 50
+    "stock": 50,
+    "gender": "men"
   },
   {
     "id": 21,
@@ -144,7 +156,8 @@
     "description": "Sharp navy formal pants. Crease-resistant fabric keeps you looking professional all day.",
     "rating": 4.6,
     "numReviews": 180,
-    "stock": 55
+    "stock": 55,
+    "gender": "men"
   },
   {
     "id": 22,
@@ -155,7 +168,8 @@
     "description": "Premium wool blend for warmth and texture. Perfect for cooler seasons.",
     "rating": 4.5,
     "numReviews": 95,
-    "stock": 30
+    "stock": 30,
+    "gender": "men"
   },
   {
     "id": 23,
@@ -166,7 +180,8 @@
     "description": "Functional and stylish cargo pants with multiple pockets. Durable fabric for outdoor activities.",
     "rating": 4.2,
     "numReviews": 110,
-    "stock": 45
+    "stock": 45,
+    "gender": "men"
   },
   {
     "id": 17,
@@ -178,7 +193,8 @@
     "rating": 4.8,
     "numReviews": 320,
     "stock": 70,
-    "featured": true
+    "featured": true,
+    "gender": "men"
   },
   {
     "id": 102,
@@ -190,7 +206,8 @@
     "rating": 4.7,
     "numReviews": 250,
     "stock": 65,
-    "featured": true
+    "featured": true,
+    "gender": "men"
   },
   {
     "id": 103,
@@ -201,7 +218,8 @@
     "description": "Versatile zip-up style in navy. Great for layering.",
     "rating": 4.5,
     "numReviews": 180,
-    "stock": 50
+    "stock": 50,
+    "gender": "men"
   },
   {
     "id": 201,
@@ -212,7 +230,8 @@
     "description": "Essential white crew neck t-shirt. Made from combed cotton for extra softness.",
     "rating": 4.6,
     "numReviews": 400,
-    "stock": 100
+    "stock": 100,
+    "gender": "men"
   },
   {
     "id": 202,
@@ -223,7 +242,8 @@
     "description": "Express yourself with this unique graphic print. High-quality print that won't fade.",
     "rating": 4.3,
     "numReviews": 120,
-    "stock": 80
+    "stock": 80,
+    "gender": "men"
   },
   {
     "id": 203,
@@ -234,7 +254,8 @@
     "description": "Modern V-neck cut in a heather grey. Flattering fit.",
     "rating": 4.4,
     "numReviews": 150,
-    "stock": 90
+    "stock": 90,
+    "gender": "men"
   },
   {
     "id": 11,
@@ -245,7 +266,8 @@
     "description": "High-quality premium cotton shirt for special occasions.",
     "rating": 4.6,
     "numReviews": 88,
-    "stock": 42
+    "stock": 42,
+    "gender": "men"
   },
   {
     "id": 12,
@@ -256,7 +278,8 @@
     "description": "Modern check pattern for the urban explorer.",
     "rating": 4.3,
     "numReviews": 54,
-    "stock": 38
+    "stock": 38,
+    "gender": "men"
   },
   {
     "id": 13,
@@ -267,7 +290,8 @@
     "description": "Ultra-soft flannel shirt, perfect for layering.",
     "rating": 4.7,
     "numReviews": 130,
-    "stock": 48
+    "stock": 48,
+    "gender": "men"
   },
   {
     "id": 14,
@@ -278,7 +302,8 @@
     "description": "Relaxed fit for your end-of-week style.",
     "rating": 4.4,
     "numReviews": 76,
-    "stock": 52
+    "stock": 52,
+    "gender": "men"
   },
   {
     "id": 15,
@@ -289,7 +314,8 @@
     "description": "Lightweight and airy, designed for hot summer days.",
     "rating": 4.5,
     "numReviews": 99,
-    "stock": 60
+    "stock": 60,
+    "gender": "men"
   },
   {
     "id": 24,
@@ -300,7 +326,8 @@
     "description": "Designed for all-day comfort without sacrificing style.",
     "rating": 4.3,
     "numReviews": 82,
-    "stock": 45
+    "stock": 45,
+    "gender": "men"
   },
   {
     "id": 25,
@@ -311,7 +338,8 @@
     "description": "Street-style cargo pants with a modern taper.",
     "rating": 4.6,
     "numReviews": 112,
-    "stock": 40
+    "stock": 40,
+    "gender": "men"
   },
   {
     "id": 26,
@@ -322,7 +350,8 @@
     "description": "The perfect balance between formal and casual.",
     "rating": 4.4,
     "numReviews": 95,
-    "stock": 50
+    "stock": 50,
+    "gender": "men"
   },
   {
     "id": 27,
@@ -333,7 +362,8 @@
     "description": "Classic denim look with added stretch for flexibility.",
     "rating": 4.7,
     "numReviews": 205,
-    "stock": 75
+    "stock": 75,
+    "gender": "men"
   },
   {
     "id": 28,
@@ -344,7 +374,8 @@
     "description": "Casual joggers for lounging or hitting the gym.",
     "rating": 4.5,
     "numReviews": 150,
-    "stock": 65
+    "stock": 65,
+    "gender": "men"
   },
   {
     "id": 104,
@@ -355,7 +386,8 @@
     "description": "Bold street style hoodie with unique detailing.",
     "rating": 4.7,
     "numReviews": 180,
-    "stock": 55
+    "stock": 55,
+    "gender": "men"
   },
   {
     "id": 105,
@@ -366,7 +398,8 @@
     "description": "Maximum warmth with our signature soft fleece lining.",
     "rating": 4.8,
     "numReviews": 210,
-    "stock": 60
+    "stock": 60,
+    "gender": "men"
   },
   {
     "id": 106,
@@ -377,7 +410,8 @@
     "description": "Moisture-wicking fabric for active lifestyles.",
     "rating": 4.6,
     "numReviews": 95,
-    "stock": 45
+    "stock": 45,
+    "gender": "men"
   },
   {
     "id": 204,
@@ -388,7 +422,8 @@
     "description": "Classic Henley style with a subtle stripe pattern.",
     "rating": 4.4,
     "numReviews": 110,
-    "stock": 70
+    "stock": 70,
+    "gender": "men"
   },
   {
     "id": 205,
@@ -399,7 +434,8 @@
     "description": "Retro logo print for a nostalgic look.",
     "rating": 4.5,
     "numReviews": 135,
-    "stock": 55
+    "stock": 55,
+    "gender": "men"
   },
   {
     "id": 206,
@@ -410,7 +446,8 @@
     "description": "Trendy colorblock design for a modern aesthetic.",
     "rating": 4.2,
     "numReviews": 88,
-    "stock": 50
+    "stock": 50,
+    "gender": "men"
   },
   {
     "id": 207,
@@ -421,7 +458,8 @@
     "description": "Everyday essential tee in a fresh colorway.",
     "rating": 4.6,
     "numReviews": 160,
-    "stock": 100
+    "stock": 100,
+    "gender": "men"
   },
   {
     "id": 208,
@@ -432,6 +470,187 @@
     "description": "Perfect for transitional weather, soft and breathable.",
     "rating": 4.3,
     "numReviews": 92,
-    "stock": 60
+    "stock": 60,
+    "gender": "men"
+  },
+  {
+    "id": 40,
+    "name": "Floral Print A-Line Midi Dress",
+    "description": "Graceful floral printed A-line midi dress designed with a flattering cinched waist and flutter sleeves. Cut from breathable lightweight georgette for breezy elegance.",
+    "price": 1799,
+    "original_price": 2499,
+    "category": "dresses",
+    "gender": "women",
+    "image": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=800&q=80",
+    "stock": 35,
+    "rating": 4.8,
+    "numReviews": 94,
+    "featured": true,
+    "brand": "Clothings Store Luxe"
+  },
+  {
+    "id": 41,
+    "name": "Pure White Tiered Broderie Sundress",
+    "description": "Pristine white broderie anglaise sundress with delicate tiered detailing and adjustable shoulder straps. Perfect for sunny outings and coastal getaways.",
+    "price": 2199,
+    "original_price": 3199,
+    "category": "dresses",
+    "gender": "women",
+    "image": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
+    "stock": 28,
+    "rating": 4.7,
+    "numReviews": 67,
+    "featured": true,
+    "brand": "Clothings Store Studio"
+  },
+  {
+    "id": 42,
+    "name": "Classic Linen Oversized Button-Down Shirt",
+    "description": "Effortlessly chic oversized linen shirt tailored with dropped shoulders and pearl buttons. Style it tucked into tailored pants or untucked over swimwear.",
+    "price": 1499,
+    "original_price": 2199,
+    "category": "tops",
+    "gender": "women",
+    "image": "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800&q=80",
+    "stock": 45,
+    "rating": 4.6,
+    "numReviews": 82,
+    "featured": false,
+    "brand": "Clothings Store"
+  },
+  {
+    "id": 43,
+    "name": "Tailored Double-Breasted Power Blazer & Trousers",
+    "description": "Impeccably tailored double-breasted formal pant set featuring sharp lapels and high-waist straight trousers. Designed for confident modern power dressing.",
+    "price": 3499,
+    "original_price": 4999,
+    "category": "pants",
+    "gender": "women",
+    "image": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=80",
+    "stock": 20,
+    "rating": 4.9,
+    "numReviews": 112,
+    "featured": true,
+    "brand": "Clothings Store Atelier"
+  },
+  {
+    "id": 44,
+    "name": "Embroidered Chanderi Kurta Set with Dupatta",
+    "description": "Exquisite Chanderi silk kurta highlighted with delicate zari embroidery, paired with straight cotton-silk trousers and a matching printed organza dupatta.",
+    "price": 2799,
+    "original_price": 3999,
+    "category": "ethnic",
+    "gender": "women",
+    "image": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80",
+    "stock": 30,
+    "rating": 4.9,
+    "numReviews": 140,
+    "featured": true,
+    "brand": "Clothings Store Heritage"
+  },
+  {
+    "id": 45,
+    "name": "High-Rise Wide Leg Vintage Washed Jeans",
+    "description": "Authentic non-stretch rigid denim shaped into a comfortable high-rise waist and relaxed wide-leg flare. Stone washed for a vintage feel.",
+    "price": 1899,
+    "original_price": 2799,
+    "category": "pants",
+    "gender": "women",
+    "image": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80",
+    "stock": 40,
+    "rating": 4.7,
+    "numReviews": 95,
+    "featured": false,
+    "brand": "Clothings Store Denim"
+  },
+  {
+    "id": 46,
+    "name": "Boys Oxford Check Button-Down Shirt & Shorts Set",
+    "description": "Preppy two-piece casual ensemble featuring a breathable cotton plaid button-down shirt paired with tailored twill chino shorts with an adjustable waistband.",
+    "price": 999,
+    "original_price": 1499,
+    "category": "boys",
+    "gender": "kids",
+    "image": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=800&q=80",
+    "stock": 40,
+    "rating": 4.8,
+    "numReviews": 73,
+    "featured": true,
+    "brand": "Clothings Store Kids"
+  },
+  {
+    "id": 47,
+    "name": "Girls Sunshine Floral Tiered Cotton Dress",
+    "description": "Delightful all-over floral printed summer sundress with ruffle flutter sleeves and soft cotton lining, perfect for playdates and weekend family brunch.",
+    "price": 899,
+    "original_price": 1399,
+    "category": "girls",
+    "gender": "kids",
+    "image": "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=800&q=80",
+    "stock": 50,
+    "rating": 4.9,
+    "numReviews": 88,
+    "featured": true,
+    "brand": "Clothings Store Junior"
+  },
+  {
+    "id": 48,
+    "name": "Boys Urban Streetwear Graphic Tee & Joggers",
+    "description": "Contemporary urban street style duo featuring an artistic front-print tee crafted from combed jersey and stretchy cargo joggers with functional pockets.",
+    "price": 1099,
+    "original_price": 1599,
+    "category": "boys",
+    "gender": "kids",
+    "image": "https://images.unsplash.com/photo-1596870230751-ebdfce98ec42?auto=format&fit=crop&w=800&q=80",
+    "stock": 35,
+    "rating": 4.6,
+    "numReviews": 51,
+    "featured": false,
+    "brand": "Clothings Store Kids"
+  },
+  {
+    "id": 49,
+    "name": "Girls Shimmer Tulle Ballerina Party Frock",
+    "description": "Enchanting fairy-tale celebration dress layered with sparkling soft tulle skirts, a satin sash bow, and 100% skin-friendly cotton lining for zero itching.",
+    "price": 1499,
+    "original_price": 2299,
+    "category": "girls",
+    "gender": "kids",
+    "image": "https://images.unsplash.com/photo-1543332164-6e82f355badc?auto=format&fit=crop&w=800&q=80",
+    "stock": 30,
+    "rating": 4.9,
+    "numReviews": 64,
+    "featured": true,
+    "brand": "Clothings Store Junior"
+  },
+  {
+    "id": 50,
+    "name": "Unisex Kids Sherpa Fleece Pullover Hoodie",
+    "description": "Super plush and thermal Sherpa fleece hooded sweatshirt designed to keep kids snug and cozy in cold temperatures with kangaroo pocket and ribbed cuffs.",
+    "price": 1199,
+    "original_price": 1799,
+    "category": "kids",
+    "gender": "kids",
+    "image": "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=800&q=80",
+    "stock": 45,
+    "rating": 4.8,
+    "numReviews": 79,
+    "featured": false,
+    "brand": "Clothings Store Kids"
+  },
+  {
+    "id": 51,
+    "name": "Girls Denim Pinafore Overalls & Striped Tee Set",
+    "description": "Cute classic denim overall dungarees with metal clasps and patch pockets, paired with a soft striped long-sleeve cotton crewneck tee.",
+    "price": 1299,
+    "original_price": 1899,
+    "category": "girls",
+    "gender": "kids",
+    "image": "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=800&q=80",
+    "stock": 35,
+    "rating": 4.7,
+    "numReviews": 58,
+    "featured": false,
+    "brand": "Clothings Store Junior"
   }
 ]
