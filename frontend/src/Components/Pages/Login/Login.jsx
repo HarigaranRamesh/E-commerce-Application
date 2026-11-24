@@ -56,9 +56,9 @@ export default function Login() {
         if (response.data.role === 'admin') {
           navigate("/admin/dashboard");
         } else {
-          navigate("/");
+          navigate(redirectPath);
         }
-      }, 1500);
+      }, 1000);
     } catch (error) {
       console.error("Login error:", error);
       const message = error.response?.data?.message || "Invalid credentials. Please try again.";
