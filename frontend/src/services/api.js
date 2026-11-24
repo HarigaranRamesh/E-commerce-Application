@@ -236,4 +236,13 @@ export const adminAPI = {
     updateUser: (id, userData) => api.put(`/auth/users/${id}`, userData),
 };
 
+/**
+ * Strapi CMS API Service
+ */
+export const strapiAPI = {
+    getStatus: () => api.get('/strapi/status'),
+    triggerSync: () => api.post('/strapi/sync'),
+    getProducts: () => api.get('/strapi/products'),
+};
+
 export default api;

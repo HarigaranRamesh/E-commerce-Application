@@ -25,6 +25,7 @@ const UserList = lazy(() => import("./Components/Admin/UserList"));
 const OrderList = lazy(() => import("./Components/Admin/OrderList"));
 const ProductListAdmin = lazy(() => import("./Components/Admin/ProductListAdmin"));
 const ProductEdit = lazy(() => import("./Components/Admin/ProductEdit"));
+const StrapiManager = lazy(() => import("./Components/Admin/StrapiManager"));
 const AdminRoute = lazy(() => import("./Components/Admin/AdminRoute"));
 
 import { AuthProvider } from "./Context/AuthContext";
@@ -84,6 +85,7 @@ function App() {
                   <Route path="users" element={<UserList />} />
                   <Route path="orders" element={<OrderList />} />
                   <Route path="products" element={<ProductListAdmin />} />
+                  <Route path="strapi-cms" element={<StrapiManager />} />
                   <Route path="product/new" element={<ProductEdit />} />
                   <Route path="product/:id/edit" element={<ProductEdit />} />
                 </Route>

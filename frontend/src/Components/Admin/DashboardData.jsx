@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
 import { DollarSign, ShoppingBag, Users as UsersIcon } from 'lucide-react';
 
@@ -122,14 +123,56 @@ const DashboardData = () => {
                     </div>
                 </div>
 
-                {/* Fallback/Placeholder panel to balance the grid */}
+                {/* Strapi CMS Quick Management Card */}
                 <div className="admin-card activity-panel">
-                    <div className="card-header">
-                        <h3>Recent Activity</h3>
+                    <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3>Strapi Headless CMS</h3>
+                        <span style={{ fontSize: '0.78rem', padding: '2px 8px', borderRadius: '12px', background: '#e0f2fe', color: '#0369a1', fontWeight: 700 }}>
+                            DYNAMIC CATALOG
+                        </span>
                     </div>
                     <div className="card-body">
-                        <div className="empty-state-message">
-                            <p>No recent activity to show.</p>
+                        <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.6', margin: '0 0 16px 0' }}>
+                            Upload product photos, multi-image galleries, and manage ratings & categories dynamically via Strapi Headless CMS.
+                        </p>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <Link
+                                to="/admin/strapi-cms"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    padding: '8px 16px',
+                                    background: '#01579b',
+                                    color: '#ffffff',
+                                    borderRadius: '8px',
+                                    fontSize: '0.88rem',
+                                    fontWeight: 600,
+                                    textDecoration: 'none',
+                                }}
+                            >
+                                Open CMS Sync Manager
+                            </Link>
+                            <a
+                                href="http://localhost:1337/admin"
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    padding: '8px 14px',
+                                    background: '#f1f5f9',
+                                    color: '#334155',
+                                    borderRadius: '8px',
+                                    fontSize: '0.88rem',
+                                    fontWeight: 600,
+                                    textDecoration: 'none',
+                                    border: '1px solid #cbd5e1',
+                                }}
+                            >
+                                Strapi Admin (1337)
+                            </a>
                         </div>
                     </div>
                 </div>

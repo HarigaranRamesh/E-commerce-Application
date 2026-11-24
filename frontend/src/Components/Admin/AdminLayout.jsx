@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../Context/AuthContext';
-import { LayoutDashboard, Users, ShoppingBag, Package, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, ShoppingBag, Package, LogOut, Layers } from 'lucide-react';
 import './Admin.css';
 
 const AdminLayout = () => {
@@ -52,6 +52,10 @@ const AdminLayout = () => {
                     <Link to="/admin/products" className={`admin-nav-item ${isActive('/admin/products') ? 'active' : ''}`} onClick={closeSidebar}>
                         <Package size={20} />
                         <span>Products</span>
+                    </Link>
+                    <Link to="/admin/strapi-cms" className={`admin-nav-item ${isActive('/admin/strapi-cms') ? 'active' : ''}`} onClick={closeSidebar}>
+                        <Layers size={20} />
+                        <span>Strapi CMS</span>
                     </Link>
                 </nav>
                 <div className="admin-sidebar-footer">
