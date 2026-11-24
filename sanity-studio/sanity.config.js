@@ -5,10 +5,10 @@ import { schemaTypes } from './schemas';
 
 export default defineConfig({
   name: 'default',
-  title: 'Luxury E-commerce Studio',
+  title: 'Clothings Store Studio',
 
-  projectId: process.env.SANITY_STUDIO_PROJECT_ID || 'your-project-id',
-  dataset: process.env.SANITY_STUDIO_DATASET || 'production',
+  projectId: 'twhkbzvd',
+  dataset: 'production',
 
   plugins: [structureTool(), visionTool()],
 

@@ -7,12 +7,26 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import os from 'os';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID || process.env.SANITY_PROJECT_ID;
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || process.env.SANITY_PROJECT_ID || 'twhkbzvd';
 const dataset = process.env.SANITY_STUDIO_DATASET || process.env.SANITY_DATASET || 'production';
-const token = process.env.SANITY_AUTH_TOKEN || process.env.SANITY_API_TOKEN;
+
+let token = process.env.SANITY_AUTH_TOKEN || process.env.SANITY_API_TOKEN;
+if (!token) {
+  try {
+    const configPath = path.join(os.homedir(), '.config/sanity/config.json');
+    if (fs.existsSync(configPath)) {
+      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      token = cfg.authToken;
+    }
+  } catch (e) {
+    // ignore
+  }
+}
 
 if (!projectId || !token) {
   console.error("❌ Please provide SANITY_PROJECT_ID and SANITY_API_TOKEN environment variables.");

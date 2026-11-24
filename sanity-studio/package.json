@@ -2,6 +2,7 @@
   "name": "ecommerce-sanity-studio",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Sanity.io Studio for Luxury E-commerce Platform",
   "scripts": {
     "dev": "sanity dev",
