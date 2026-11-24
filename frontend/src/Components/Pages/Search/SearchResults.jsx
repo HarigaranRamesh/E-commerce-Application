@@ -281,13 +281,28 @@ const SearchResults = () => {
                             </div>
 
                             <div className="product-details">
-                                <span style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "#9ca3af", letterSpacing: "0.5px" }}>
-                                    {product.category}
-                                </span>
-                                <h3 className="product-title">{product.name}</h3>
-                                <p className="product-price">
-                                    ₹{Number(product.price).toLocaleString("en-IN")}
-                                </p>
+                                <span className="product-brand-tag">{product.brand || "CLOTHINGS STORE"}</span>
+                                <h3 className="product-title" title={product.name}>{product.name}</h3>
+
+                                <div className="product-price-row">
+                                    <span className="product-price">₹{Number(product.price).toLocaleString("en-IN")}</span>
+                                    {product.original_price && Number(product.original_price) > Number(product.price) && (
+                                        <>
+                                            <span className="product-original-price">
+                                                ₹{Number(product.original_price).toLocaleString("en-IN")}
+                                            </span>
+                                            <span className="product-discount-percent">
+                                                ({Math.round(((Number(product.original_price) - Number(product.price)) / Number(product.original_price)) * 100)}% off)
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className="product-offer-row">
+                                    <span className="offer-tag-label">Offer Price:</span>
+                                    <span className="offer-tag-price">₹{Math.round(Number(product.price) * 0.8).toLocaleString("en-IN")}</span>
+                                    <span className="offer-tag-code">| With SUPER20</span>
+                                </div>
                             </div>
                         </div>
                     ))}
