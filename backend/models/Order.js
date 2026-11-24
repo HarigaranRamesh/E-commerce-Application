@@ -19,6 +19,8 @@ class OrderInstance {
         this.couponCode = row.coupon_code || null;
         this.isPaid = Boolean(row.is_paid);
         this.paidAt = row.paid_at;
+        this.paymentStatus = row.payment_status || (this.isPaid ? 'paid' : 'pending');
+        this.razorpayOrderId = row.razorpay_order_id || null;
         this.isDelivered = Boolean(row.is_delivered);
         this.deliveredAt = row.delivered_at;
         this.status = row.status || 'pending';
@@ -65,8 +67,9 @@ class OrderInstance {
                 paid_at = $10, is_delivered = $11, delivered_at = $12,
                 status = $13, coupon_code = $14, discount_amount = $15,
                 timeline = $16, tracking_number = $17, carrier = $18,
-                invoice_number = $19, updated_at = NOW()
-            WHERE id = $20
+                invoice_number = $19, payment_status = $20, razorpay_order_id = $21,
+                updated_at = NOW()
+            WHERE id = $22
             RETURNING *;
         `;
         const values = [
@@ -89,6 +92,8 @@ class OrderInstance {
             this.trackingNumber,
             this.carrier,
             this.invoiceNumber,
+            this.paymentStatus || (this.isPaid ? 'paid' : 'pending'),
+            this.razorpayOrderId || null,
             this.id,
         ];
 
@@ -193,9 +198,10 @@ const Order = {
                 user_id, order_items, shipping_address, payment_method,
                 payment_result, items_price, tax_price, shipping_price,
                 total_price, is_paid, paid_at, is_delivered, delivered_at,
-                status, coupon_code, discount_amount, timeline, invoice_number
+                status, coupon_code, discount_amount, timeline, invoice_number,
+                payment_status, razorpay_order_id
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
             RETURNING *;
         `;
         const values = [
@@ -217,6 +223,8 @@ const Order = {
             data.discountAmount || 0,
             JSON.stringify(initialTimeline),
             invoiceNum,
+            data.paymentStatus || (data.isPaid ? 'paid' : 'pending'),
+            data.razorpayOrderId || null,
         ];
 
         const res = await pool.query(queryText, values);
