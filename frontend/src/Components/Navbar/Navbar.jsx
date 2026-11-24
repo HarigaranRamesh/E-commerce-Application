@@ -4,7 +4,7 @@ import { CartContext } from "../../Context/CartContext";
 import { AuthContext } from "../../Context/AuthContext";
 import { WishlistContext } from "../../Context/WishlistContext";
 import { useSite } from "../../Context/SiteContext";
-import { ShoppingBag, Heart, Search, Menu, X, ArrowRight, ChevronDown } from "lucide-react";
+import { ShoppingBag, Heart, Search, Menu, X, ArrowRight, ChevronDown, Package, User, MapPin } from "lucide-react";
 import { productsAPI } from "../../services/api";
 import { throttle } from "../../utils/performance";
 import toast from "react-hot-toast";
@@ -76,6 +76,7 @@ export default function Navbar() {
   const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeCategoryMenu, setActiveCategoryMenu] = useState(null);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const searchContainerRef = useRef(null);
   const navigate = useNavigate();
 
@@ -145,6 +146,7 @@ export default function Navbar() {
   const handleLogout = () => {
     logout();
     setMenuOpen(false);
+    setAccountMenuOpen(false);
     toast.success("Logged out successfully");
     navigate("/");
   };
@@ -158,39 +160,61 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* 1. Top Utility Row (Right Aligned User & Account Links) */}
+      {/* 1. Top Utility Row (Right Aligned User & My Account Links) */}
       <div className="top-utility-bar">
         <div className="top-utility-container">
           <div className="top-utility-right">
             {user ? (
-              <>
+              <div className="account-nav-group">
                 <Link to="/profile" className="utility-link user-name-link">
                   {user.name || "Harigaran"}
                 </Link>
-                <Link to="/profile" className="utility-link">
-                  My Account
-                </Link>
+
+                {/* My Account with Hover Dropdown */}
+                <div
+                  className="my-account-dropdown-wrapper"
+                  onMouseEnter={() => setAccountMenuOpen(true)}
+                  onMouseLeave={() => setAccountMenuOpen(false)}
+                >
+                  <Link to="/profile" className="utility-link my-account-link">
+                    <span>My Account</span>
+                    <ChevronDown size={12} className={`account-chevron ${accountMenuOpen ? "open" : ""}`} />
+                  </Link>
+
+                  {accountMenuOpen && (
+                    <div className="my-account-submenu">
+                      <Link
+                        to="/profile?tab=orders"
+                        className="account-submenu-item"
+                        onClick={() => setAccountMenuOpen(false)}
+                      >
+                        <Package size={14} /> <span>My Orders</span>
+                      </Link>
+                      <Link
+                        to="/profile?tab=personal"
+                        className="account-submenu-item"
+                        onClick={() => setAccountMenuOpen(false)}
+                      >
+                        <User size={14} /> <span>Personal Information</span>
+                      </Link>
+                      <Link
+                        to="/profile?tab=address"
+                        className="account-submenu-item"
+                        onClick={() => setAccountMenuOpen(false)}
+                      >
+                        <MapPin size={14} /> <span>Address Book</span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
                 <button type="button" onClick={handleLogout} className="utility-btn signout-btn">
                   Sign Out
                 </button>
-              </>
+              </div>
             ) : (
-              <>
-                <Link to="/Login" className="utility-link">
-                  Sign In / Join
-                </Link>
-              </>
-            )}
-            <Link to="/Category" className="utility-link">
-              Customer Care
-            </Link>
-            {user?.role === "admin" ? (
-              <Link to="/admin" className="utility-badge-btn">
-                ADMIN
-              </Link>
-            ) : (
-              <Link to="/Category" className="utility-badge-btn">
-                VISIT LUXE
+              <Link to="/Login" className="utility-link">
+                Sign In / Join
               </Link>
             )}
           </div>
@@ -343,7 +367,9 @@ export default function Navbar() {
                 <div>
                   <span className="mobile-greeting">Welcome, {user.name || "Harigaran"}</span>
                   <div className="mobile-user-links">
-                    <Link to="/profile" onClick={() => setMenuOpen(false)}>My Account</Link>
+                    <Link to="/profile?tab=orders" onClick={() => setMenuOpen(false)}>My Orders</Link>
+                    <Link to="/profile?tab=personal" onClick={() => setMenuOpen(false)}>Personal Info</Link>
+                    <Link to="/profile?tab=address" onClick={() => setMenuOpen(false)}>Address Book</Link>
                     <button type="button" onClick={handleLogout}>Sign Out</button>
                   </div>
                 </div>

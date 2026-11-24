@@ -1,7 +1,5 @@
 /* ==========================================================================
    TWO-TIER LUXURY NAVBAR STYLING
-   Matching official header layout with top utility bar, categories,
-   pill search input, and dark circular icons.
    ========================================================================== */
 
 .header-wrapper {
@@ -33,7 +31,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   1. Top Utility Row (Right Aligned Account Links)
+   1. Top Utility Row (Right Aligned User & My Account Links)
    -------------------------------------------------------------------------- */
 .top-utility-bar {
   background: #ffffff;
@@ -53,7 +51,12 @@
 .top-utility-right {
   display: flex;
   align-items: center;
-  gap: 22px;
+}
+
+.account-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
 .utility-link {
@@ -74,6 +77,78 @@
   color: #2c4152;
 }
 
+/* My Account Dropdown */
+.my-account-dropdown-wrapper {
+  position: relative;
+}
+
+.my-account-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.account-chevron {
+  color: #888888;
+  transition: transform 0.2s ease;
+}
+
+.account-chevron.open {
+  transform: rotate(180deg);
+  color: var(--luxury-gold, #d5a249);
+}
+
+.my-account-submenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #ededed;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 0px;
+  min-width: 190px;
+  padding: 8px 0;
+  z-index: 1002;
+  animation: accountFadeIn 0.15s ease-out;
+}
+
+@keyframes accountFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.account-submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.account-submenu-item svg {
+  color: #2c4152;
+}
+
+.account-submenu-item:hover {
+  background: #fbf8f2;
+  color: var(--luxury-gold, #d5a249);
+  padding-left: 22px;
+}
+
+.account-submenu-item:hover svg {
+  color: var(--luxury-gold, #d5a249);
+}
+
 .utility-btn {
   background: none;
   border: none;
@@ -89,25 +164,6 @@
 
 .utility-btn:hover {
   color: #d32f2f;
-}
-
-.utility-badge-btn {
-  display: inline-flex;
-  align-items: center;
-  background: #000000;
-  color: #ffffff !important;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  padding: 4px 10px;
-  border-radius: 0px;
-  text-decoration: none;
-  transition: background-color 0.2s ease;
-}
-
-.utility-badge-btn:hover {
-  background: #2c4152;
 }
 
 /* --------------------------------------------------------------------------
@@ -513,7 +569,8 @@
 
   .mobile-user-links {
     display: flex;
-    gap: 16px;
+    flex-wrap: wrap;
+    gap: 14px;
   }
 
   .mobile-user-links a {
