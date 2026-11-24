@@ -1,3 +1,17 @@
+/* Dynamic CMS Top Announcement Bar */
+.top-announcement-bar {
+  background: linear-gradient(135deg, #01579b 0%, #0284c7 100%);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-align: center;
+  padding: 7px 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 /* Glassmorphic Navbar Base */
 .navbar {
   background: rgba(255, 255, 255, 0.65);

@@ -5,6 +5,7 @@ import { AuthContext } from "../../Context/AuthContext";
 import { WishlistContext } from "../../Context/WishlistContext";
 import { ShoppingBag, Heart, User, Search, Menu, X, ArrowRight } from "lucide-react";
 import { productsAPI } from "../../services/api";
+import { fetchGlobalSettings } from "../../services/strapi";
 import { throttle } from "../../utils/performance";
 import toast from "react-hot-toast";
 import logo from "../../assets/mens_hub_logo.png";
@@ -19,8 +20,22 @@ export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [announcement, setAnnouncement] = useState("");
   const searchContainerRef = useRef(null);
   const navigate = useNavigate();
+
+  // Load dynamic announcement from Strapi CMS
+  useEffect(() => {
+    let isMounted = true;
+    fetchGlobalSettings().then((settings) => {
+      if (isMounted && settings?.announcement_banner) {
+        setAnnouncement(settings.announcement_banner);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const totalItems = cart?.reduce((total, item) => total + item.quantity, 0) || 0;
   const wishlistCount = wishlist?.length || 0;
@@ -89,6 +104,11 @@ export default function Navbar() {
 
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
+      {announcement && (
+        <div className="top-announcement-bar">
+          <span>{announcement}</span>
+        </div>
+      )}
       <div className="navbar-container container">
         {/* Logo */}
         <Link to="/" className="logo">

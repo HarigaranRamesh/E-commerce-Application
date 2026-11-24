@@ -1,48 +1,90 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Footer.css";
-import { Twitter, Instagram, Facebook, Phone, Mail, MapPin, } from "lucide-react";
+import { Twitter, Instagram, Facebook, Phone, Mail, MapPin } from "lucide-react";
 import logo from "../../assets/mens_hub_logo.png";
+import { fetchGlobalSettings } from "../../services/strapi";
 
 export default function Footer() {
+  const [settings, setSettings] = useState({
+    site_name: "Mens Hub",
+    tagline: "Quality products, Fresh Choices",
+    about_text: "At Mens Hub, we believe in delivering premium quality products with an effortless shopping experience. We bring you an exclusive selection curated with care.",
+    phone: "+91 97826260723",
+    email: "harigaran925@gmail.com",
+    address: "Kotagiri, Nilgiris, Tamil Nadu, India.",
+    twitter_url: "https://twitter.com",
+    instagram_url: "https://instagram.com",
+    facebook_url: "https://facebook.com",
+    copyright_text: "© Copyright 2025 Mens Hub. All rights reserved.",
+    footer_links: [
+      { label: "F.A.Q", url: "#" },
+      { label: "Privacy Policy", url: "#" },
+      { label: "Terms & Conditions", url: "#" },
+    ],
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchGlobalSettings().then((data) => {
+      if (isMounted && data) {
+        setSettings((prev) => ({
+          ...prev,
+          ...data,
+        }));
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-section brand">
           <div className="footer-logo-container">
             <img src={logo} alt="Brand Logo" className="footer-logo-img" />
-            <h2 className="footer-logo-text">Mens Hub</h2>
+            <h2 className="footer-logo-text">{settings.site_name || "Mens Hub"}</h2>
           </div>
-          <p>“Quality products, Fresh Choices”</p>
-          <p>
-            “At Mens Hub, we believe in delivering premium quality products
-            with an effortless shopping experience. We bring you an exclusive selection curated
-            with care.”
-          </p>
+          <p className="footer-tagline">“{settings.tagline || "Quality products, Fresh Choices"}”</p>
+          <p className="footer-about">{settings.about_text}</p>
         </div>
 
         <div className="footer-contacts">
-          <p>
-            <Phone className="icon" /> 97826260723
-          </p>
-          <p>
-            <Mail className="icon" /> harigaran925@gmail.com
-          </p>
-          <p>
-            <MapPin className="icon" /> Kotagiri, Nilgiris, Tamil Nadu, India.
-          </p>
+          {settings.phone && (
+            <p>
+              <Phone className="icon" /> {settings.phone}
+            </p>
+          )}
+          {settings.email && (
+            <p>
+              <Mail className="icon" /> {settings.email}
+            </p>
+          )}
+          {settings.address && (
+            <p>
+              <MapPin className="icon" /> {settings.address}
+            </p>
+          )}
         </div>
 
         <div className="footer-section social">
           <div className="social-icons">
-            <a href=" " target="_blank" rel="noopener noreferrer">
-              <Twitter className="icon" />
-            </a>
-            <a href=" " target="_blank" rel="noopener noreferrer">
-              <Instagram className="icon" />
-            </a>
-            <a href="  " target="_blank" rel="noopener noreferrer">
-              <Facebook className="icon" />
-            </a>
+            {settings.twitter_url && (
+              <a href={settings.twitter_url} target="_blank" rel="noopener noreferrer" title="Twitter">
+                <Twitter className="icon" />
+              </a>
+            )}
+            {settings.instagram_url && (
+              <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" title="Instagram">
+                <Instagram className="icon" />
+              </a>
+            )}
+            {settings.facebook_url && (
+              <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" title="Facebook">
+                <Facebook className="icon" />
+              </a>
+            )}
           </div>
           <p>
             Stay updated with our latest offers and follow us for exclusive
@@ -52,11 +94,21 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>© Copyright 2025 Mens Hub. All rights reserved.</p>
+        <p>{settings.copyright_text || "© Copyright 2025 Mens Hub. All rights reserved."}</p>
         <div className="footer-links">
-          <a href="#">F.A.Q</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms & Conditions</a>
+          {settings.footer_links && Array.isArray(settings.footer_links) ? (
+            settings.footer_links.map((link, idx) => (
+              <a key={idx} href={link.url || "#"}>
+                {link.label || link.name}
+              </a>
+            ))
+          ) : (
+            <>
+              <a href="#">F.A.Q</a>
+              <a href="#">Privacy Policy</a>
+              <a href="#">Terms & Conditions</a>
+            </>
+          )}
         </div>
       </div>
     </footer>

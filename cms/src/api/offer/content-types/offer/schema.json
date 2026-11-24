@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "offers",
+  "info": {
+    "singularName": "offer",
+    "pluralName": "offers",
+    "displayName": "Offer & Coupon",
+    "description": "Dynamic Promotional Offers, Coupons and Flash Deals"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "code": {
+      "type": "string"
+    },
+    "discount": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "min_spend": {
+      "type": "string",
+      "default": "₹0"
+    },
+    "badge": {
+      "type": "string",
+      "default": "HOT DEAL"
+    },
+    "cta_text": {
+      "type": "string",
+      "default": "Shop Offer"
+    },
+    "cta_link": {
+      "type": "string",
+      "default": "/Category"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_flash_sale": {
+      "type": "boolean",
+      "default": false
+    },
+    "order": {
+      "type": "integer",
+      "default": 1
+    }
+  }
+}

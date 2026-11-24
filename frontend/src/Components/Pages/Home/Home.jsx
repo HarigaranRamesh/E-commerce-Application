@@ -5,6 +5,7 @@ import Hero from "../../Main/Hero";
 import ServiceFeatures from "../../Main/ServiceFeatures";
 import { Tag, Copy, Check, ArrowRight, Sparkles, Flame, Award, Zap, History } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { fetchOffers } from "../../../services/strapi";
 import "./Home.css";
 
 const categories = [
@@ -14,13 +15,7 @@ const categories = [
   { name: "T-Shirts", slug: "t-shirts", image: "/images/Tshirt6.jpeg", count: "15+ Items" },
 ];
 
-const coupons = [
-  { code: "WELCOME10", desc: "10% OFF on 1st Order", min: "₹500" },
-  { code: "SUPER20", desc: "20% OFF Orders over ₹1500", min: "₹1,500" },
-  { code: "FREESHIP", desc: "Free Express Shipping", min: "₹999" },
-];
-
-const FlashSaleBanner = React.memo(function FlashSaleBanner({ onCtaClick }) {
+const FlashSaleBanner = React.memo(function FlashSaleBanner({ offer, onCtaClick }) {
   const [timeLeft, setTimeLeft] = useState({
     hours: 14,
     minutes: 22,
@@ -44,6 +39,11 @@ const FlashSaleBanner = React.memo(function FlashSaleBanner({ onCtaClick }) {
     return () => clearInterval(timer);
   }, []);
 
+  const badgeText = offer?.badge || "LIMITED TIME OFFER";
+  const titleText = offer?.title || "Mid-Season Flash Sale - Up to 60% OFF";
+  const descText = offer?.description || "Grab our trending wardrobe essentials at unbeatable prices. Extra 20% off on checkout with code SUPER20.";
+  const ctaText = offer?.cta_text || "Shop Flash Deals Now";
+
   return (
     <div className="container">
       <div className="countdown-banner">
@@ -60,12 +60,11 @@ const FlashSaleBanner = React.memo(function FlashSaleBanner({ onCtaClick }) {
               marginBottom: "12px",
             }}
           >
-            LIMITED TIME OFFER
+            {badgeText}
           </span>
-          <h3>Mid-Season Flash Sale - Up to 60% OFF</h3>
+          <h3>{titleText}</h3>
           <p>
-            Grab our trending wardrobe essentials at unbeatable prices. Extra 20% off on checkout
-            with code <strong>SUPER20</strong>.
+            {descText}
           </p>
           <div className="timer-boxes">
             <div className="timer-box">
@@ -89,7 +88,7 @@ const FlashSaleBanner = React.memo(function FlashSaleBanner({ onCtaClick }) {
           </div>
         </div>
         <button className="countdown-cta" onClick={onCtaClick}>
-          Shop Flash Deals Now
+          {ctaText}
         </button>
       </div>
     </div>
@@ -103,6 +102,22 @@ function Home() {
   const [visitedTabs, setVisitedTabs] = useState({ featured: true });
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [offers, setOffers] = useState([]);
+
+  // Fetch dynamic promotional offers from Strapi CMS
+  useEffect(() => {
+    let isMounted = true;
+    fetchOffers().then((data) => {
+      if (isMounted && Array.isArray(data) && data.length > 0) {
+        setOffers(data);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const flashSaleOffer = offers.find((o) => o.is_flash_sale) || offers[0];
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -156,16 +171,20 @@ function Home() {
             <span>Exclusive Deals & Promo Codes</span>
           </div>
           <div className="promo-coupons-rail">
-            {coupons.map((c) => (
+            {(offers && offers.length > 0 ? offers : [
+              { code: "WELCOME10", discount: "10% OFF", description: "10% OFF on 1st Order" },
+              { code: "SUPER20", discount: "20% OFF", description: "20% OFF Orders over ₹1500" },
+              { code: "FREESHIP", discount: "FREE SHIPPING", description: "Free Express Shipping" },
+            ]).map((c) => (
               <div
-                key={c.code}
+                key={c.code || c.id}
                 className="promo-coupon-badge"
                 onClick={() => handleCopyCoupon(c.code)}
                 title="Click to copy coupon code"
               >
                 <span className="coupon-code-text">{c.code}</span>
                 <span>•</span>
-                <span>{c.desc}</span>
+                <span>{c.discount || c.desc || c.description}</span>
                 {copiedCode === c.code ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
               </div>
             ))}
@@ -289,7 +308,10 @@ function Home() {
       </div>
 
       {/* Flash Sale Banner with Countdown */}
-      <FlashSaleBanner onCtaClick={() => navigate("/search?discount=true")} />
+      <FlashSaleBanner
+        offer={flashSaleOffer}
+        onCtaClick={() => navigate(flashSaleOffer?.cta_link || "/search?discount=true")}
+      />
 
       {/* Recently Viewed Products */}
       {recentlyViewed && recentlyViewed.length > 0 && (
