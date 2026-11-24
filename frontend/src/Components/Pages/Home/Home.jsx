@@ -20,14 +20,7 @@ const coupons = [
   { code: "FREESHIP", desc: "Free Express Shipping", min: "₹999" },
 ];
 
-function Home() {
-  const navigate = useNavigate();
-  const [copiedCode, setCopiedCode] = useState(null);
-  const [activeTab, setActiveTab] = useState("featured");
-  const [recentlyViewed, setRecentlyViewed] = useState([]);
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-
-  // Countdown timer for Flash Sale (counts down to 14h 22m 45s)
+const FlashSaleBanner = React.memo(function FlashSaleBanner({ onCtaClick }) {
   const [timeLeft, setTimeLeft] = useState({
     hours: 14,
     minutes: 22,
@@ -50,6 +43,65 @@ function Home() {
 
     return () => clearInterval(timer);
   }, []);
+
+  return (
+    <div className="container">
+      <div className="countdown-banner">
+        <div className="countdown-info">
+          <span
+            style={{
+              display: "inline-block",
+              background: "rgba(56, 189, 248, 0.15)",
+              color: "#38bdf8",
+              fontWeight: "700",
+              fontSize: "0.85rem",
+              padding: "4px 12px",
+              borderRadius: "20px",
+              marginBottom: "12px",
+            }}
+          >
+            LIMITED TIME OFFER
+          </span>
+          <h3>Mid-Season Flash Sale - Up to 60% OFF</h3>
+          <p>
+            Grab our trending wardrobe essentials at unbeatable prices. Extra 20% off on checkout
+            with code <strong>SUPER20</strong>.
+          </p>
+          <div className="timer-boxes">
+            <div className="timer-box">
+              <span className="timer-num">
+                {String(timeLeft.hours).padStart(2, "0")}
+              </span>
+              <span className="timer-lbl">Hours</span>
+            </div>
+            <div className="timer-box">
+              <span className="timer-num">
+                {String(timeLeft.minutes).padStart(2, "0")}
+              </span>
+              <span className="timer-lbl">Mins</span>
+            </div>
+            <div className="timer-box">
+              <span className="timer-num">
+                {String(timeLeft.seconds).padStart(2, "0")}
+              </span>
+              <span className="timer-lbl">Secs</span>
+            </div>
+          </div>
+        </div>
+        <button className="countdown-cta" onClick={onCtaClick}>
+          Shop Flash Deals Now
+        </button>
+      </div>
+    </div>
+  );
+});
+
+function Home() {
+  const navigate = useNavigate();
+  const [copiedCode, setCopiedCode] = useState(null);
+  const [activeTab, setActiveTab] = useState("featured");
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [newsletterEmail, setNewsletterEmail] = useState("");
 
   // Load recently viewed products
   useEffect(() => {
@@ -215,54 +267,7 @@ function Home() {
       </div>
 
       {/* Flash Sale Banner with Countdown */}
-      <div className="container">
-        <div className="countdown-banner">
-          <div className="countdown-info">
-            <span
-              style={{
-                display: "inline-block",
-                background: "rgba(56, 189, 248, 0.15)",
-                color: "#38bdf8",
-                fontWeight: "700",
-                fontSize: "0.85rem",
-                padding: "4px 12px",
-                borderRadius: "20px",
-                marginBottom: "12px",
-              }}
-            >
-              LIMITED TIME OFFER
-            </span>
-            <h3>Mid-Season Flash Sale - Up to 60% OFF</h3>
-            <p>
-              Grab our trending wardrobe essentials at unbeatable prices. Extra 20% off on checkout
-              with code <strong>SUPER20</strong>.
-            </p>
-            <div className="timer-boxes">
-              <div className="timer-box">
-                <span className="timer-num">
-                  {String(timeLeft.hours).padStart(2, "0")}
-                </span>
-                <span className="timer-lbl">Hours</span>
-              </div>
-              <div className="timer-box">
-                <span className="timer-num">
-                  {String(timeLeft.minutes).padStart(2, "0")}
-                </span>
-                <span className="timer-lbl">Mins</span>
-              </div>
-              <div className="timer-box">
-                <span className="timer-num">
-                  {String(timeLeft.seconds).padStart(2, "0")}
-                </span>
-                <span className="timer-lbl">Secs</span>
-              </div>
-            </div>
-          </div>
-          <button className="countdown-cta" onClick={() => navigate("/search?discount=true")}>
-            Shop Flash Deals Now
-          </button>
-        </div>
-      </div>
+      <FlashSaleBanner onCtaClick={() => navigate("/search?discount=true")} />
 
       {/* Recently Viewed Products */}
       {recentlyViewed && recentlyViewed.length > 0 && (
