@@ -32,7 +32,7 @@
     },
     "announcement_banner": {
       "type": "string",
-      "default": "🔥 FREE EXPRESS SHIPPING ON ORDERS OVER ₹999 | USE CODE SUPER20 FOR 20% OFF | 7-DAY EASY RETURNS"
+      "default": ""
     },
     "about_text": {
       "type": "text"

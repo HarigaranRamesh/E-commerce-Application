@@ -138,7 +138,7 @@ module.exports = {
           const globalData = {
             site_name: "Mens Hub",
             tagline: "Quality products, Fresh Choices",
-            announcement_banner: "🔥 FREE EXPRESS DELIVERY ON ORDERS OVER ₹999 | USE CODE SUPER20 FOR 20% OFF | 7-DAY EASY RETURNS",
+            announcement_banner: "",
             about_text: "At Mens Hub, we believe in delivering premium quality products with an effortless shopping experience. We bring you an exclusive selection curated with care.",
             phone: "+91 97826260723",
             email: "harigaran925@gmail.com",
