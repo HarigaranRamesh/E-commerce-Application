@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Heart, ChevronRight, SlidersHorizontal, Star, Eye } from "lucide-react";
 import "../../Main/Products.css";
 import { WishlistContext } from "../../../Context/WishlistContext";
@@ -20,6 +20,8 @@ const deduplicateProducts = (items) => {
 
 const CategoryDetail = () => {
   const { categoryName } = useParams();
+  const [searchParams] = useSearchParams();
+  const genderParam = searchParams.get("gender");
   const navigate = useNavigate();
   const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
   const { user } = useContext(AuthContext);
@@ -33,6 +35,31 @@ const CategoryDetail = () => {
   const displayCategory = categoryName
     ? categoryName.charAt(0).toUpperCase() + categoryName.slice(1).replace("-", " ")
     : "Collection";
+
+  const filterFallback = (items) => {
+    const catLower = (categoryName || "").toLowerCase();
+    const targetGender = genderParam ? genderParam.toLowerCase() : null;
+
+    return items.filter((p) => {
+      const pCat = (p.category || "").toLowerCase();
+      const pGender = (p.gender || "men").toLowerCase();
+
+      if (targetGender && pGender !== targetGender) {
+        return false;
+      }
+
+      if (catLower === "men" || catLower === "mens") {
+        return pGender === "men" || ["shirts", "pants", "hoodies", "t-shirts"].includes(pCat);
+      }
+      if (catLower === "women" || catLower === "womens") {
+        return pGender === "women" || ["dresses", "tops", "ethnic", "skirts"].includes(pCat);
+      }
+      if (catLower === "kids" || catLower === "kid") {
+        return pGender === "kids" || ["boys", "girls"].includes(pCat);
+      }
+      return pCat === catLower;
+    });
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -48,7 +75,8 @@ const CategoryDetail = () => {
         else if (sortBy === "newest") sortParam = "newest";
 
         const params = {
-          category: categoryName === "mens" ? undefined : categoryName,
+          category: categoryName,
+          gender: genderParam || undefined,
           inStock: inStockOnly ? "true" : undefined,
           sort: sortParam,
         };
@@ -61,10 +89,7 @@ const CategoryDetail = () => {
             setProducts(deduplicateProducts(dataList));
           } else {
             // Fallback filter
-            let filtered = staticProducts.filter((p) => {
-              if (categoryName.toLowerCase() === "mens") return true;
-              return p.category?.toLowerCase() === categoryName.toLowerCase();
-            });
+            let filtered = filterFallback(staticProducts);
 
             if (inStockOnly) {
               filtered = filtered.filter((p) => (p.stock ?? p.countInStock ?? 10) > 0);
@@ -83,10 +108,7 @@ const CategoryDetail = () => {
         }
       } catch {
         if (isMounted) {
-          let filtered = staticProducts.filter((p) => {
-            if (categoryName.toLowerCase() === "mens") return true;
-            return p.category?.toLowerCase() === categoryName.toLowerCase();
-          });
+          let filtered = filterFallback(staticProducts);
           setProducts(deduplicateProducts(filtered));
         }
       } finally {
@@ -99,7 +121,7 @@ const CategoryDetail = () => {
     return () => {
       isMounted = false;
     };
-  }, [categoryName, sortBy, inStockOnly]);
+  }, [categoryName, genderParam, sortBy, inStockOnly]);
 
   const isWishlisted = (productId) => {
     return wishlist.some((item) => String(item.id) === String(productId));
