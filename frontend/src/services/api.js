@@ -18,6 +18,21 @@ const api = axios.create({
     },
 });
 
+// Token refresh queue state
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+    failedQueue.forEach((prom) => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+    failedQueue = [];
+};
+
 // Add token to requests if available
 api.interceptors.request.use(
     (config) => {
@@ -25,8 +40,9 @@ api.interceptors.request.use(
             const userStr = localStorage.getItem('currentUser');
             if (userStr) {
                 const user = JSON.parse(userStr);
-                if (user && user.token) {
-                    config.headers.Authorization = `Bearer ${user.token}`;
+                const activeToken = user.accessToken || user.token;
+                if (activeToken) {
+                    config.headers.Authorization = `Bearer ${activeToken}`;
                 }
             }
         } catch (error) {
@@ -34,10 +50,87 @@ api.interceptors.request.use(
         }
         return config;
     },
-    (error) => {
-        if (error.response && error.response.status === 401) {
-            localStorage.removeItem('currentUser');
+    (error) => Promise.reject(error)
+);
+
+// Response interceptor with automatic JWT refresh queue
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+
+        // Skip refresh for auth login, register, or refresh calls themselves
+        const isAuthEndpoint = originalRequest.url?.includes('/auth/login') ||
+            originalRequest.url?.includes('/auth/register') ||
+            originalRequest.url?.includes('/auth/refresh');
+
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                })
+                    .then((token) => {
+                        originalRequest.headers.Authorization = `Bearer ${token}`;
+                        return api(originalRequest);
+                    })
+                    .catch((err) => Promise.reject(err));
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            let refreshToken = null;
+            let currentUser = null;
+            try {
+                const userStr = localStorage.getItem('currentUser');
+                if (userStr) {
+                    currentUser = JSON.parse(userStr);
+                    refreshToken = currentUser?.refreshToken;
+                }
+            } catch {
+                refreshToken = null;
+            }
+
+            if (!refreshToken) {
+                isRefreshing = false;
+                processQueue(new Error('No refresh token available'), null);
+                localStorage.removeItem('currentUser');
+                window.dispatchEvent(new Event('auth:logout'));
+                return Promise.reject(error);
+            }
+
+            try {
+                // Call refresh endpoint directly using raw axios to bypass interceptor recursion
+                const response = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+                const newAccessToken = response.data?.accessToken || response.data?.token;
+                const newRefreshToken = response.data?.refreshToken || refreshToken;
+
+                if (newAccessToken && currentUser) {
+                    const updatedUser = {
+                        ...currentUser,
+                        token: newAccessToken,
+                        accessToken: newAccessToken,
+                        refreshToken: newRefreshToken,
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                    window.dispatchEvent(new CustomEvent('auth:token-refreshed', { detail: updatedUser }));
+                }
+
+                api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+                processQueue(null, newAccessToken);
+                return api(originalRequest);
+            } catch (refreshErr) {
+                processQueue(refreshErr, null);
+                localStorage.removeItem('currentUser');
+                window.dispatchEvent(new Event('auth:logout'));
+                return Promise.reject(refreshErr);
+            } finally {
+                isRefreshing = false;
+            }
         }
+
         return Promise.reject(error);
     }
 );
@@ -48,6 +141,8 @@ api.interceptors.request.use(
 export const authAPI = {
     register: (userData) => api.post('/auth/register', userData),
     login: (credentials) => api.post('/auth/login', credentials),
+    refreshToken: (refreshToken) => axios.post(`${API_URL}/auth/refresh`, { refreshToken }),
+    logout: () => api.post('/auth/logout'),
     getProfile: () => api.get('/auth/profile'),
     updateProfile: (userData) => api.put('/auth/profile', userData),
 };
