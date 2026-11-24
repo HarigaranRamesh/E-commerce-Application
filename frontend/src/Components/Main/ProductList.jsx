@@ -141,13 +141,17 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
   };
 
   if (loading) {
+    const skeletonCount = limit ? Math.min(limit, 8) : 4;
     return (
       <div className="product-container">
-        {[1, 2, 3, 4].map((n) => (
-          <div key={n} className="product-card skeleton-card">
-            <div className="product-image-wrapper skeleton-box" style={{ height: "300px" }}></div>
-            <div className="skeleton-line" style={{ width: "80%", height: "18px", marginTop: "10px" }}></div>
-            <div className="skeleton-line" style={{ width: "40%", height: "16px", marginTop: "8px" }}></div>
+        {Array.from({ length: skeletonCount }).map((_, idx) => (
+          <div key={idx} className="product-card skeleton-card">
+            <div className="product-image-wrapper skeleton-box" style={{ height: "280px" }}></div>
+            <div style={{ padding: "14px 10px" }}>
+              <div className="skeleton-line" style={{ width: "30%", height: "12px", marginBottom: "8px" }}></div>
+              <div className="skeleton-line" style={{ width: "85%", height: "16px", marginBottom: "10px" }}></div>
+              <div className="skeleton-line" style={{ width: "45%", height: "18px" }}></div>
+            </div>
           </div>
         ))}
       </div>
