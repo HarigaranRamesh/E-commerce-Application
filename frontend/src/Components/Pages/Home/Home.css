@@ -416,21 +416,6 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .countdown-banner {
-    flex-direction: column;
-    text-align: center;
-    gap: 26px;
-    padding: 32px 24px;
-  }
-
-  .countdown-info p {
-    margin: 0 auto 20px auto;
-  }
-
-  .timer-boxes {
-    justify-content: center;
-  }
-
   .recently-viewed-grid {
     grid-template-columns: repeat(3, 1fr);
   }
