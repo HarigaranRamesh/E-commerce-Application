@@ -213,11 +213,6 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
             style={{ cursor: "pointer" }}
           >
             <div className="product-image-wrapper">
-              {/* Discount Tag */}
-              {discountPct > 0 && (
-                <span className="badge-discount">-{discountPct}%</span>
-              )}
-
               {/* Stock Warning */}
               {stockCount <= 0 ? (
                 <span className="badge-stock out">Out of Stock</span>

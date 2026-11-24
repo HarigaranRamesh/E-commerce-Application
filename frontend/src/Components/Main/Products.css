@@ -52,26 +52,8 @@
   transform: scale(1.08);
 }
 
-/* Badges - Luxury Discount & Stock */
+/* Badges - Luxury Stock Warning */
 .badge-discount {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #3cb998 !important;
-  color: #fff;
-  font-family: var(--luxury-font-primary, sans-serif);
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 0px !important;
-  z-index: 4;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  box-shadow: none !important;
-  border: none !important;
-}
-
-.badge-discount::after {
   display: none !important;
 }
 

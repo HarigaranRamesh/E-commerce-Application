@@ -246,10 +246,6 @@ const CategoryDetail = () => {
                   style={{ cursor: "pointer" }}
                 >
                   <div className="product-image-wrapper">
-                    {discountPct > 0 && (
-                      <span className="badge-discount">-{discountPct}%</span>
-                    )}
-
                     {stockCount <= 0 ? (
                       <span className="badge-stock out">Out of Stock</span>
                     ) : stockCount <= 5 ? (
