@@ -9,10 +9,10 @@ import { fetchOffers } from "../../../services/strapi";
 import "./Home.css";
 
 const categories = [
-  { name: "Shirts", slug: "shirts", image: "/images/shirt13.jpeg", count: "12+ Items" },
-  { name: "Hoodies", slug: "hoodies", image: "/images/Hoodies.jpeg", count: "8+ Items" },
-  { name: "Pants", slug: "pants", image: "/images/pant16.jpeg", count: "10+ Items" },
-  { name: "T-Shirts", slug: "t-shirts", image: "/images/Tshirt6.jpeg", count: "15+ Items" },
+  { name: "Men's Wear", slug: "men", image: "/images/shirt1.jpeg", count: "40+ Styles" },
+  { name: "Women's Fashion", slug: "women", image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=800&q=80", count: "Trending Dresses & Tops" },
+  { name: "Kids' Collection", slug: "kids", image: "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=800&q=80", count: "Boys & Girls Styles" },
+  { name: "Shirts & Trousers", slug: "shirts", image: "/images/shirt13.jpeg", count: "Timeless Essentials" },
 ];
 
 const FlashSaleBanner = React.memo(function FlashSaleBanner({ offer, onCtaClick }) {
@@ -356,7 +356,7 @@ function Home() {
       <div className="container">
         <div className="newsletter-section">
           <div className="newsletter-content">
-            <h3>Join the Mens Hub VIP Club</h3>
+            <h3>Join the Clothings Store VIP Club</h3>
             <p>
               Subscribe to get exclusive early access to drops, member-only discounts, and style tips.
             </p>
