@@ -63,7 +63,8 @@ const Checkout = () => {
   };
 
   const handleOrderSubmission = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (processingPayment) return;
 
     if (!user) {
       toast.error("Please login to complete your order");
@@ -79,8 +80,6 @@ const Checkout = () => {
     setProcessingPayment(true);
     try {
       if (paymentMethod === "razorpay") {
-        toast("Initiating secure Razorpay checkout...", { icon: "🔒" });
-
         // 1. Request Order Creation from Backend (Server-side validation)
         const orderPayload = {
           orderItems: cart.map((item) => ({
@@ -106,6 +105,8 @@ const Checkout = () => {
 
         // Check if official Razorpay client can be opened
         if (isScriptLoaded && window.Razorpay && keyId && !keyId.includes("placeholder")) {
+          toast("Opening Razorpay Secure Checkout...", { icon: "🔒" });
+
           const options = {
             key: keyId,
             amount: amount,
@@ -165,7 +166,7 @@ const Checkout = () => {
           rzpInstance.open();
         } else {
           // Test Mode Sandbox Verification Simulation when live credentials are in test mode
-          toast("Simulating secure test verification in sandbox mode...", { icon: "🧪" });
+          toast("Authorizing test order via Sandbox...", { icon: "🧪" });
           const testPaymentId = `pay_test_${Date.now()}`;
           const testSignature = `sim_sig_${Date.now()}`;
 
@@ -179,9 +180,7 @@ const Checkout = () => {
           if (verifyRes.data.verified) {
             clearCart();
             toast.success("Test Payment Verified! Order confirmed 🎉");
-            setTimeout(() => {
-              navigate(`/order/${orderId}`);
-            }, 1000);
+            navigate(`/order/${orderId}`);
           } else {
             throw new Error("Sandbox payment verification failed.");
           }

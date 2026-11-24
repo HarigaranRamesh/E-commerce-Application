@@ -66,6 +66,12 @@ class UserInstance {
         await pool.query('DELETE FROM users WHERE id = $1', [this.id]);
         return { acknowledged: true, deletedCount: 1 };
     }
+
+    async clearCart() {
+        this.cart = [];
+        await pool.query("UPDATE users SET cart = '[]'::jsonb, updated_at = NOW() WHERE id = $1", [this.id]);
+        return this;
+    }
 }
 
 class UserQueryBuilder {
@@ -166,6 +172,14 @@ const User = {
     async countDocuments() {
         const res = await pool.query('SELECT COUNT(*)::int AS count FROM users');
         return res.rows[0].count;
+    },
+
+    async clearCart(userId) {
+        if (!userId) return false;
+        const targetId = String(userId);
+        if (!UUID_REGEX.test(targetId)) return false;
+        await pool.query("UPDATE users SET cart = '[]'::jsonb, updated_at = NOW() WHERE id = $1", [targetId]);
+        return true;
     },
 };
 

@@ -334,7 +334,15 @@ export const verifyPayment = async (req, res) => {
 
         // Clear cart for the authenticated user
         const userId = req.user._id || req.user.id;
-        await User.clearCart(userId).catch(() => {});
+        try {
+            if (typeof User.clearCart === 'function') {
+                await User.clearCart(userId);
+            } else {
+                await pool.query("UPDATE users SET cart = '[]'::jsonb, updated_at = NOW() WHERE id = $1", [userId]);
+            }
+        } catch (cartErr) {
+            console.warn('Cart clear warning:', cartErr.message);
+        }
 
         res.json({
             success: true,
