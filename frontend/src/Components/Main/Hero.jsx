@@ -8,26 +8,26 @@ const Hero = () => {
     return (
         <section className="hero-section">
             <div className="hero-overlay"></div>
-            <img src={heroImg} alt="Mens Hub Fashion Model" className="hero-bg-img" />
+            <img src={heroImg} alt="Clothings Store Fashion Model" className="hero-bg-img" />
 
             <div className="hero-content container">
                 <div className="hero-text-wrapper">
                     {/* Eyebrow Badge */}
                     <div className="hero-badge">
                         <Sparkles size={14} className="hero-badge-icon" />
-                        <span>NEW SEASON ARRIVALS • 2026</span>
+                        <span>NEW SEASON ARRIVALS • MEN • WOMEN • KIDS</span>
                     </div>
 
                     {/* Main Headline */}
                     <h1 className="hero-title">
-                        Refined Style For The <br />
-                        <span className="hero-title-gradient">Modern Gentleman</span>
+                        Elevated Fashion For The <br />
+                        <span className="hero-title-gradient">Entire Family</span>
                     </h1>
 
                     {/* Subtitle */}
                     <p className="hero-subtitle">
-                        Discover handcrafted shirts, urban hoodies, tailored trousers, and everyday
-                        essentials built with sustainable organic fabrics.
+                        Discover handcrafted men's wear, elegant women's couture, and vibrant kids'
+                        essentials crafted with premium fabrics and unmatched comfort.
                     </p>
 
                     {/* CTAs */}
