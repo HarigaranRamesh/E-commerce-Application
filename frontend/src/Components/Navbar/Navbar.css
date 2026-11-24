@@ -158,45 +158,53 @@
 }
 
 .nav-icon-link {
-  color: var(--text-secondary);
+  color: #2c4152;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 8px;
+  padding: 6px;
   border-radius: 50%;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast);
+  text-decoration: none;
 }
 
 .nav-icon-link:hover {
-  color: var(--accent-primary);
-  background: rgba(255, 255, 255, 0.8);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  color: #d5a249;
+  background: transparent;
+  transform: none;
+  box-shadow: none;
 }
 
 .icon-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
+/* AJIO Exact Bag & Wishlist Number Badge */
 .badge {
   position: absolute;
-  top: -8px;
+  top: -6px;
   right: -8px;
-  background: var(--accent-gradient);
-  color: white;
-  font-size: 0.72rem;
-  font-weight: 800;
-  min-width: 20px;
-  height: 20px;
-  border-radius: var(--radius-full);
+  background: #d5a249 !important;
+  color: #ffffff !important;
+  font-family: var(--ajio-font-primary, 'Source Sans 3', sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 10px !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
-  box-shadow: 0 2px 8px rgba(1, 87, 155, 0.4);
-  animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 0 3px;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  line-height: 1;
+  letter-spacing: 0;
+  z-index: 2;
+  pointer-events: none;
 }
 
 @keyframes badgePop {
