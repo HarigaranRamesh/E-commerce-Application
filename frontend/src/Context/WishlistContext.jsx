@@ -1,5 +1,7 @@
 import { createContext, useReducer, useEffect, useContext } from "react";
 import { AuthContext } from "./AuthContext";
+import { wishlistAPI } from "../services/api";
+import { toast } from "react-hot-toast";
 
 export const WishlistContext = createContext();
 
@@ -31,75 +33,94 @@ export const WishlistProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [wishlist, dispatch] = useReducer(wishlistReducer, []);
 
-  // Load and merge wishlist on mount or user change
+  // Sync wishlist with backend and user session
   useEffect(() => {
     if (user && user.email) {
       const userKey = `wishlist_${user.email}`;
-      let userWishlist = [];
+      let cached = [];
       try {
-        userWishlist = JSON.parse(localStorage.getItem(userKey)) || [];
+        cached = JSON.parse(localStorage.getItem(userKey)) || [];
       } catch {
-        userWishlist = [];
+        cached = [];
+      }
+      if (cached.length > 0) {
+        dispatch({ type: "LOAD_WISHLIST", payload: cached });
       }
 
-      // Merge guest wishlist
-      let guestWishlist = [];
-      try {
-        guestWishlist = JSON.parse(localStorage.getItem("wishlist_guest")) || [];
-      } catch {
-        guestWishlist = [];
-      }
-
-      if (guestWishlist.length > 0) {
-        guestWishlist.forEach((guestItem) => {
-          if (!userWishlist.some((i) => String(i.id) === String(guestItem.id))) {
-            userWishlist.push(guestItem);
+      // Fetch official wishlist from backend
+      wishlistAPI.getWishlist()
+        .then((res) => {
+          if (Array.isArray(res.data)) {
+            dispatch({ type: "LOAD_WISHLIST", payload: res.data });
+            localStorage.setItem(userKey, JSON.stringify(res.data));
           }
+        })
+        .catch(() => {
+          // If offline, fallback to cached
         });
-        localStorage.removeItem("wishlist_guest");
-        localStorage.setItem(userKey, JSON.stringify(userWishlist));
-      }
-
-      dispatch({ type: "LOAD_WISHLIST", payload: userWishlist });
     } else {
-      // Guest mode
-      let guestWishlist = [];
-      try {
-        guestWishlist = JSON.parse(localStorage.getItem("wishlist_guest")) || [];
-      } catch {
-        guestWishlist = [];
-      }
-      dispatch({ type: "LOAD_WISHLIST", payload: guestWishlist });
+      // Unauthenticated users have NO wishlist access
+      dispatch({ type: "LOAD_WISHLIST", payload: [] });
+      localStorage.removeItem("wishlist_guest");
     }
   }, [user]);
 
-  // Persist wishlist whenever it changes
+  // Persist wishlist whenever it changes when logged in
   useEffect(() => {
     if (user && user.email) {
       localStorage.setItem(`wishlist_${user.email}`, JSON.stringify(wishlist));
-    } else {
-      localStorage.setItem("wishlist_guest", JSON.stringify(wishlist));
     }
   }, [wishlist, user]);
 
-  const addToWishlist = (product) => {
+  const addToWishlist = async (product) => {
+    if (!user) {
+      toast.error("Please sign in to add items to your wishlist");
+      return false;
+    }
+
     dispatch({ type: "ADD_TO_WISHLIST", payload: product });
+
+    try {
+      await wishlistAPI.addToWishlist({
+        id: product.id || product._id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+        rating: product.rating,
+        stock: product.stock,
+      });
+    } catch (err) {
+      console.warn("Backend wishlist sync error:", err.message);
+    }
+    return true;
   };
 
-  const removeFromWishlist = (id) => {
+  const removeFromWishlist = async (id) => {
+    if (!user) return;
     dispatch({ type: "REMOVE_FROM_WISHLIST", payload: id });
+
+    try {
+      await wishlistAPI.removeFromWishlist(id);
+    } catch (err) {
+      console.warn("Backend wishlist remove error:", err.message);
+    }
   };
 
-  const clearWishlist = () => {
+  const clearWishlist = async () => {
     dispatch({ type: "CLEAR_WISHLIST" });
     if (user && user.email) {
       localStorage.removeItem(`wishlist_${user.email}`);
-    } else {
-      localStorage.removeItem("wishlist_guest");
+      try {
+        await wishlistAPI.clearWishlist();
+      } catch (err) {
+        console.warn("Backend wishlist clear error:", err.message);
+      }
     }
   };
 
   const isWishlisted = (productId) => {
+    if (!user) return false;
     return wishlist.some((item) => String(item.id) === String(productId));
   };
 
