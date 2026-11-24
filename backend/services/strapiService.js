@@ -40,8 +40,8 @@ export const normalizeStrapiProduct = (rawItem, strapiBaseUrl) => {
     const attrs = rawItem.attributes || rawItem;
     const strapiId = rawItem.id || attrs.id;
 
-    // Resolve primary image
-    const primaryImg = attrs.imageUrl || resolveStrapiMediaUrl(attrs.image, base) || '/images/placeholder.png';
+    // Resolve primary image from Strapi Media Library first, fallback to imageUrl
+    const primaryImg = resolveStrapiMediaUrl(attrs.image, base) || attrs.imageUrl || '/images/placeholder.png';
 
     // Resolve gallery images
     let gallery = [];
