@@ -52,6 +52,9 @@
       "required": false,
       "allowedTypes": ["images"]
     },
+    "imageUrl": {
+      "type": "string"
+    },
     "stock": {
       "type": "integer",
       "default": 10

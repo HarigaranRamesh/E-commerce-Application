@@ -3,6 +3,10 @@
 build/
 dist/
 .tmp/
+.strapi/
+types/
+.strapi-updater.json
+
 
 # Environment
 .env

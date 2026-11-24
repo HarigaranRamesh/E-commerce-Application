@@ -41,7 +41,7 @@ export const normalizeStrapiProduct = (rawItem, strapiBaseUrl) => {
     const strapiId = rawItem.id || attrs.id;
 
     // Resolve primary image
-    const primaryImg = resolveStrapiMediaUrl(attrs.image, base) || '/images/placeholder.png';
+    const primaryImg = attrs.imageUrl || resolveStrapiMediaUrl(attrs.image, base) || '/images/placeholder.png';
 
     // Resolve gallery images
     let gallery = [];
