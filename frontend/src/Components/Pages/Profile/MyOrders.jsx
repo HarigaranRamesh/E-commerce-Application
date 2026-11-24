@@ -42,7 +42,30 @@ const MyOrders = () => {
         }
     };
 
-    if (loading) return <div className="loading">Loading orders...</div>;
+    if (loading) {
+        return (
+            <div className="my-orders-container">
+                <div className="skeleton-line" style={{ width: "160px", height: "28px", marginBottom: "24px" }}></div>
+                <div className="orders-list">
+                    {[1, 2, 3].map((n) => (
+                        <div key={n} className="order-card skeleton-card" style={{ padding: "20px", marginBottom: "16px", borderRadius: "var(--radius-lg)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                                <div className="skeleton-line" style={{ width: "180px", height: "18px" }}></div>
+                                <div className="skeleton-box" style={{ width: "90px", height: "26px", borderRadius: "20px" }}></div>
+                            </div>
+                            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                                <div className="skeleton-box" style={{ width: "65px", height: "65px", borderRadius: "10px", flexShrink: 0 }}></div>
+                                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+                                    <div className="skeleton-line" style={{ width: "60%", height: "16px" }}></div>
+                                    <div className="skeleton-line" style={{ width: "30%", height: "14px" }}></div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     if (orders.length === 0) {
         return (
