@@ -19,7 +19,6 @@ import {
   Heart,
   Plus,
   Minus,
-  Check,
   Lock,
 } from "lucide-react";
 import "./Bag.css";
@@ -41,6 +40,14 @@ const Bag = () => {
     (acc, item) => acc + (Number(item.price) || 0) * (item.quantity || 1),
     0
   );
+
+  // Total original MRP calculation for savings display
+  const totalMRP = cart.reduce((acc, item) => {
+    const original = item.originalPrice ? Number(item.originalPrice) : Math.round(Number(item.price || 0) * 1.5);
+    return acc + original * (item.quantity || 1);
+  }, 0);
+
+  const productSavings = Math.max(0, totalMRP - subtotal);
 
   // Free shipping calculation
   const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
@@ -123,20 +130,20 @@ const Bag = () => {
       <div className="bag-page">
         <div className="bag-auth-prompt-card">
           <div className="bag-empty-icon-circle">
-            <Lock size={44} color="#01579b" />
+            <Lock size={36} />
           </div>
           <span className="bag-empty-eyebrow">AUTHENTICATION REQUIRED</span>
           <h2>Sign In to View Your Bag</h2>
           <p>
             Your personal shopping bag is securely saved to your account. Sign in now to view
-            saved items, apply special discount coupons, and complete your order.
+            saved items, apply exclusive coupons, and complete your order.
           </p>
           <div className="bag-empty-actions">
             <button
               className="btn-bag-primary"
               onClick={() => navigate("/Login", { state: { redirect: "/bag" } })}
             >
-              Sign In to Your Account <ArrowRight size={18} />
+              Sign In to Your Account <ArrowRight size={17} />
             </button>
             <button className="btn-bag-secondary" onClick={() => navigate("/Category")}>
               Explore Menswear Collections
@@ -154,12 +161,12 @@ const Bag = () => {
         <div className="bag-stepper-wrap">
           <div className="bag-step active">
             <div className="bag-step-badge">1</div>
-            <span className="bag-step-text">Shopping Bag</span>
+            <span className="bag-step-text">Bag</span>
           </div>
           <div className="bag-stepper-line"></div>
           <div className="bag-step">
             <div className="bag-step-badge">2</div>
-            <span className="bag-step-text">Shipping & Delivery</span>
+            <span className="bag-step-text">Delivery</span>
           </div>
           <div className="bag-stepper-line"></div>
           <div className="bag-step">
@@ -170,17 +177,16 @@ const Bag = () => {
 
         <div className="bag-empty-card">
           <div className="bag-empty-icon-circle">
-            <ShoppingBag size={48} color="#01579b" />
+            <ShoppingBag size={38} />
           </div>
           <span className="bag-empty-eyebrow">YOUR SHOPPING BAG</span>
           <h2>Your Bag is Currently Empty</h2>
           <p>
-            Explore our curated selection of luxury menswear, shirts, chinos, and streetwear to
-            elevate your wardrobe today.
+            Explore our curated selection of luxury menswear to elevate your wardrobe today.
           </p>
           <div className="bag-empty-actions">
             <button className="btn-bag-primary" onClick={() => navigate("/Category")}>
-              Explore Collections <ArrowRight size={18} />
+              Start Shopping <ArrowRight size={17} />
             </button>
             <button className="btn-bag-secondary" onClick={() => navigate("/Wishlist")}>
               View Saved Wishlist
@@ -195,16 +201,16 @@ const Bag = () => {
 
   return (
     <div className="bag-page">
-      {/* Stepper Progress Bar */}
+      {/* Minimal Luxury Stepper */}
       <div className="bag-stepper-wrap">
         <div className="bag-step active">
           <div className="bag-step-badge">1</div>
-          <span className="bag-step-text">Shopping Bag ({totalItemsCount})</span>
+          <span className="bag-step-text">Bag ({totalItemsCount})</span>
         </div>
         <div className="bag-stepper-line"></div>
         <div className="bag-step">
           <div className="bag-step-badge">2</div>
-          <span className="bag-step-text">Shipping & Delivery</span>
+          <span className="bag-step-text">Delivery</span>
         </div>
         <div className="bag-stepper-line"></div>
         <div className="bag-step">
@@ -213,11 +219,11 @@ const Bag = () => {
         </div>
       </div>
 
-      {/* Free Shipping Progress Indicator */}
+      {/* Free Delivery Meter Strip */}
       <div className="free-shipping-card">
         <div className="meter-label">
           <div className="meter-icon-box">
-            <Truck size={20} color="#01579b" />
+            <Truck size={18} />
           </div>
           <div className="meter-text-wrap">
             {isFreeShipping ? (
@@ -227,7 +233,7 @@ const Bag = () => {
             ) : (
               <span>
                 Add <strong>₹{amountNeededForFreeShipping.toLocaleString("en-IN")}</strong> more to unlock{" "}
-                <strong>FREE Express Delivery</strong> (Threshold: ₹999)
+                <strong>FREE Express Delivery</strong> (Orders over ₹999)
               </span>
             )}
           </div>
@@ -246,8 +252,7 @@ const Bag = () => {
         <div className="bag-items-column">
           <div className="bag-items-header">
             <div>
-              <h2>Shopping Bag</h2>
-              <p className="bag-subtitle">Review your items, adjust quantities, or save to wishlist</p>
+              <h2>My Bag <span className="bag-item-count">({totalItemsCount} {totalItemsCount === 1 ? "Item" : "Items"})</span></h2>
             </div>
             <button
               type="button"
@@ -265,7 +270,15 @@ const Bag = () => {
 
           <div className="bag-items-list">
             {cart.map((item) => {
-              const itemTotal = (Number(item.price) || 0) * (item.quantity || 1);
+              const itemPrice = Number(item.price) || 0;
+              const itemTotal = itemPrice * (item.quantity || 1);
+              const originalPrice = item.originalPrice
+                ? Number(item.originalPrice)
+                : Math.round(itemPrice * 1.5);
+              const itemSavings = (originalPrice - itemPrice) * (item.quantity || 1);
+              const discountPercent = originalPrice > itemPrice
+                ? Math.round(((originalPrice - itemPrice) / originalPrice) * 100)
+                : 0;
               const productId = item.id || item.product || item._id;
 
               return (
@@ -283,72 +296,102 @@ const Bag = () => {
 
                   {/* Details */}
                   <div className="bag-item-details">
-                    <div className="item-title-row">
-                      <Link to={`/product/${productId}`} className="item-name-link">
-                        {item.name}
-                      </Link>
+                    <div className="item-top-row">
+                      <div className="item-brand-title">
+                        <span className="item-brand-name">
+                          {item.brand || item.category || "MENS HUB"}
+                        </span>
+                        <Link to={`/product/${productId}`} className="item-name-link">
+                          {item.name}
+                        </Link>
+                      </div>
+
                       <button
                         type="button"
                         className="btn-remove-item"
                         title="Remove from bag"
                         onClick={() => handleRemove(item.itemKey)}
+                        aria-label="Remove item"
                       >
-                        <Trash2 size={18} />
+                        <X size={18} />
                       </button>
                     </div>
 
-                    <div className="item-tags-row">
-                      <span className="item-badge">Size: {item.size || "M"}</span>
+                    {/* Variant & Size Selection */}
+                    <div className="item-variants-row">
+                      <div className="variant-tag">
+                        <span>Size:</span> <strong>{item.size || "M"}</strong>
+                      </div>
                       {item.selectedColor && (
-                        <span className="item-badge">Color: {item.selectedColor}</span>
-                      )}
-                      <span className="item-stock-tag">In Stock</span>
-                    </div>
-
-                    {/* Bottom row: Quantity + Actions + Price */}
-                    <div className="item-footer-row">
-                      <div className="qty-and-actions">
-                        {/* Stepper */}
-                        <div className="quantity-stepper">
-                          <button
-                            type="button"
-                            className="qty-btn"
-                            disabled={item.quantity <= 1}
-                            onClick={() => updateQuantity(item.itemKey, item.quantity - 1)}
-                            title="Decrease quantity"
-                          >
-                            <Minus size={14} />
-                          </button>
-                          <span className="qty-number">{item.quantity}</span>
-                          <button
-                            type="button"
-                            className="qty-btn"
-                            onClick={() => updateQuantity(item.itemKey, item.quantity + 1)}
-                            title="Increase quantity"
-                          >
-                            <Plus size={14} />
-                          </button>
+                        <div className="variant-tag">
+                          <span>Color:</span> <strong>{item.selectedColor}</strong>
                         </div>
-
-                        {/* Move to Wishlist */}
+                      )}
+                      <div className="variant-stepper">
+                        <span>Qty:</span>
                         <button
                           type="button"
-                          className="btn-move-wishlist"
-                          onClick={() => handleMoveToWishlist(item)}
+                          className="qty-btn"
+                          disabled={item.quantity <= 1}
+                          onClick={() => updateQuantity(item.itemKey, item.quantity - 1)}
+                          title="Decrease quantity"
                         >
-                          <Heart size={14} />
-                          <span>Save to Wishlist</span>
+                          <Minus size={12} />
+                        </button>
+                        <span className="qty-number">{item.quantity}</span>
+                        <button
+                          type="button"
+                          className="qty-btn"
+                          onClick={() => updateQuantity(item.itemKey, item.quantity + 1)}
+                          title="Increase quantity"
+                        >
+                          <Plus size={12} />
                         </button>
                       </div>
+                    </div>
 
-                      <div className="item-price-block">
-                        <span className="item-unit-price">
-                          ₹{Number(item.price).toLocaleString("en-IN")} each
-                        </span>
-                        <span className="item-total-price">
+                    {/* Price and Savings Row */}
+                    <div className="item-pricing-row">
+                      <div className="item-price-group">
+                        <span className="item-final-price">
                           ₹{itemTotal.toLocaleString("en-IN")}
                         </span>
+                        {originalPrice > itemPrice && (
+                          <>
+                            <span className="item-mrp-price">
+                              ₹{(originalPrice * (item.quantity || 1)).toLocaleString("en-IN")}
+                            </span>
+                            <span className="item-discount-tag">
+                              ({discountPercent}% OFF)
+                            </span>
+                          </>
+                        )}
                       </div>
+                      {itemSavings > 0 && (
+                        <div className="item-savings-text">
+                          You Save: ₹{itemSavings.toLocaleString("en-IN")}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Bottom Actions */}
+                    <div className="item-actions-bottom">
+                      <button
+                        type="button"
+                        className="btn-move-wishlist"
+                        onClick={() => handleMoveToWishlist(item)}
+                      >
+                        <Heart size={14} />
+                        <span>Move to Wishlist</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-delete-inline"
+                        onClick={() => handleRemove(item.itemKey)}
+                      >
+                        <Trash2 size={14} />
+                        <span>Remove</span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -367,21 +410,16 @@ const Bag = () => {
         {/* Right Column: Order Summary Sidebar */}
         <div className="bag-sidebar">
           <div className="bag-summary-card">
-            <div className="summary-card-header">
-              <h3>Order Summary</h3>
-              <span className="summary-item-pill">{totalItemsCount} Items</span>
-            </div>
-
             {/* Promo Code Box */}
             <div className="bag-coupon-section">
               <span className="coupon-label">
-                <Tag size={15} /> Have a Promotional Voucher?
+                <Tag size={15} /> Apply Coupon
               </span>
 
               {appliedCoupon ? (
                 <div className="applied-coupon-box">
                   <div className="applied-coupon-info">
-                    <CheckCircle size={18} color="#10b981" />
+                    <CheckCircle size={18} color="#2e7d32" />
                     <div>
                       <strong>{appliedCoupon.coupon?.code || appliedCoupon.code}</strong>
                       <span>Saved ₹{discountAmount.toLocaleString("en-IN")}</span>
@@ -407,7 +445,7 @@ const Bag = () => {
                   >
                     <input
                       type="text"
-                      placeholder="ENTER CODE"
+                      placeholder="ENTER PROMO CODE"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                     />
@@ -418,32 +456,45 @@ const Bag = () => {
 
                   {/* Promo Suggestions */}
                   <div className="coupon-suggestions">
-                    <span className="suggestion-text">Available Deals:</span>
-                    <button
-                      type="button"
-                      className="suggested-coupon-chip"
-                      onClick={() => handleApplyCoupon("SUPER20")}
-                    >
-                      SUPER20 (20% OFF)
-                    </button>
-                    <button
-                      type="button"
-                      className="suggested-coupon-chip"
-                      onClick={() => handleApplyCoupon("WELCOME10")}
-                    >
-                      WELCOME10 (10% OFF)
-                    </button>
+                    <span className="suggestion-text">Applicable Deals:</span>
+                    <div className="suggestions-row">
+                      <button
+                        type="button"
+                        className="suggested-coupon-chip"
+                        onClick={() => handleApplyCoupon("SUPER20")}
+                      >
+                        SUPER20 (20% OFF)
+                      </button>
+                      <button
+                        type="button"
+                        className="suggested-coupon-chip"
+                        onClick={() => handleApplyCoupon("WELCOME10")}
+                      >
+                        WELCOME10 (10% OFF)
+                      </button>
+                    </div>
                   </div>
                 </>
               )}
             </div>
 
             {/* Price Calculations */}
+            <div className="summary-card-header">
+              <h3>Order Details</h3>
+            </div>
+
             <div className="bag-price-breakdown">
               <div className="price-row">
-                <span>Bag Subtotal</span>
-                <span>₹{subtotal.toLocaleString("en-IN")}</span>
+                <span>Bag Total (MRP)</span>
+                <span>₹{totalMRP.toLocaleString("en-IN")}</span>
               </div>
+
+              {productSavings > 0 && (
+                <div className="price-row discount">
+                  <span>Bag Discount</span>
+                  <span>-₹{productSavings.toLocaleString("en-IN")}</span>
+                </div>
+              )}
 
               {discountAmount > 0 && (
                 <div className="price-row discount">
@@ -453,7 +504,7 @@ const Bag = () => {
               )}
 
               <div className="price-row">
-                <span>Estimated Shipping</span>
+                <span>Delivery Fee</span>
                 <span>
                   {shippingFee === 0 ? (
                     <strong className="shipping-free-badge">FREE</strong>
@@ -464,13 +515,13 @@ const Bag = () => {
               </div>
 
               <div className="price-row">
-                <span>Estimated GST (5%)</span>
+                <span>Applicable GST (5%)</span>
                 <span>₹{taxPrice.toLocaleString("en-IN")}</span>
               </div>
 
               <div className="price-total-row">
-                <span>Estimated Total</span>
-                <span className="grand-total-glow">
+                <span>Total Amount</span>
+                <span className="grand-total-amount">
                   ₹{grandTotal.toLocaleString("en-IN")}
                 </span>
               </div>
@@ -479,29 +530,29 @@ const Bag = () => {
             {/* Checkout Action */}
             <div className="checkout-action-wrap">
               <button className="btn-proceed-checkout" onClick={handleCheckout}>
-                <span>PROCEED TO CHECKOUT</span>
-                <ArrowRight size={18} />
+                <span>PROCEED TO SHIPPING</span>
+                <ArrowRight size={17} />
               </button>
 
               <div className="bag-ssl-assurance">
-                <ShieldCheck size={16} color="#10b981" />
-                <span>256-Bit SSL Encrypted • Razorpay Certified</span>
+                <ShieldCheck size={16} color="#2e7d32" />
+                <span>100% Secure Payments • Razorpay Certified</span>
               </div>
             </div>
 
-            {/* Trust Grid */}
+            {/* Trust Badges */}
             <div className="bag-trust-grid">
               <div className="trust-pill">
-                <Truck size={16} color="#01579b" />
+                <Truck size={16} />
                 <span>Express Delivery</span>
               </div>
               <div className="trust-pill">
-                <RotateCcw size={16} color="#01579b" />
-                <span>7-Day Return Policy</span>
+                <RotateCcw size={16} />
+                <span>15-Day Easy Returns</span>
               </div>
               <div className="trust-pill">
-                <Sparkles size={16} color="#01579b" />
-                <span>100% Genuine Apparel</span>
+                <Sparkles size={16} />
+                <span>Assured Quality</span>
               </div>
             </div>
           </div>
