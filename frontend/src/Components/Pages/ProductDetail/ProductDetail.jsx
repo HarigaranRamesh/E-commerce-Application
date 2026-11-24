@@ -103,8 +103,30 @@ const ProductDetail = () => {
 
     if (loading) {
         return (
-            <div className="product-detail-page container" style={{ minHeight: "70vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div className="loader"></div>
+            <div className="product-detail-page container" style={{ minHeight: "75vh" }}>
+                <div className="detail-wrapper">
+                    <div className="detail-image-section skeleton-box" style={{ height: "500px", borderRadius: "var(--radius-xl)" }}></div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "1rem 0" }}>
+                        <div className="skeleton-line" style={{ width: "25%", height: "16px" }}></div>
+                        <div className="skeleton-line" style={{ width: "85%", height: "34px" }}></div>
+                        <div className="skeleton-line" style={{ width: "40%", height: "20px" }}></div>
+                        <div className="skeleton-line" style={{ width: "35%", height: "28px", marginTop: "8px" }}></div>
+
+                        <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                            <div className="skeleton-line" style={{ width: "20%", height: "14px" }}></div>
+                            <div style={{ display: "flex", gap: "10px" }}>
+                                {[1, 2, 3, 4, 5].map((s) => (
+                                    <div key={s} className="skeleton-box" style={{ width: "45px", height: "45px", borderRadius: "10px" }}></div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: "24px", display: "flex", gap: "14px" }}>
+                            <div className="skeleton-box" style={{ width: "190px", height: "50px", borderRadius: "var(--radius-full)" }}></div>
+                            <div className="skeleton-box" style={{ width: "50px", height: "50px", borderRadius: "50%" }}></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
