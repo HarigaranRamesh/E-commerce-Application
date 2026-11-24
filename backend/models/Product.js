@@ -11,6 +11,7 @@ class ProductInstance {
         this.price = row.price !== null ? parseFloat(row.price) : 0;
         this.originalPrice = row.original_price !== null ? parseFloat(row.original_price) : undefined;
         this.category = row.category;
+        this.gender = row.gender || 'men';
         this.image = row.image;
         this.images = Array.isArray(row.images) ? row.images : [];
         this.stock = row.stock !== null ? parseInt(row.stock, 10) : 0;
@@ -84,15 +85,30 @@ const Product = {
         const values = [];
 
         if (query.category) {
+            const cat = String(query.category).toLowerCase();
             if (typeof query.category === 'object' && query.category.$nin) {
                 const placeholders = query.category.$nin.map((val) => {
                     values.push(val);
                     return `$${values.length}`;
                 });
                 conditions.push(`category NOT IN (${placeholders.join(', ')})`);
-            } else if (query.category !== 'all') {
+            } else if (cat === 'men' || cat === 'mens') {
+                conditions.push(`(LOWER(gender) = 'men' OR LOWER(category) IN ('men', 'mens', 'shirts', 'pants', 'hoodies', 't-shirts'))`);
+            } else if (cat === 'women' || cat === 'womens') {
+                conditions.push(`(LOWER(gender) = 'women' OR LOWER(category) IN ('women', 'womens', 'dresses', 'tops', 'ethnic', 'skirts'))`);
+            } else if (cat === 'kids' || cat === 'kid') {
+                conditions.push(`(LOWER(gender) = 'kids' OR LOWER(category) IN ('kids', 'boys', 'girls'))`);
+            } else if (cat !== 'all') {
                 values.push(query.category);
                 conditions.push(`LOWER(category) = LOWER($${values.length})`);
+            }
+        }
+
+        if (query.gender) {
+            const g = String(query.gender).toLowerCase();
+            if (g !== 'all') {
+                values.push(g);
+                conditions.push(`LOWER(gender) = LOWER($${values.length})`);
             }
         }
 
@@ -192,9 +208,26 @@ const Product = {
         const conditions = [];
         const values = [];
 
-        if (query.category && query.category !== 'all') {
-            values.push(query.category);
-            conditions.push(`LOWER(category) = LOWER($${values.length})`);
+        if (query.category) {
+            const cat = String(query.category).toLowerCase();
+            if (cat === 'men' || cat === 'mens') {
+                conditions.push(`(LOWER(gender) = 'men' OR LOWER(category) IN ('men', 'mens', 'shirts', 'pants', 'hoodies', 't-shirts'))`);
+            } else if (cat === 'women' || cat === 'womens') {
+                conditions.push(`(LOWER(gender) = 'women' OR LOWER(category) IN ('women', 'womens', 'dresses', 'tops', 'ethnic', 'skirts'))`);
+            } else if (cat === 'kids' || cat === 'kid') {
+                conditions.push(`(LOWER(gender) = 'kids' OR LOWER(category) IN ('kids', 'boys', 'girls'))`);
+            } else if (cat !== 'all') {
+                values.push(query.category);
+                conditions.push(`LOWER(category) = LOWER($${values.length})`);
+            }
+        }
+
+        if (query.gender) {
+            const g = String(query.gender).toLowerCase();
+            if (g !== 'all') {
+                values.push(g);
+                conditions.push(`LOWER(gender) = LOWER($${values.length})`);
+            }
         }
         const searchTerm = query.search || query.keyword;
         if (searchTerm) {
