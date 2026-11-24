@@ -1,57 +1,64 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Assistant:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
 :root {
-  /* Core Theme Colors */
-  --bg-gradient: radial-gradient(at 0% 0%, rgba(224, 242, 254, 0.45) 0px, transparent 50%),
-                 radial-gradient(at 100% 0%, rgba(243, 232, 255, 0.35) 0px, transparent 50%),
-                 radial-gradient(at 50% 100%, rgba(224, 231, 255, 0.4) 0px, transparent 50%),
-                 #f8fafc;
-  --bg-primary: #f8fafc;
-  --bg-secondary: #f1f5f9;
-  --bg-tertiary: #e2e8f0;
+  /* AJIO Typography Tokens */
+  --ajio-font-primary: 'Source Sans 3', 'Source Sans Pro', 'Assistant', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --ajio-font-serif: 'Lora', Georgia, serif;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-tertiary: #94a3b8;
+  /* AJIO Official Color Palette */
+  --ajio-gold: #d5a249;
+  --ajio-gold-hover: #c29037;
+  --ajio-gold-active: #b38228;
+  --ajio-gold-subtle: #fbf8f2;
+  --ajio-navy: #2c4152;
+  --ajio-navy-hover: #1f2e3a;
+  --ajio-navy-dark: #152029;
+  --ajio-charcoal: #2c2c2c;
+  --ajio-dark: #1e1e1e;
+  --ajio-text-muted: #666666;
+  --ajio-text-light: #999999;
+  --ajio-border: #ededed;
+  --ajio-border-dark: #d1d5db;
+  --ajio-bg: #ffffff;
+  --ajio-bg-subtle: #f8f8f8;
+  --ajio-teal: #3cb998;
+  --ajio-coral: #ef4444;
 
-  /* Glassmorphism System */
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-bg-hover: rgba(255, 255, 255, 0.88);
-  --glass-bg-active: rgba(255, 255, 255, 0.95);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.8);
-  --glass-border-subtle: 1px solid rgba(226, 232, 240, 0.6);
-  --glass-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 0 1px 1px rgba(255, 255, 255, 0.8) inset;
-  --glass-shadow-hover: 0 20px 40px -10px rgba(1, 87, 155, 0.15), 0 0 2px 1px rgba(255, 255, 255, 0.9) inset;
-  --glass-blur: blur(16px);
-  --glass-glow: 0 0 24px rgba(56, 189, 248, 0.25);
+  /* AJIO Button Geometry Tokens */
+  --ajio-btn-radius: 0px;
+  --ajio-btn-radius-sm: 2px;
+  --ajio-btn-tracking: 1.25px;
+  --ajio-btn-tracking-wide: 1.5px;
+  --ajio-btn-weight: 700;
 
-  /* Brand Accents */
-  --accent-primary: #01579b;
-  --accent-secondary: #0284c7;
-  --accent-light: #e0f2fe;
-  --accent-hover: #0277bd;
-  --accent-gradient: linear-gradient(135deg, #01579b 0%, #0284c7 50%, #38bdf8 100%);
-  --accent-gradient-hover: linear-gradient(135deg, #0277bd 0%, #0369a1 50%, #0284c7 100%);
+  /* Backward Compatibility Mappings */
+  --accent-primary: #d5a249;
+  --accent-secondary: #2c4152;
+  --accent-hover: #c29037;
+  --accent-light: #fbf8f2;
+  --accent-gradient: #d5a249;
+  --accent-gradient-hover: #c29037;
 
-  /* Status Colors */
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.12);
-  --danger: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.12);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.12);
+  --text-primary: #2c2c2c;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
 
-  /* Radius Tokens */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
+  --bg-gradient: #ffffff;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f8f8;
+  --bg-tertiary: #ededed;
+
+  /* Radius Tokens - Mapped to AJIO Flat Aesthetic */
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 4px;
+  --radius-full: 2px;
 
   /* Transitions */
-  --transition-fast: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-base: 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.35s ease;
 }
 
 * {
@@ -65,157 +72,210 @@ html {
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--bg-gradient);
-  background-attachment: fixed;
-  color: var(--text-primary);
-  line-height: 1.6;
+  font-family: var(--ajio-font-primary);
+  background: var(--ajio-bg);
+  color: var(--ajio-charcoal);
+  line-height: 1.5;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* Glassmorphic Common Utility Classes */
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-base);
-}
+/* ==========================================================================
+   AJIO EXACT BUTTON STYLES & UI TOKENS
+   ========================================================================== */
 
-.glass-panel:hover {
-  background: var(--glass-bg-hover);
-  box-shadow: var(--glass-shadow-hover);
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
-  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
-  position: relative;
-  overflow: hidden;
-}
-
-.glass-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.7s ease;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.glass-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(1, 87, 155, 0.12);
-  border-color: rgba(255, 255, 255, 0.95);
-}
-
-.glass-card:hover::before {
-  left: 100%;
-}
-
-/* Glass Buttons */
-.btn-glass {
+/* Primary CTA - Iconic AJIO Gold Button ("ADD TO BAG", "PROCEED TO DELIVER", "BUY NOW") */
+.btn-glass-primary,
+.ajio-btn-primary,
+.btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 0.95rem;
-  padding: 10px 22px;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: var(--text-primary);
+  font-family: var(--ajio-font-primary);
+  font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: var(--ajio-btn-tracking);
+  padding: 14px 28px;
+  border-radius: var(--ajio-btn-radius) !important;
+  border: 1px solid var(--ajio-gold) !important;
+  background: var(--ajio-gold) !important;
+  color: #ffffff !important;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-}
-
-.btn-glass:hover {
-  background: rgba(255, 255, 255, 0.98);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  color: var(--accent-primary);
-}
-
-.btn-glass:active {
-  transform: translateY(0);
-}
-
-.btn-glass-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 0.95rem;
-  padding: 12px 26px;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: var(--accent-gradient);
-  color: #ffffff;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  box-shadow: 0 8px 24px rgba(1, 87, 155, 0.3);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   position: relative;
   overflow: hidden;
+}
+
+.btn-glass-primary:hover,
+.ajio-btn-primary:hover,
+.btn-primary:hover {
+  background: var(--ajio-gold-hover) !important;
+  border-color: var(--ajio-gold-hover) !important;
+  color: #ffffff !important;
+  transform: none !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+.btn-glass-primary:active,
+.ajio-btn-primary:active {
+  background: var(--ajio-gold-active) !important;
+  border-color: var(--ajio-gold-active) !important;
 }
 
 .btn-glass-primary::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -120%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
-  transform: skewX(-20deg);
-  pointer-events: none;
-  animation: buttonShimmer 4s ease-in-out infinite;
+  display: none !important;
 }
 
-.btn-glass-primary:hover {
-  background: var(--accent-gradient-hover);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(1, 87, 155, 0.4);
+.btn-glass-primary:disabled,
+.ajio-btn-primary:disabled,
+.btn-primary:disabled {
+  background: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed;
+  box-shadow: none !important;
 }
 
-.btn-glass-primary:active {
-  transform: translateY(0) scale(0.99);
+/* Secondary CTA - AJIO Outline / Save to Wishlist Button */
+.btn-glass,
+.ajio-btn-secondary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--ajio-font-primary);
+  font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: var(--ajio-btn-tracking);
+  padding: 13px 26px;
+  border-radius: var(--ajio-btn-radius) !important;
+  border: 1px solid var(--ajio-navy) !important;
+  background: #ffffff !important;
+  color: var(--ajio-navy) !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
 }
 
-/* Glass Inputs */
-.glass-input {
+.btn-glass:hover,
+.ajio-btn-secondary:hover,
+.btn-secondary:hover {
+  background: var(--ajio-gold-subtle) !important;
+  border-color: var(--ajio-gold) !important;
+  color: var(--ajio-gold) !important;
+  transform: none !important;
+}
+
+/* AJIO Navy CTA Button ("APPLY", "PLACE ORDER", "LOGIN") */
+.ajio-btn-navy,
+.btn-navy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--ajio-font-primary);
+  font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: var(--ajio-btn-tracking);
+  padding: 13px 26px;
+  border-radius: var(--ajio-btn-radius) !important;
+  border: 1px solid var(--ajio-navy) !important;
+  background: var(--ajio-navy) !important;
+  color: #ffffff !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
+}
+
+.ajio-btn-navy:hover,
+.btn-navy:hover {
+  background: var(--ajio-navy-hover) !important;
+  border-color: var(--ajio-navy-hover) !important;
+  color: #ffffff !important;
+}
+
+/* AJIO Flat Inputs */
+.glass-input,
+.ajio-input {
   width: 100%;
-  padding: 12px 18px;
-  border-radius: var(--radius-md);
-  border: 1.5px solid rgba(226, 232, 240, 0.8);
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  font-family: inherit;
-  font-size: 0.95rem;
-  color: var(--text-primary);
-  transition: all var(--transition-fast);
+  padding: 11px 16px;
+  border-radius: var(--ajio-btn-radius) !important;
+  border: 1px solid var(--ajio-border-dark) !important;
+  background: #ffffff !important;
+  font-family: var(--ajio-font-primary);
+  font-size: 0.92rem;
+  color: var(--ajio-charcoal);
+  transition: border-color 0.2s ease;
   outline: none;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.glass-input:focus,
+.ajio-input:focus {
+  border-color: var(--ajio-navy) !important;
+  box-shadow: none !important;
+}
+
+/* AJIO Clean Surface & Panels */
+.glass-panel,
+.glass-card {
+  background: #ffffff !important;
+  border: 1px solid var(--ajio-border) !important;
+  border-radius: var(--ajio-btn-radius) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.glass-panel:hover,
+.glass-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-2px) !important;
+  border-color: var(--ajio-border-dark) !important;
+}
+
+.glass-card::before {
+  display: none !important;
+}
+
+/* AJIO Minimal Lucide Icon Styling */
+.lucide {
+  stroke-width: 1.6px;
+}
+
+/* AJIO Badges & Discount Tags */
+.glass-badge,
+.badge-discount,
+.ajio-badge {
+  font-family: var(--ajio-font-primary);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-radius: var(--ajio-btn-radius) !important;
+  padding: 3px 8px;
+  background: #ffffff !important;
+  border: 1px solid var(--ajio-teal) !important;
+  color: var(--ajio-teal) !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.glass-badge::after,
+.badge-discount::after {
+  display: none !important;
 }
 
 .glass-input:focus {
