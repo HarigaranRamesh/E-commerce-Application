@@ -86,6 +86,11 @@ const SearchResults = () => {
 
     const toggleWishlist = (product, e) => {
         e.stopPropagation();
+        if (!user) {
+            toast.error("Please log in to manage your wishlist");
+            navigate("/Login");
+            return;
+        }
         if (isWishlisted(product.id)) {
             removeFromWishlist(product.id);
             toast("Removed from Wishlist", { icon: "❌" });
