@@ -355,7 +355,7 @@ const ProductDetail = () => {
                     </div>
 
                     <h1 className="detail-title">{product.name}</h1>
-                    <p className="detail-brand">By <strong>{product.brand || "Mens Hub Premium"}</strong></p>
+                    <p className="detail-brand">By <strong>{product.brand || "Clothings Store"}</strong></p>
 
                     {/* Rating Row */}
                     <div className="detail-rating">
@@ -575,7 +575,7 @@ const ProductDetail = () => {
                                     </tr>
                                     <tr>
                                         <td><strong>Brand</strong></td>
-                                        <td>{product.brand || "Mens Hub Premium"}</td>
+                                        <td>{product.brand || "Clothings Store"}</td>
                                     </tr>
                                     <tr>
                                         <td><strong>SKU Identifier</strong></td>
