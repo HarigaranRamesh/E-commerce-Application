@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "./Category.css";
 
 const categories = [
-  { id: 1, name: "Shirts", slug: "shirts", image: "/images/shirt13.jpeg", count: "12+ Styles" },
-  { id: 2, name: "Hoodies", slug: "hoodies", image: "/images/Hoodies.jpeg", count: "8+ Styles" },
-  { id: 3, name: "Pants", slug: "pants", image: "/images/pant16.jpeg", count: "10+ Styles" },
-  { id: 4, name: "T-Shirts", slug: "t-shirts", image: "/images/Tshirt6.jpeg", count: "15+ Styles" },
+  { id: 1, name: "Men's Wear", slug: "men", image: "/images/shirt1.jpeg", count: "40+ Styles" },
+  { id: 2, name: "Women's Fashion", slug: "women", image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=800&q=80", count: "Dresses, Tops & Sets" },
+  { id: 3, name: "Kids' Collection", slug: "kids", image: "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=800&q=80", count: "Boys & Girls Styles" },
+  { id: 4, name: "Shirts & Tops", slug: "shirts", image: "/images/shirt13.jpeg", count: "Casual & Formal" },
+  { id: 5, name: "Dresses & Gowns", slug: "dresses", image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80", count: "Graceful Silhouettes" },
+  { id: 6, name: "Hoodies & Winterwear", slug: "hoodies", image: "/images/Hoodies.jpeg", count: "Thermal Comfort" },
 ];
 
 const CategoryPage = () => {
