@@ -14,8 +14,14 @@ const DashboardData = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await adminAPI.getStats();
-                setStats(response.data);
+                const [statsRes] = await Promise.allSettled([
+                    adminAPI.getStats(),
+                    adminAPI.getOrders(),
+                ]);
+
+                if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
+                    setStats(statsRes.value.data);
+                }
             } catch (error) {
                 console.error('Error fetching stats:', error);
             } finally {

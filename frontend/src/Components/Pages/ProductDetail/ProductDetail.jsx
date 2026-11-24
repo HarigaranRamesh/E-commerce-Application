@@ -51,8 +51,14 @@ const ProductDetail = () => {
         const fetchProductData = async () => {
             setLoading(true);
             try {
-                const { data } = await productsAPI.getById(productId);
-                if (data) {
+                // Parallelize product and related data fetching using Promise.allSettled
+                const [productResult, relatedResult] = await Promise.allSettled([
+                    productsAPI.getById(productId),
+                    productsAPI.getRelated(productId)
+                ]);
+
+                if (productResult.status === "fulfilled" && productResult.value?.data) {
+                    const data = productResult.value.data;
                     setProduct(data);
                     setSelectedImage(data.image);
 
@@ -74,17 +80,16 @@ const ProductDetail = () => {
                         // ignore storage errors
                     }
 
-                    // Fetch related products
-                    try {
-                        const relRes = await productsAPI.getRelated(data.id || productId);
-                        setRelatedProducts(relRes.data || []);
-                    } catch {
-                        // fallback related
+                    if (relatedResult.status === "fulfilled" && Array.isArray(relatedResult.value.data) && relatedResult.value.data.length > 0) {
+                        setRelatedProducts(relatedResult.value.data);
+                    } else {
                         const relFallback = staticProducts.filter(
                             (p) => p.category === data.category && String(p.id) !== String(data.id)
                         ).slice(0, 4);
                         setRelatedProducts(relFallback);
                     }
+                } else {
+                    throw new Error("Product detail request failed, using static fallback");
                 }
             } catch {
                 // Fallback to static data if backend is offline or item not in DB

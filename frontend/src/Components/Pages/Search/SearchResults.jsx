@@ -5,6 +5,7 @@ import { productsAPI } from "../../../services/api";
 import staticProducts from "../../../assets/data/products";
 import { WishlistContext } from "../../../Context/WishlistContext";
 import { AuthContext } from "../../../Context/AuthContext";
+import { curry } from "../../../utils/performance";
 import { toast } from "react-hot-toast";
 import "../../../Components/Main/Products.css";
 
@@ -33,6 +34,14 @@ const SearchResults = () => {
     const [maxPrice, setMaxPrice] = useState(3000);
 
     const categories = ["all", "shirts", "pants", "hoodies", "t-shirts"];
+
+    // Curried filter state updater
+    const updateFilter = curry((field, value) => {
+        if (field === "category") setSelectedCategory(value);
+        else if (field === "sort") setSort(value);
+        else if (field === "inStock") setInStockOnly(value);
+        else if (field === "maxPrice") setMaxPrice(Number(value));
+    });
 
     useEffect(() => {
         const fetchFilteredProducts = async () => {
