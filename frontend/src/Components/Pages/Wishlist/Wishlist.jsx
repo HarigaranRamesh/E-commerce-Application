@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { WishlistContext } from "../../../Context/WishlistContext";
 import { CartContext } from "../../../Context/CartContext";
+import { AuthContext } from "../../../Context/AuthContext";
 import { ShoppingBag, Trash2, ArrowRight, Eye } from "lucide-react";
 import "./Wishlist.css";
 
@@ -11,6 +12,7 @@ const SIZES = ["S", "M", "L", "XL"];
 const Wishlist = () => {
   const { wishlist, removeFromWishlist, clearWishlist } = useContext(WishlistContext);
   const { addToCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // Selected sizes for each item in wishlist (defaults to 'M')
@@ -50,6 +52,28 @@ const Wishlist = () => {
     clearWishlist();
     toast.success(`Moved ${movedCount} items to your Bag! 🛍️`);
   };
+
+  if (!user) {
+    return (
+      <div className="wishlist-page-wrapper">
+        <div className="container text-center" style={{ maxWidth: "540px", margin: "0 auto", padding: "120px 20px 80px" }}>
+          <div className="glass-panel" style={{ padding: "3rem 2rem" }}>
+            <h2 style={{ fontSize: "1.8rem", fontWeight: "800", marginBottom: "1rem" }}>PLEASE SIGN IN</h2>
+            <p style={{ color: "var(--text-secondary)", marginBottom: "2rem" }}>
+              Sign in to view and manage your saved wishlist items across all your devices.
+            </p>
+            <button
+              onClick={() => navigate("/Login")}
+              className="btn-glass-primary btn-shimmer"
+              style={{ padding: "14px 32px", fontSize: "1rem" }}
+            >
+              Sign In Now
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="wishlist-page-wrapper">

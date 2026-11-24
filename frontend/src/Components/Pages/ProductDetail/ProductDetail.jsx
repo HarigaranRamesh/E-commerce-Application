@@ -180,6 +180,11 @@ const ProductDetail = () => {
     const isWishlisted = wishlist.some((item) => String(item.id) === String(product.id));
 
     const toggleWishlist = () => {
+        if (!user) {
+            toast.error("Please sign in to manage your wishlist");
+            navigate("/Login");
+            return;
+        }
         if (isWishlisted) {
             removeFromWishlist(product.id);
             toast("Removed from Wishlist", { icon: "❌" });
@@ -190,6 +195,11 @@ const ProductDetail = () => {
     };
 
     const handleAddToCart = () => {
+        if (!user) {
+            toast.error("Please sign in to add items to your bag");
+            navigate("/Login");
+            return;
+        }
         if (!selectedSize) {
             toast.error("Please select a size");
             return;

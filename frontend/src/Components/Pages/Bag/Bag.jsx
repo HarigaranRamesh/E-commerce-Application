@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../../../Context/CartContext";
+import { AuthContext } from "../../../Context/AuthContext";
 import { couponsAPI } from "../../../services/api";
 import { toast } from "react-hot-toast";
 import { Trash2, Tag, CheckCircle, Truck, X } from "lucide-react";
@@ -11,6 +12,7 @@ const STANDARD_SHIPPING_FEE = 60;
 
 const Bag = () => {
   const { cart, removeFromCart, updateQuantity } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [couponCode, setCouponCode] = useState("");
@@ -60,6 +62,11 @@ const Bag = () => {
   };
 
   const handleCheckout = () => {
+    if (!user) {
+      toast.error("Please sign in to proceed to checkout");
+      navigate("/Login", { state: { redirect: "/checkout" } });
+      return;
+    }
     if (cart.length === 0) return;
     navigate("/checkout", {
       state: {
@@ -100,7 +107,17 @@ const Bag = () => {
         </div>
       </div>
 
-      {cart.length === 0 ? (
+      {!user ? (
+        <div className="bag-empty-grid">
+          <div className="empty-message glass-card" style={{ maxWidth: "520px", margin: "2rem auto", padding: "3rem 2rem" }}>
+            <h3>PLEASE SIGN IN TO VIEW YOUR BAG</h3>
+            <p>You must be signed in to manage your shopping bag and place orders.</p>
+            <button className="btn-explore btn-shimmer" onClick={() => navigate("/Login")}>
+              SIGN IN NOW
+            </button>
+          </div>
+        </div>
+      ) : cart.length === 0 ? (
         <div className="bag-empty-grid">
           <div className="empty-message">
             <h3>YOUR SHOPPING BAG IS EMPTY.</h3>
