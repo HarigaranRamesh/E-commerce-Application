@@ -126,7 +126,7 @@ const SearchResults = () => {
                     <ArrowUpDown size={16} color="#6b7280" />
                     <select
                         value={sort}
-                        onChange={(e) => setSort(e.target.value)}
+                        onChange={(e) => updateFilter("sort")(e.target.value)}
                         style={{
                             padding: "0.5rem 1rem",
                             borderRadius: "8px",
@@ -168,7 +168,7 @@ const SearchResults = () => {
                         <button
                             key={cat}
                             type="button"
-                            onClick={() => setSelectedCategory(cat)}
+                            onClick={() => updateFilter("category")(cat)}
                             style={{
                                 padding: "0.35rem 0.85rem",
                                 borderRadius: "20px",
@@ -197,7 +197,7 @@ const SearchResults = () => {
                             max="3000"
                             step="100"
                             value={maxPrice}
-                            onChange={(e) => setMaxPrice(Number(e.target.value))}
+                            onChange={(e) => updateFilter("maxPrice")(e.target.value)}
                             style={{ cursor: "pointer", width: "100px" }}
                         />
                         <span style={{ fontSize: "0.85rem", fontWeight: 600, minWidth: "55px" }}>₹{maxPrice}</span>
@@ -207,7 +207,7 @@ const SearchResults = () => {
                         <input
                             type="checkbox"
                             checked={inStockOnly}
-                            onChange={(e) => setInStockOnly(e.target.checked)}
+                            onChange={(e) => updateFilter("inStock")(e.target.checked)}
                         />
                         <span>In-Stock Only</span>
                     </label>
