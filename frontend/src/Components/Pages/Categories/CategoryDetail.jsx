@@ -22,6 +22,7 @@ const CategoryDetail = () => {
   const { categoryName } = useParams();
   const navigate = useNavigate();
   const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
+  const { user } = useContext(AuthContext);
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
