@@ -287,22 +287,25 @@ const CategoryDetail = () => {
                   </div>
 
                   <div className="product-details">
-                    <span className="product-category-tag">{product.category || displayCategory}</span>
+                    <span className="product-brand-tag">{product.brand || "CLOTHINGS STORE"}</span>
                     <h3 className="product-title" title={product.name}>{product.name}</h3>
 
-                    <div className="product-rating-row">
-                      <div className="star-rating">
-                        <Star size={13} fill="#ffb400" color="#ffb400" />
-                        <span className="rating-score">{Number(product.rating || 4.5).toFixed(1)}</span>
-                      </div>
-                      <span className="reviews-count">({product.num_reviews || product.reviews_count || 12})</span>
-                    </div>
-
+                    {/* Price row */}
                     <div className="product-price-row">
                       <span className="product-price">₹{price.toLocaleString("en-IN")}</span>
                       {originalPrice > price && (
-                        <span className="product-original-price">₹{originalPrice.toLocaleString("en-IN")}</span>
+                        <>
+                          <span className="product-original-price">₹{originalPrice.toLocaleString("en-IN")}</span>
+                          <span className="product-discount-percent">({discountPct}% off)</span>
+                        </>
                       )}
+                    </div>
+
+                    {/* Under-price Offer Line */}
+                    <div className="product-offer-row">
+                      <span className="offer-tag-label">Offer Price:</span>
+                      <span className="offer-tag-price">₹{Math.round(price * 0.8).toLocaleString("en-IN")}</span>
+                      <span className="offer-tag-code">| With SUPER20</span>
                     </div>
                   </div>
                 </div>
