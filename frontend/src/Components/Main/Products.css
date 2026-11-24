@@ -67,6 +67,20 @@
   letter-spacing: 0.5px;
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+}
+
+.badge-discount::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: buttonShimmer 3.2s ease-in-out infinite;
 }
 
 .badge-stock {
