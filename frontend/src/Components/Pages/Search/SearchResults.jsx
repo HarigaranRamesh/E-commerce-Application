@@ -4,6 +4,7 @@ import { Heart, SlidersHorizontal, ArrowUpDown, Check } from "lucide-react";
 import { productsAPI } from "../../../services/api";
 import staticProducts from "../../../assets/data/products";
 import { WishlistContext } from "../../../Context/WishlistContext";
+import { AuthContext } from "../../../Context/AuthContext";
 import { toast } from "react-hot-toast";
 import "../../../Components/Main/Products.css";
 
@@ -22,6 +23,7 @@ const SearchResults = () => {
     const query = searchParams.get("q") || "";
     const navigate = useNavigate();
     const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
+    const { user } = useContext(AuthContext);
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);

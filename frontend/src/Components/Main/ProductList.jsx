@@ -3,6 +3,7 @@ import "./Products.css";
 import { Heart, Star, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { WishlistContext } from "../../Context/WishlistContext";
+import { AuthContext } from "../../Context/AuthContext";
 import { productsAPI } from "../../services/api";
 import staticProducts from "../../assets/data/products";
 import { toast } from "react-hot-toast";
@@ -19,6 +20,7 @@ const deduplicateProducts = (items) => {
 
 const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = [] }) => {
   const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
@@ -131,6 +133,11 @@ const ProductList = ({ category, featured, sort, limit, minRating, excludeIds = 
 
   const toggleWishlist = (product, e) => {
     e.stopPropagation();
+    if (!user) {
+      toast.error("Please log in to manage your wishlist");
+      navigate("/Login");
+      return;
+    }
     if (isWishlisted(product.id)) {
       removeFromWishlist(product.id);
       toast("Removed from Wishlist", { icon: "❌" });
