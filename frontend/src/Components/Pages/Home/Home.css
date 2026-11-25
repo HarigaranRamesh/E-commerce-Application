@@ -30,7 +30,8 @@
 }
 
 .section-title-wrap h2 {
-  font-size: 2rem;
+  font-family: var(--luxury-font-primary, sans-serif);
+  font-size: 2.1rem;
   font-weight: 800;
   color: var(--text-primary);
   margin: 0 0 6px 0;

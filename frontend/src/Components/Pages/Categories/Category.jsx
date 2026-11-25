@@ -47,7 +47,11 @@ const CategoryPage = () => {
 
   return (
     <div className="category-page">
-      <h2>Shop by Category</h2>
+      <div className="category-page-header">
+        <span className="section-eyebrow">CURATED WARDROBE</span>
+        <h2>Shop by Category</h2>
+        <p className="section-subtitle">Explore our handpicked collection for every occasion</p>
+      </div>
       <div className="category-container">
         {loading && categories.length === 0 ? (
           Array.from({ length: 6 }).map((_, idx) => (
