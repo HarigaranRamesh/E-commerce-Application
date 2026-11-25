@@ -145,6 +145,8 @@ export const authAPI = {
     logout: () => api.post('/auth/logout'),
     getProfile: () => api.get('/auth/profile'),
     updateProfile: (userData) => api.put('/auth/profile', userData),
+    forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+    resetPassword: (payload) => api.post('/auth/reset-password', payload),
 };
 
 /**
