@@ -30,6 +30,8 @@ const CategoryDetail = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("default");
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   // Normalize category name for display
   const displayCategory = categoryName
@@ -122,6 +124,16 @@ const CategoryDetail = () => {
       isMounted = false;
     };
   }, [categoryName, genderParam, sortBy, inStockOnly]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [categoryName, genderParam, sortBy, inStockOnly]);
+
+  const totalPages = Math.ceil(products.length / itemsPerPage) || 1;
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return products.slice(start, start + itemsPerPage);
+  }, [products, currentPage, itemsPerPage]);
 
   const isWishlisted = (productId) => {
     return wishlist.some((item) => String(item.id) === String(productId));
@@ -228,8 +240,9 @@ const CategoryDetail = () => {
             ))}
           </div>
         ) : products.length > 0 ? (
-          <div className="product-container">
-            {products.map((product) => {
+          <>
+            <div className="product-container">
+              {paginatedProducts.map((product) => {
               const prodId = product.id || product._id;
               const price = Number(product.price) || 0;
               const originalPrice = product.original_price ? Number(product.original_price) : Math.round(price * 1.25);
@@ -306,7 +319,47 @@ const CategoryDetail = () => {
               );
             })}
           </div>
-        ) : (
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "2.5rem", padding: "1.25rem 0", borderTop: "1px solid #eef2f6", flexWrap: "wrap", gap: "1rem" }}>
+              <span style={{ fontSize: "0.88rem", color: "#666" }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, products.length)} of {products.length} products
+              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <button
+                  type="button"
+                  disabled={currentPage <= 1}
+                  onClick={() => { setCurrentPage((p) => Math.max(p - 1, 1)); window.scrollTo({ top: 120, behavior: "smooth" }); }}
+                  style={{ padding: "0.4rem 0.75rem", borderRadius: "6px", border: "1px solid #dcdfe4", background: "#fff", cursor: currentPage <= 1 ? "not-allowed" : "pointer", opacity: currentPage <= 1 ? 0.4 : 1 }}
+                  title="Previous Page"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => { setCurrentPage(p); window.scrollTo({ top: 120, behavior: "smooth" }); }}
+                    style={{ minWidth: "34px", height: "34px", padding: "0 0.5rem", borderRadius: "6px", border: "1px solid", borderColor: currentPage === p ? "#01579b" : "#dcdfe4", background: currentPage === p ? "#01579b" : "#fff", color: currentPage === p ? "#fff" : "#333", fontWeight: currentPage === p ? 600 : 400, cursor: "pointer" }}
+                  >
+                    {p}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => { setCurrentPage((p) => Math.min(p + 1, totalPages)); window.scrollTo({ top: 120, behavior: "smooth" }); }}
+                  style={{ padding: "0.4rem 0.75rem", borderRadius: "6px", border: "1px solid #dcdfe4", background: "#fff", cursor: currentPage >= totalPages ? "not-allowed" : "pointer", opacity: currentPage >= totalPages ? 0.4 : 1 }}
+                  title="Next Page"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
           <div style={{
             background: "#fff",
             borderRadius: "16px",
