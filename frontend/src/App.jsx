@@ -17,6 +17,7 @@ const MyOrders = lazy(() => import("./Components/Pages/Profile/MyOrders"));
 const ProductDetail = lazy(() => import("./Components/Pages/ProductDetail/ProductDetail"));
 const SearchResults = lazy(() => import("./Components/Pages/Search/SearchResults"));
 const OrderDetail = lazy(() => import("./Components/Pages/Order/OrderDetail"));
+const OrderConfirmation = lazy(() => import("./Components/Pages/Order/OrderConfirmation"));
 
 // Admin Components (Lazy load)
 const AdminLayout = lazy(() => import("./Components/Admin/AdminLayout"));
@@ -80,6 +81,10 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/my-orders" element={<MyOrders />} />
                 <Route path="/order/:id" element={<OrderDetail />} />
+                <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
+                <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                <Route path="/booking-confirmation/:id" element={<OrderConfirmation />} />
+                <Route path="/booking-confirmation" element={<OrderConfirmation />} />
               </Route>
 
               {/* Admin Routes - Isolated from Public Layout */}
