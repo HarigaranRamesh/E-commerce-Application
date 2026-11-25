@@ -14,17 +14,52 @@ export const SiteContext = createContext({
 });
 
 export const SiteProvider = ({ children }) => {
-  const [settings, setSettings] = useState({
-    site_name: "Clothings Store",
-    tagline: "Quality products, Fresh Choices",
-    announcement_banner: "",
-    logoUrl: null,
-    free_shipping_threshold: 999,
-  });
-  const [loading, setLoading] = useState(true);
-
-  const loadSettings = useCallback(async () => {
+  const [settings, setSettings] = useState(() => {
     try {
+      const cached = sessionStorage.getItem("app_site_settings");
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return {
+      site_name: "Clothings Store",
+      tagline: "Quality products, Fresh Choices",
+      announcement_banner: "",
+      logoUrl: null,
+      free_shipping_threshold: 999,
+    };
+  });
+  const [loading, setLoading] = useState(!sessionStorage.getItem("app_site_settings"));
+
+  const applySettingsToDOM = (data) => {
+    if (!data) return;
+    if (data.site_name) {
+      const brandName = data.site_name;
+      const tagline = data.tagline ? ` | ${data.tagline}` : "";
+      document.title = `${brandName}${tagline}`;
+    }
+    if (data.logoUrl) {
+      let faviconLink = document.querySelector("link[rel*='icon']");
+      if (!faviconLink) {
+        faviconLink = document.createElement("link");
+        faviconLink.rel = "shortcut icon";
+        document.head.appendChild(faviconLink);
+      }
+      faviconLink.href = data.logoUrl;
+    }
+  };
+
+  const loadSettings = useCallback(async (forceRefresh = false) => {
+    try {
+      // Return cached settings if fresh within 10 minutes unless force-refreshed
+      if (!forceRefresh) {
+        const lastFetched = sessionStorage.getItem("app_site_settings_ts");
+        const cached = sessionStorage.getItem("app_site_settings");
+        if (cached && lastFetched && Date.now() - Number(lastFetched) < 10 * 60 * 1000) {
+          applySettingsToDOM(JSON.parse(cached));
+          setLoading(false);
+          return;
+        }
+      }
+
       // 1. First attempt to fetch from Sanity CMS Edge CDN (<10ms)
       let data = await fetchSanityGlobalSettings();
 
@@ -35,24 +70,12 @@ export const SiteProvider = ({ children }) => {
 
       if (data) {
         setSettings(data);
+        try {
+          sessionStorage.setItem("app_site_settings", JSON.stringify(data));
+          sessionStorage.setItem("app_site_settings_ts", String(Date.now()));
+        } catch {}
 
-        // Dynamically update document title
-        if (data.site_name) {
-          const brandName = data.site_name;
-          const tagline = data.tagline ? ` | ${data.tagline}` : "";
-          document.title = `${brandName}${tagline}`;
-        }
-
-        // Dynamically update favicon if dynamic logo exists
-        if (data.logoUrl) {
-          let faviconLink = document.querySelector("link[rel*='icon']");
-          if (!faviconLink) {
-            faviconLink = document.createElement("link");
-            faviconLink.rel = "shortcut icon";
-            document.head.appendChild(faviconLink);
-          }
-          faviconLink.href = data.logoUrl;
-        }
+        applySettingsToDOM(data);
       }
     } catch (err) {
       console.warn("Could not load dynamic site settings:", err);
@@ -63,6 +86,10 @@ export const SiteProvider = ({ children }) => {
 
   useEffect(() => {
     loadSettings();
+  }, [loadSettings]);
+
+  const refreshSettings = useCallback(() => {
+    return loadSettings(true);
   }, [loadSettings]);
 
   const siteName = settings?.site_name || "Clothings Store";
@@ -79,7 +106,7 @@ export const SiteProvider = ({ children }) => {
         announcement,
         settings,
         loading,
-        refreshSettings: loadSettings,
+        refreshSettings,
       }}
     >
       {children}

@@ -9,10 +9,19 @@ const SANITY_API_VERSION = 'v2024-01-01';
 
 const CDN_BASE_URL = `https://${SANITY_PROJECT_ID}.api.sanity.io/${SANITY_API_VERSION}/data/query/${SANITY_DATASET}`;
 
+// In-memory cache for Sanity queries to eliminate repeated API calls
+const sanityQueryCache = new Map();
+const SANITY_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 /**
- * Execute GROQ query against Sanity Edge CDN
+ * Execute GROQ query against Sanity Edge CDN with caching
  */
 export async function querySanity(groq) {
+  const cached = sanityQueryCache.get(groq);
+  if (cached && Date.now() - cached.timestamp < SANITY_CACHE_TTL) {
+    return cached.data;
+  }
+
   try {
     const url = `${CDN_BASE_URL}?query=${encodeURIComponent(groq)}`;
     const res = await fetch(url);
@@ -20,9 +29,11 @@ export async function querySanity(groq) {
       throw new Error(`Sanity CDN returned HTTP ${res.status}`);
     }
     const json = await res.json();
+    sanityQueryCache.set(groq, { data: json.result, timestamp: Date.now() });
     return json.result;
   } catch (err) {
     console.warn('[Sanity CMS] CDN query failed, falling back:', err.message);
+    if (cached) return cached.data;
     return null;
   }
 }
