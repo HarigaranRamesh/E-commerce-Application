@@ -9,6 +9,7 @@ import {
     generateResetToken,
     verifyResetToken,
 } from '../utils/token.js';
+import { sendPasswordResetEmail } from '../utils/sendEmail.js';
 
 /**
  * @desc    Register a new user
@@ -328,13 +329,22 @@ export const forgotPassword = async (req, res) => {
         }
 
         const resetToken = generateResetToken(user._id, user.email);
+        const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+        const resetUrl = `${frontendUrl}/forgot-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
+
+        const emailResult = await sendPasswordResetEmail({
+            to: user.email,
+            name: user.name,
+            resetUrl,
+        });
 
         res.status(200).json({
             success: true,
-            message: 'Account verified! Please set your new password.',
+            message: 'Password reset link has been sent to your email address!',
             email: user.email,
             name: user.name,
             resetToken,
+            previewUrl: emailResult?.previewUrl || null,
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
