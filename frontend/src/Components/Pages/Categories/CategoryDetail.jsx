@@ -154,65 +154,106 @@ const CategoryDetail = () => {
   };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#fafafa", padding: "100px 0 60px" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#ffffff", padding: "110px 0 60px" }}>
       <div className="container">
         {/* Breadcrumb Navigation */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.9rem", color: "#666", marginBottom: "20px" }}>
-          <Link to="/" style={{ color: "#666", textDecoration: "none" }}>Home</Link>
-          <ChevronRight size={14} />
-          <Link to="/Category" style={{ color: "#666", textDecoration: "none" }}>Categories</Link>
-          <ChevronRight size={14} />
-          <span style={{ color: "#01579b", fontWeight: "600" }}>{displayCategory}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", color: "#94a3b8", marginBottom: "16px" }}>
+          <Link to="/" style={{ color: "#64748b", textDecoration: "none", fontWeight: 500 }}>Home</Link>
+          <ChevronRight size={13} color="#94a3b8" />
+          <Link to="/Category" style={{ color: "#64748b", textDecoration: "none", fontWeight: 500 }}>Categories</Link>
+          <ChevronRight size={13} color="#94a3b8" />
+          <span style={{ color: "#1e293b", fontWeight: "600" }}>{displayCategory}</span>
         </div>
 
-        {/* Category Header Banner */}
+        {/* Category Header (Clean, Background-free with Enhanced UI) */}
         <div style={{
-          background: "#ffffff",
-          borderRadius: "16px",
-          padding: "30px",
-          marginBottom: "30px",
-          border: "1px solid #eef2f6",
+          paddingBottom: "24px",
+          marginBottom: "28px",
+          borderBottom: "1px solid #f1f5f9",
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: "flex-end",
           flexWrap: "wrap",
-          gap: "20px"
+          gap: "1.25rem"
         }}>
           <div>
-            <h1 style={{ fontSize: "2.2rem", fontWeight: "800", color: "#111", margin: "0 0 6px 0" }}>
-              {displayCategory} Collection
-            </h1>
-            <p style={{ color: "#666", margin: 0 }}>
-              Showing {products.length} {products.length === 1 ? "product" : "products"}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
+              <h1 style={{
+                fontSize: "2.25rem",
+                fontWeight: "800",
+                color: "#1e293b",
+                margin: 0,
+                letterSpacing: "-0.5px",
+                lineHeight: 1.2
+              }}>
+                {displayCategory} Collection
+              </h1>
+              <span style={{
+                display: "inline-flex",
+                alignItems: "center",
+                padding: "3px 10px",
+                background: "#f1f5f9",
+                borderRadius: "20px",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                color: "#64748b"
+              }}>
+                {products.length} {products.length === 1 ? "Product" : "Products"}
+              </span>
+            </div>
+            <p style={{ color: "#64748b", margin: 0, fontSize: "0.95rem" }}>
+              Explore our handpicked {displayCategory.toLowerCase()} wardrobe crafted with premium fabrics & modern tailoring
             </p>
           </div>
 
           {/* Controls Bar */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-            <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "0.9rem", color: "#444" }}>
-              <input
-                type="checkbox"
-                checked={inStockOnly}
-                onChange={(e) => setInStockOnly(e.target.checked)}
-                style={{ accentColor: "#01579b" }}
-              />
-              In Stock Only
-            </label>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            {/* Custom Pill Toggle for In Stock Only */}
+            <button
+              type="button"
+              onClick={() => setInStockOnly(!inStockOnly)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "7px 16px",
+                borderRadius: "20px",
+                border: inStockOnly ? "1px solid #1e293b" : "1px solid #e2e8f0",
+                background: inStockOnly ? "#1e293b" : "#ffffff",
+                color: inStockOnly ? "#ffffff" : "#475569",
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+            >
+              <span style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                background: inStockOnly ? "#10b981" : "#94a3b8",
+                display: "inline-block"
+              }}></span>
+              <span>In Stock Only</span>
+            </button>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <SlidersHorizontal size={16} color="#666" />
+            {/* Enhanced Sort Select */}
+            <div style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+              <SlidersHorizontal size={15} color="#64748b" style={{ position: "absolute", left: "12px", pointerEvents: "none" }} />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 style={{
-                  padding: "8px 14px",
-                  borderRadius: "8px",
-                  border: "1px solid #dcdfe4",
-                  fontSize: "0.9rem",
-                  color: "#333",
-                  background: "#fff",
+                  padding: "7px 14px 7px 34px",
+                  borderRadius: "20px",
+                  border: "1px solid #e2e8f0",
+                  fontSize: "0.85rem",
+                  fontWeight: 500,
+                  color: "#334155",
+                  background: "#ffffff",
                   outline: "none",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  transition: "border-color 0.2s ease"
                 }}
               >
                 <option value="default">Sort by: Recommended</option>
