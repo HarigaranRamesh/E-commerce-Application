@@ -17,7 +17,8 @@ const DEFAULT_CATEGORIES = [
 
 function Home() {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   const [activeTab, setActiveTab] = useState("featured");
   const [visitedTabs, setVisitedTabs] = useState({ featured: true });
   const [recentlyViewed, setRecentlyViewed] = useState([]);
@@ -28,11 +29,17 @@ function Home() {
     const loadCategories = async () => {
       try {
         const dynamicCats = await fetchCuratedCategories();
-        if (isMounted && dynamicCats && dynamicCats.length > 0) {
-          setCategories(dynamicCats);
+        if (isMounted) {
+          if (dynamicCats && dynamicCats.length > 0) {
+            setCategories(dynamicCats);
+          } else {
+            setCategories(DEFAULT_CATEGORIES);
+          }
         }
       } catch (err) {
-        console.warn("Could not load dynamic categories:", err);
+        if (isMounted) setCategories(DEFAULT_CATEGORIES);
+      } finally {
+        if (isMounted) setLoadingCategories(false);
       }
     };
     loadCategories();
@@ -95,32 +102,40 @@ function Home() {
         </div>
 
         <div className="home-categories-grid">
-          {categories.map((cat) => (
-            <div
-              key={cat.slug}
-              className="home-category-card"
-              onClick={() => navigate(`/category/${cat.slug}`)}
-            >
-              <img
-                src={cat.image}
-                alt={cat.name}
-                className="home-category-img"
-                onError={(e) => {
-                  e.target.src = "/images/placeholder.png";
-                }}
-              />
-              <div className="home-category-overlay">
-                <div className="home-category-info">
-                  <h3 className="home-category-name">{cat.name}</h3>
-                  <span className="home-category-count">{cat.count}</span>
-                </div>
-                <div className="home-category-cta">
-                  <span>Explore</span>
-                  <ArrowRight size={14} />
+          {loadingCategories && categories.length === 0 ? (
+            Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="home-category-card skeleton-card" style={{ height: "380px" }}>
+                <div className="skeleton-box" style={{ width: "100%", height: "100%" }}></div>
+              </div>
+            ))
+          ) : (
+            categories.map((cat) => (
+              <div
+                key={cat.slug}
+                className="home-category-card"
+                onClick={() => navigate(`/category/${cat.slug}`)}
+              >
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="home-category-img"
+                  onError={(e) => {
+                    e.target.src = "/images/placeholder.png";
+                  }}
+                />
+                <div className="home-category-overlay">
+                  <div className="home-category-info">
+                    <h3 className="home-category-name">{cat.name}</h3>
+                    <span className="home-category-count">{cat.count}</span>
+                  </div>
+                  <div className="home-category-cta">
+                    <span>Explore</span>
+                    <ArrowRight size={14} />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
