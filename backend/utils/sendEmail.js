@@ -19,11 +19,12 @@ const createTransporter = async () => {
 
     // 2. Check for Gmail service shortcut
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        const cleanPass = process.env.EMAIL_PASS.replace(/\s+/g, '');
         return nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
+                user: process.env.EMAIL_USER.trim(),
+                pass: cleanPass,
             },
         });
     }
@@ -49,7 +50,7 @@ const createTransporter = async () => {
 export const sendPasswordResetEmail = async ({ to, name, resetUrl }) => {
     try {
         const transporter = await createTransporter();
-        const fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER || '"Clothings Store Support" <support@clothingsstore.com>';
+        const fromAddress = process.env.EMAIL_FROM || (process.env.EMAIL_USER ? `"Clothings Store Support" <${process.env.EMAIL_USER}>` : '"Clothings Store Support" <support@clothingsstore.com>');
 
         const mailOptions = {
             from: fromAddress,
