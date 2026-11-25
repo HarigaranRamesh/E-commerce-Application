@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { fetchGlobalSettings } from "../services/strapi";
+import { fetchSanityGlobalSettings } from "../services/sanity";
 import defaultLogo from "../assets/mens_hub_logo.png";
 
 export const SiteContext = createContext({
@@ -18,12 +19,20 @@ export const SiteProvider = ({ children }) => {
     tagline: "Quality products, Fresh Choices",
     announcement_banner: "",
     logoUrl: null,
+    free_shipping_threshold: 999,
   });
   const [loading, setLoading] = useState(true);
 
   const loadSettings = useCallback(async () => {
     try {
-      const data = await fetchGlobalSettings();
+      // 1. First attempt to fetch from Sanity CMS Edge CDN (<10ms)
+      let data = await fetchSanityGlobalSettings();
+
+      // 2. If Sanity has no global settings, fall back to Strapi
+      if (!data) {
+        data = await fetchGlobalSettings();
+      }
+
       if (data) {
         setSettings(data);
 

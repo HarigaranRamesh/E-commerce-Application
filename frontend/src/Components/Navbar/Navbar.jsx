@@ -6,12 +6,13 @@ import { WishlistContext } from "../../Context/WishlistContext";
 import { useSite } from "../../Context/SiteContext";
 import { ShoppingBag, Heart, Search, Menu, X, ArrowRight, ChevronDown, Package, User, MapPin } from "lucide-react";
 import { productsAPI } from "../../services/api";
+import { fetchNavigationMenus } from "../../services/sanity";
 import { throttle } from "../../utils/performance";
 
 import logo from "../../assets/mens_hub_logo.png";
 import "./Navbar.css";
 
-const CATEGORY_MENUS = [
+const DEFAULT_CATEGORY_MENUS = [
   {
     name: "MEN",
     slug: "men",
@@ -52,12 +53,31 @@ export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const { wishlist } = useContext(WishlistContext);
   const { siteName, siteLogo, announcement } = useSite();
+  const [categoryMenus, setCategoryMenus] = useState(DEFAULT_CATEGORY_MENUS);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeCategoryMenu, setActiveCategoryMenu] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadMenus = async () => {
+      try {
+        const dynamicMenus = await fetchNavigationMenus();
+        if (isMounted && dynamicMenus && dynamicMenus.length > 0) {
+          setCategoryMenus(dynamicMenus);
+        }
+      } catch (err) {
+        console.warn("Could not load dynamic navigation menus:", err);
+      }
+    };
+    loadMenus();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const searchContainerRef = useRef(null);
   const navigate = useNavigate();
@@ -217,7 +237,7 @@ export default function Navbar() {
 
           {/* Category Dropdowns Navigation */}
           <div className="nav-categories">
-            {CATEGORY_MENUS.map((cat) => (
+            {categoryMenus.map((cat) => (
               <div
                 key={cat.name}
                 className="category-dropdown-wrapper"
@@ -362,7 +382,7 @@ export default function Navbar() {
             </div>
 
             <div className="mobile-categories-list">
-              {CATEGORY_MENUS.map((cat) => (
+              {categoryMenus.map((cat) => (
                 <div key={cat.name} className="mobile-category-block">
                   <div className="mobile-cat-header">{cat.name}</div>
                   <div className="mobile-subcat-links">
