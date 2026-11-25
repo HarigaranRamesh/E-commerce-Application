@@ -76,6 +76,7 @@ const createTables = async () => {
     // Add enterprise columns to products if missing
     await pool.query(`
         ALTER TABLE products
+        ADD COLUMN IF NOT EXISTS gender VARCHAR(50) DEFAULT 'men',
         ADD COLUMN IF NOT EXISTS sku VARCHAR(100),
         ADD COLUMN IF NOT EXISTS specifications JSONB DEFAULT '{}'::jsonb,
         ADD COLUMN IF NOT EXISTS variants JSONB DEFAULT '[]'::jsonb,

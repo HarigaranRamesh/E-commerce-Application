@@ -33,11 +33,11 @@ class ProductInstance {
         const queryText = `
             UPDATE products
             SET name = $1, description = $2, price = $3, original_price = $4,
-                category = $5, image = $6, images = $7, stock = $8,
-                rating = $9, num_reviews = $10, reviews = $11, featured = $12,
-                brand = $13, tags = $14, sku = $15, specifications = $16,
-                variants = $17, views_count = $18, updated_at = NOW()
-            WHERE id = $19 OR _id::text = $20
+                category = $5, gender = $6, image = $7, images = $8, stock = $9,
+                rating = $10, num_reviews = $11, reviews = $12, featured = $13,
+                brand = $14, tags = $15, sku = $16, specifications = $17,
+                variants = $18, views_count = $19, updated_at = NOW()
+            WHERE id = $20 OR _id::text = $21
             RETURNING *;
         `;
         const values = [
@@ -46,6 +46,7 @@ class ProductInstance {
             this.price,
             this.originalPrice || null,
             this.category,
+            this.gender || 'men',
             this.image,
             JSON.stringify(this.images || []),
             this.stock,
@@ -98,7 +99,7 @@ const Product = {
                 conditions.push(`(LOWER(gender) = 'women' OR LOWER(category) IN ('women', 'womens', 'dresses', 'tops', 'ethnic', 'skirts'))`);
             } else if (cat === 'kids' || cat === 'kid') {
                 conditions.push(`(LOWER(gender) = 'kids' OR LOWER(category) IN ('kids', 'boys', 'girls'))`);
-            } else if (cat !== 'all') {
+            } else if (!['all', 'collection', 'all-products', 'all-collections'].includes(cat)) {
                 values.push(query.category);
                 conditions.push(`LOWER(category) = LOWER($${values.length})`);
             }
@@ -216,7 +217,7 @@ const Product = {
                 conditions.push(`(LOWER(gender) = 'women' OR LOWER(category) IN ('women', 'womens', 'dresses', 'tops', 'ethnic', 'skirts'))`);
             } else if (cat === 'kids' || cat === 'kid') {
                 conditions.push(`(LOWER(gender) = 'kids' OR LOWER(category) IN ('kids', 'boys', 'girls'))`);
-            } else if (cat !== 'all') {
+            } else if (!['all', 'collection', 'all-products', 'all-collections'].includes(cat)) {
                 values.push(query.category);
                 conditions.push(`LOWER(category) = LOWER($${values.length})`);
             }
@@ -312,10 +313,10 @@ const Product = {
         if (data.id) {
             const queryText = `
                 INSERT INTO products (
-                    id, name, description, price, original_price, category, image, images,
+                    id, name, description, price, original_price, category, gender, image, images,
                     stock, rating, num_reviews, reviews, featured, brand, tags, sku, specifications, variants
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
                 RETURNING *;
             `;
             const values = [
@@ -323,13 +324,14 @@ const Product = {
                 data.name,
                 data.description,
                 data.price,
-                data.originalPrice || null,
+                data.originalPrice || data.original_price || null,
                 data.category,
+                data.gender || 'men',
                 data.image,
-                JSON.stringify(data.images || []),
+                JSON.stringify(data.images || (data.image ? [data.image] : [])),
                 data.stock || 0,
                 data.rating || 0,
-                data.numReviews || 0,
+                data.numReviews || data.num_reviews || 0,
                 JSON.stringify(data.reviews || []),
                 Boolean(data.featured),
                 data.brand || '',
@@ -343,23 +345,24 @@ const Product = {
         } else {
             const queryText = `
                 INSERT INTO products (
-                    name, description, price, original_price, category, image, images,
+                    name, description, price, original_price, category, gender, image, images,
                     stock, rating, num_reviews, reviews, featured, brand, tags, sku, specifications, variants
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
                 RETURNING *;
             `;
             const values = [
                 data.name,
                 data.description,
                 data.price,
-                data.originalPrice || null,
+                data.originalPrice || data.original_price || null,
                 data.category,
+                data.gender || 'men',
                 data.image,
-                JSON.stringify(data.images || []),
+                JSON.stringify(data.images || (data.image ? [data.image] : [])),
                 data.stock || 0,
                 data.rating || 0,
-                data.numReviews || 0,
+                data.numReviews || data.num_reviews || 0,
                 JSON.stringify(data.reviews || []),
                 Boolean(data.featured),
                 data.brand || '',

@@ -21,6 +21,9 @@ const seedAdmin = async () => {
         }
 
         // 2. Seed Products
+        await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS gender VARCHAR(50) DEFAULT 'men';");
+        await pool.query("UPDATE products SET gender = 'men' WHERE gender IS NULL OR gender = '';");
+
         if (products && products.length > 0) {
             for (const productData of products) {
                 await Product.findOneAndUpdate(
