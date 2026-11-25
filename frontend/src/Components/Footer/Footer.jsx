@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Footer.css";
 import { Twitter, Instagram, Facebook, Phone, Mail, MapPin, RefreshCw, ShieldCheck, Award } from "lucide-react";
 import logo from "../../assets/mens_hub_logo.png";
@@ -109,17 +110,24 @@ export default function Footer() {
           <p className="copyright-text">{settings?.copyright_text || "© Copyright 2025 Clothings Store. All rights reserved."}</p>
           <div className="footer-links">
             {settings?.footer_links && Array.isArray(settings.footer_links) ? (
-              settings.footer_links.map((link, idx) => (
-                <a key={idx} href={link.url || "#"}>
-                  {link.label || link.name}
-                </a>
-              ))
+              settings.footer_links.map((link, idx) => {
+                const url = link.url || "#";
+                return url.startsWith("/") ? (
+                  <Link key={idx} to={url}>
+                    {link.label || link.name}
+                  </Link>
+                ) : (
+                  <a key={idx} href={url} target="_blank" rel="noopener noreferrer">
+                    {link.label || link.name}
+                  </a>
+                );
+              })
             ) : (
               <>
-                <a href="#">F.A.Q</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms & Conditions</a>
-                <a href="#">Shipping & Returns</a>
+                <Link to="/faq">F.A.Q</Link>
+                <Link to="/privacy">Privacy Policy</Link>
+                <Link to="/terms">Terms & Conditions</Link>
+                <Link to="/shipping">Shipping & Returns</Link>
               </>
             )}
           </div>
