@@ -190,13 +190,13 @@ export const wishlistAPI = {
 export const ordersAPI = {
     create: (orderData) => api.post('/orders', orderData),
     getById: (id) => api.get(`/orders/${id}`),
-    getMyOrders: () => api.get('/orders/myorders'),
+    getMyOrders: (params) => api.get('/orders/myorders', { params }),
     updateToPaid: (id, paymentResult) => api.put(`/orders/${id}/pay`, paymentResult),
     updateToDelivered: (id) => api.put(`/orders/${id}/deliver`),
     updateStatus: (id, statusData) => api.put(`/orders/${id}/status`, statusData),
     cancel: (id, reason) => api.put(`/orders/${id}/cancel`, { reason }),
     requestReturn: (id, reason) => api.put(`/orders/${id}/return`, { reason }),
-    getAll: () => api.get('/orders'),
+    getAll: (params) => api.get('/orders', { params }),
 };
 
 /**
@@ -232,8 +232,8 @@ export const paymentAPI = {
  */
 export const adminAPI = {
     getStats: () => api.get('/analytics/dashboard'),
-    getUsers: () => api.get('/auth/users'),
-    getOrders: () => api.get('/orders'),
+    getUsers: (params) => api.get('/auth/users', { params }),
+    getOrders: (params) => api.get('/orders', { params }),
     deleteUser: (id) => api.delete(`/auth/users/${id}`),
     updateUser: (id, userData) => api.put(`/auth/users/${id}`, userData),
 };

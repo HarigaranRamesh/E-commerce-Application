@@ -258,7 +258,34 @@ export const requestReturn = async (req, res) => {
  */
 export const getMyOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.user._id || req.user.id }).sort({ createdAt: -1 });
+        const { status, search, sort, page, limit } = req.query;
+        const filter = { user: req.user._id || req.user.id };
+        if (status && status !== 'all') filter.status = status;
+        if (search) filter.search = search;
+
+        const queryBuilder = Order.find(filter);
+        if (sort) queryBuilder.sort(sort);
+        else queryBuilder.sort({ createdAt: -1 });
+
+        if (page !== undefined || limit !== undefined) {
+            const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+            const limitNum = Math.max(parseInt(limit, 10) || 10, 1);
+            const skipNum = (pageNum - 1) * limitNum;
+
+            const [total, orders] = await Promise.all([
+                queryBuilder.count(),
+                queryBuilder.limit(limitNum).skip(skipNum).exec(),
+            ]);
+
+            return res.json({
+                orders,
+                page: pageNum,
+                pages: Math.ceil(total / limitNum) || 1,
+                total,
+            });
+        }
+
+        const orders = await queryBuilder.exec();
         res.json(orders);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -272,7 +299,35 @@ export const getMyOrders = async (req, res) => {
  */
 export const getOrders = async (req, res) => {
     try {
-        const orders = await Order.find({}).populate('user', 'id name email').sort({ createdAt: -1 });
+        const { status, search, isPaid, sort, page, limit } = req.query;
+        const filter = {};
+        if (status && status !== 'all') filter.status = status;
+        if (search) filter.search = search;
+        if (isPaid !== undefined && isPaid !== '' && isPaid !== 'all') filter.isPaid = isPaid;
+
+        const queryBuilder = Order.find(filter).populate('user', 'id name email');
+        if (sort) queryBuilder.sort(sort);
+        else queryBuilder.sort({ createdAt: -1 });
+
+        if (page !== undefined || limit !== undefined) {
+            const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+            const limitNum = Math.max(parseInt(limit, 10) || 10, 1);
+            const skipNum = (pageNum - 1) * limitNum;
+
+            const [total, orders] = await Promise.all([
+                queryBuilder.count(),
+                queryBuilder.limit(limitNum).skip(skipNum).exec(),
+            ]);
+
+            return res.json({
+                orders,
+                page: pageNum,
+                pages: Math.ceil(total / limitNum) || 1,
+                total,
+            });
+        }
+
+        const orders = await queryBuilder.exec();
         res.json(orders);
     } catch (error) {
         res.status(500).json({ message: error.message });

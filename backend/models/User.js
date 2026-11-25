@@ -160,8 +160,61 @@ const User = {
     },
 
     async find(filter = {}) {
-        const res = await pool.query('SELECT id, name, email, phone, gender, dob, address, role, wishlist, cart, created_at, updated_at FROM users ORDER BY created_at DESC');
+        const conditions = [];
+        const values = [];
+
+        if (filter.role && filter.role !== 'all') {
+            values.push(filter.role);
+            conditions.push(`role = $${values.length}`);
+        }
+
+        if (filter.search) {
+            values.push(`%${filter.search.trim().toLowerCase()}%`);
+            conditions.push(`(LOWER(name) ILIKE $${values.length} OR LOWER(email) ILIKE $${values.length})`);
+        }
+
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+        let orderBy = 'created_at DESC';
+        if (filter.sort === 'name_asc') orderBy = 'name ASC';
+        else if (filter.sort === 'name_desc') orderBy = 'name DESC';
+        else if (filter.sort === 'oldest') orderBy = 'created_at ASC';
+
+        let limitOffsetClause = '';
+        if (filter.limit) {
+            values.push(parseInt(filter.limit, 10));
+            limitOffsetClause += ` LIMIT $${values.length}`;
+        }
+        if (filter.offset) {
+            values.push(parseInt(filter.offset, 10));
+            limitOffsetClause += ` OFFSET $${values.length}`;
+        }
+
+        const res = await pool.query(
+            `SELECT id, name, email, phone, gender, dob, address, role, wishlist, cart, created_at, updated_at
+             FROM users ${whereClause} ORDER BY ${orderBy} ${limitOffsetClause}`,
+            values
+        );
         return res.rows.map((row) => new UserInstance(row));
+    },
+
+    async count(filter = {}) {
+        const conditions = [];
+        const values = [];
+
+        if (filter.role && filter.role !== 'all') {
+            values.push(filter.role);
+            conditions.push(`role = $${values.length}`);
+        }
+
+        if (filter.search) {
+            values.push(`%${filter.search.trim().toLowerCase()}%`);
+            conditions.push(`(LOWER(name) ILIKE $${values.length} OR LOWER(email) ILIKE $${values.length})`);
+        }
+
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        const res = await pool.query(`SELECT COUNT(*)::int AS count FROM users ${whereClause}`, values);
+        return res.rows[0]?.count || 0;
     },
 
     async deleteMany(filter = {}) {

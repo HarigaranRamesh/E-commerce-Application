@@ -109,7 +109,9 @@ class OrderQueryBuilder {
     constructor(filter = {}) {
         this.filter = filter;
         this.doPopulate = false;
-        this.sortOrder = 'DESC';
+        this.orderBy = 'o.created_at DESC';
+        this.limitNum = undefined;
+        this.offset = undefined;
         this.isSingle = false;
         this.singleId = null;
     }
@@ -122,12 +124,74 @@ class OrderQueryBuilder {
     }
 
     sort(sortObj) {
-        if (sortObj?.createdAt === 1) {
-            this.sortOrder = 'ASC';
+        if (typeof sortObj === 'string') {
+            if (sortObj === 'oldest' || sortObj === 'date_asc') this.orderBy = 'o.created_at ASC';
+            else if (sortObj === 'total_high') this.orderBy = 'o.total_price DESC';
+            else if (sortObj === 'total_low') this.orderBy = 'o.total_price ASC';
+            else this.orderBy = 'o.created_at DESC';
+        } else if (sortObj?.createdAt === 1) {
+            this.orderBy = 'o.created_at ASC';
+        } else if (sortObj?.totalPrice === 1) {
+            this.orderBy = 'o.total_price ASC';
+        } else if (sortObj?.totalPrice === -1) {
+            this.orderBy = 'o.total_price DESC';
         } else {
-            this.sortOrder = 'DESC';
+            this.orderBy = 'o.created_at DESC';
         }
         return this;
+    }
+
+    limit(lim) {
+        this.limitNum = lim !== undefined ? parseInt(lim, 10) : undefined;
+        return this;
+    }
+
+    skip(offset) {
+        this.offset = offset !== undefined ? parseInt(offset, 10) : undefined;
+        return this;
+    }
+
+    _buildConditions() {
+        const conditions = [];
+        const values = [];
+
+        if (this.filter.user) {
+            const targetUserId = String(this.filter.user);
+            if (UUID_REGEX.test(targetUserId)) {
+                values.push(targetUserId);
+                conditions.push(`o.user_id = $${values.length}`);
+            } else {
+                conditions.push('1 = 0');
+            }
+        }
+
+        if (this.filter.status && this.filter.status !== 'all') {
+            values.push(this.filter.status);
+            conditions.push(`o.status = $${values.length}`);
+        }
+
+        if (this.filter.isPaid !== undefined && this.filter.isPaid !== '' && this.filter.isPaid !== 'all') {
+            values.push(this.filter.isPaid === 'true' || this.filter.isPaid === true);
+            conditions.push(`o.is_paid = $${values.length}`);
+        }
+
+        if (this.filter.search) {
+            values.push(`%${this.filter.search.trim()}%`);
+            conditions.push(`(o.id::text ILIKE $${values.length} OR o.invoice_number ILIKE $${values.length} OR u.name ILIKE $${values.length} OR u.email ILIKE $${values.length})`);
+        }
+
+        return { conditions, values };
+    }
+
+    async count() {
+        const { conditions, values } = this._buildConditions();
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        const sql = `SELECT COUNT(*)::int AS count
+                     FROM orders o
+                     LEFT JOIN users u ON o.user_id = u.id
+                     ${whereClause}`;
+        const res = await pool.query(sql, values);
+        return res.rows[0]?.count || 0;
     }
 
     async exec() {
@@ -146,26 +210,25 @@ class OrderQueryBuilder {
             return new OrderInstance(res.rows[0]);
         }
 
-        const conditions = [];
-        const values = [];
+        const { conditions, values } = this._buildConditions();
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-        if (this.filter.user) {
-            const targetUserId = String(this.filter.user);
-            if (!UUID_REGEX.test(targetUserId)) return [];
-            values.push(targetUserId);
-            conditions.push(`o.user_id = $${values.length}`);
+        let limitOffsetClause = '';
+        if (this.limitNum !== undefined) {
+            values.push(this.limitNum);
+            limitOffsetClause += ` LIMIT $${values.length}`;
+        }
+        if (this.offset !== undefined) {
+            values.push(this.offset);
+            limitOffsetClause += ` OFFSET $${values.length}`;
         }
 
-        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-        const sql = this.doPopulate
-            ? `SELECT o.*, u.name as user_name, u.email as user_email
-               FROM orders o
-               LEFT JOIN users u ON o.user_id = u.id
-               ${whereClause}
-               ORDER BY o.created_at ${this.sortOrder}`
-            : `SELECT o.* FROM orders o
-               ${whereClause}
-               ORDER BY o.created_at ${this.sortOrder}`;
+        const sql = `SELECT o.*, u.name as user_name, u.email as user_email
+                     FROM orders o
+                     LEFT JOIN users u ON o.user_id = u.id
+                     ${whereClause}
+                     ORDER BY ${this.orderBy}
+                     ${limitOffsetClause}`;
 
         const res = await pool.query(sql, values);
         return res.rows.map((row) => new OrderInstance(row));
@@ -240,6 +303,10 @@ const Order = {
 
     find(filter = {}) {
         return new OrderQueryBuilder(filter);
+    },
+
+    count(filter = {}) {
+        return new OrderQueryBuilder(filter).count();
     },
 
     async countDocuments() {

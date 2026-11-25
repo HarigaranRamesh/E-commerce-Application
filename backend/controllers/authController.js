@@ -246,6 +246,26 @@ export const updateUserProfile = async (req, res) => {
  */
 export const getUsers = async (req, res) => {
     try {
+        const { search, role, sort, page, limit } = req.query;
+
+        if (page !== undefined || limit !== undefined || search || (role && role !== 'all') || sort) {
+            const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+            const limitNum = Math.max(parseInt(limit, 10) || 10, 1);
+            const offset = (pageNum - 1) * limitNum;
+
+            const [total, users] = await Promise.all([
+                User.count({ search, role }),
+                User.find({ search, role, sort, limit: limitNum, offset }),
+            ]);
+
+            return res.json({
+                users,
+                page: pageNum,
+                pages: Math.ceil(total / limitNum) || 1,
+                total,
+            });
+        }
+
         const users = await User.find({});
         res.json(users);
     } catch (error) {
