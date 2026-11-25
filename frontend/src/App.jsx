@@ -19,6 +19,12 @@ const SearchResults = lazy(() => import("./Components/Pages/Search/SearchResults
 const OrderDetail = lazy(() => import("./Components/Pages/Order/OrderDetail"));
 const OrderConfirmation = lazy(() => import("./Components/Pages/Order/OrderConfirmation"));
 
+// Legal & Information Pages (Lazy load)
+const FAQ = lazy(() => import("./Components/Pages/Legal/FAQ"));
+const PrivacyPolicy = lazy(() => import("./Components/Pages/Legal/PrivacyPolicy"));
+const TermsConditions = lazy(() => import("./Components/Pages/Legal/TermsConditions"));
+const ShippingReturns = lazy(() => import("./Components/Pages/Legal/ShippingReturns"));
+
 // Admin Components (Lazy load)
 const AdminLayout = lazy(() => import("./Components/Admin/AdminLayout"));
 const DashboardData = lazy(() => import("./Components/Admin/DashboardData"));
