@@ -98,3 +98,56 @@ export const safeAsync = async (promise) => {
         return [null, error];
     }
 };
+
+/**
+ * LRU (Least Recently Used) Cache with TTL
+ * Backed by an ES6 Map (Hash Table + Doubly-linked order) for O(1) operations.
+ */
+export class LRUCache {
+    constructor(maxSize = 100, defaultTtlMs = 5 * 60 * 1000) {
+        this.maxSize = maxSize;
+        this.defaultTtlMs = defaultTtlMs;
+        this.cache = new Map();
+    }
+
+    get(key) {
+        const entry = this.cache.get(key);
+        if (!entry) return null;
+
+        if (entry.expiresAt && Date.now() > entry.expiresAt) {
+            this.cache.delete(key);
+            return null;
+        }
+
+        // Refresh recency (move to most recently used)
+        this.cache.delete(key);
+        this.cache.set(key, entry);
+        return entry.value;
+    }
+
+    set(key, value, ttlMs = this.defaultTtlMs) {
+        if (this.cache.has(key)) {
+            this.cache.delete(key);
+        } else if (this.cache.size >= this.maxSize) {
+            // Evict least recently used entry
+            const oldestKey = this.cache.keys().next().value;
+            if (oldestKey !== undefined) {
+                this.cache.delete(oldestKey);
+            }
+        }
+
+        this.cache.set(key, {
+            value,
+            expiresAt: ttlMs ? Date.now() + ttlMs : null,
+        });
+    }
+
+    has(key) {
+        return this.get(key) !== null;
+    }
+
+    clear() {
+        this.cache.clear();
+    }
+}
+

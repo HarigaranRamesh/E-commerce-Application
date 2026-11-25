@@ -7,10 +7,13 @@ import { useSite } from "../../Context/SiteContext";
 import { ShoppingBag, Heart, Search, Menu, X, ArrowRight, ChevronDown, Package, User, MapPin } from "lucide-react";
 import { productsAPI } from "../../services/api";
 import { fetchNavigationMenus } from "../../services/sanity";
-import { throttle } from "../../utils/performance";
+import { throttle, LRUCache } from "../../utils/performance";
 
 import logo from "../../assets/mens_hub_logo.png";
 import "./Navbar.css";
+
+// In-memory O(1) LRU Cache for search suggestions (retains last 60 queries for 3 mins)
+const searchSuggestionCache = new LRUCache(60, 3 * 60 * 1000);
 
 const DEFAULT_CATEGORY_MENUS = [
   {
@@ -104,23 +107,35 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Fetch search suggestions
+  // Fetch search suggestions with LRU cache and debouncing
   useEffect(() => {
-    if (!searchTerm.trim()) {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) {
       setSuggestions([]);
       setShowDropdown(false);
       return;
     }
 
+    // 1. Check in-memory LRU cache first for instant 0ms feedback (no network request)
+    const cached = searchSuggestionCache.get(query);
+    if (cached) {
+      setSuggestions(cached);
+      setShowDropdown(true);
+      return;
+    }
+
+    // 2. Debounce backend API calls to avoid firing on every keystroke
     const timer = setTimeout(async () => {
       try {
-        const { data } = await productsAPI.getSuggestions(searchTerm.trim());
-        setSuggestions(data || []);
+        const { data } = await productsAPI.getSuggestions(query);
+        const results = data || [];
+        searchSuggestionCache.set(query, results);
+        setSuggestions(results);
         setShowDropdown(true);
       } catch (err) {
         console.error("Suggestion error:", err);
       }
-    }, 250);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
