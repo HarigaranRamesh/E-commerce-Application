@@ -187,8 +187,13 @@ const Checkout = () => {
 
                 if (verifyRes.data.verified) {
                   clearCart();
-                  toast.success("Payment verified! Order confirmed 🎉");
-                  navigate(`/order/${orderId}`);
+                  navigate(`/order-confirmation/${orderId}`, {
+                    state: {
+                      orderId,
+                      paymentMethod: "razorpay",
+                    },
+                    replace: true,
+                  });
                 } else {
                   throw new Error("Payment signature verification failed");
                 }
@@ -239,8 +244,13 @@ const Checkout = () => {
 
           if (verifyRes.data.verified) {
             clearCart();
-            toast.success("Test Payment Verified! Order confirmed 🎉");
-            navigate(`/order/${orderId}`);
+            navigate(`/order-confirmation/${orderId}`, {
+              state: {
+                orderId,
+                paymentMethod: "razorpay",
+              },
+              replace: true,
+            });
           } else {
             throw new Error("Sandbox payment verification failed.");
           }
@@ -274,11 +284,17 @@ const Checkout = () => {
         };
 
         const response = await ordersAPI.create(orderPayload);
+        const createdOrder = response.data;
+        const newOrderId = createdOrder._id || createdOrder.id;
         clearCart();
-        toast.success("Order confirmed successfully with Cash on Delivery! 🎉");
-        setTimeout(() => {
-          navigate(`/order/${response.data._id || response.data.id}`);
-        }, 1200);
+        navigate(`/order-confirmation/${newOrderId}`, {
+          state: {
+            order: createdOrder,
+            orderId: newOrderId,
+            paymentMethod: "cod",
+          },
+          replace: true,
+        });
       }
     } catch (error) {
       console.error("Order submission error:", error);
