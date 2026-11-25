@@ -4,10 +4,11 @@ import ProductList from "../../Main/ProductList";
 import Hero from "../../Main/Hero";
 import ServiceFeatures from "../../Main/ServiceFeatures";
 import { ArrowRight, Sparkles, Flame, Award, Zap, History } from "lucide-react";
+import { fetchCuratedCategories } from "../../../services/sanity";
 import { toast } from "react-hot-toast";
 import "./Home.css";
 
-const categories = [
+const DEFAULT_CATEGORIES = [
   { name: "Men's Wear", slug: "men", image: "/images/shirt1.jpeg", count: "40+ Styles" },
   { name: "Women's Fashion", slug: "women", image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=800&q=80", count: "Trending Dresses & Tops" },
   { name: "Kids' Collection", slug: "kids", image: "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=800&q=80", count: "Boys & Girls Styles" },
@@ -16,10 +17,29 @@ const categories = [
 
 function Home() {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [activeTab, setActiveTab] = useState("featured");
   const [visitedTabs, setVisitedTabs] = useState({ featured: true });
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [newsletterEmail, setNewsletterEmail] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadCategories = async () => {
+      try {
+        const dynamicCats = await fetchCuratedCategories();
+        if (isMounted && dynamicCats && dynamicCats.length > 0) {
+          setCategories(dynamicCats);
+        }
+      } catch (err) {
+        console.warn("Could not load dynamic categories:", err);
+      }
+    };
+    loadCategories();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
