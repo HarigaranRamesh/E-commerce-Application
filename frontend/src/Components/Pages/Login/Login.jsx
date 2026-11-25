@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { AuthContext } from "../../../Context/AuthContext";
@@ -13,6 +13,11 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useContext(AuthContext);
+
+  // Guarantee window is always scrolled to top when Login opens
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const redirectPath = location.state?.redirect || "/";
 

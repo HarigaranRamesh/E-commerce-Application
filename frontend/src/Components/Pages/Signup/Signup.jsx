@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, User, Mail, Lock, Phone, MapPin, Home, Calendar } from "lucide-react";
 import { toast } from "react-hot-toast";

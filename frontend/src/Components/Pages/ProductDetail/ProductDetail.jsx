@@ -187,7 +187,7 @@ const ProductDetail = () => {
     const toggleWishlist = () => {
         if (!user) {
             toast.error("Please sign in to manage your wishlist");
-            navigate("/Login");
+            navigate("/Login", { state: { redirect: `/product/${productId}` } });
             return;
         }
         if (isWishlisted) {
@@ -200,7 +200,7 @@ const ProductDetail = () => {
     const handleAddToCart = () => {
         if (!user) {
             toast.error("Please sign in to add items to your bag");
-            navigate("/Login");
+            navigate("/Login", { state: { redirect: `/product/${productId}` } });
             return;
         }
         if (!selectedSize) {
