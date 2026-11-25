@@ -36,7 +36,8 @@ const DEFAULT_BANNER_SLIDES = [
 ];
 
 const Hero = () => {
-  const [slides, setSlides] = useState(DEFAULT_BANNER_SLIDES);
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const total = slides.length;
@@ -46,11 +47,17 @@ const Hero = () => {
     const loadBanners = async () => {
       try {
         const dynamicBanners = await fetchHeroBanners();
-        if (isMounted && dynamicBanners && dynamicBanners.length > 0) {
-          setSlides(dynamicBanners);
+        if (isMounted) {
+          if (dynamicBanners && dynamicBanners.length > 0) {
+            setSlides(dynamicBanners);
+          } else {
+            setSlides(DEFAULT_BANNER_SLIDES);
+          }
         }
       } catch (err) {
-        console.warn("Could not load dynamic hero banners:", err);
+        if (isMounted) setSlides(DEFAULT_BANNER_SLIDES);
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
     loadBanners();
@@ -78,6 +85,21 @@ const Hero = () => {
     e?.stopPropagation();
     setCurrentSlide((prev) => (prev + 1) % total);
   };
+
+  if (loading && slides.length === 0) {
+    return (
+      <section className="hero-section hero-skeleton-wrapper" aria-busy="true">
+        <div className="hero-skeleton-shimmer">
+          <div className="hero-skeleton-content">
+            <div className="hero-skeleton-pill"></div>
+            <div className="hero-skeleton-title"></div>
+            <div className="hero-skeleton-desc"></div>
+            <div className="hero-skeleton-btn"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
