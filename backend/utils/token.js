@@ -55,6 +55,30 @@ export const verifyRefreshToken = (token) => {
 };
 
 /**
+ * Generate password reset token (15 minutes)
+ */
+export const generateResetToken = (userId, email) => {
+    return jwt.sign(
+        { id: userId, email, type: 'password_reset' },
+        JWT_SECRET,
+        { expiresIn: '15m' }
+    );
+};
+
+/**
+ * Verify password reset token
+ */
+export const verifyResetToken = (token) => {
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.type !== 'password_reset') return null;
+        return decoded;
+    } catch {
+        return null;
+    }
+};
+
+/**
  * Legacy verify token alias
  */
 export const verifyToken = (token) => {

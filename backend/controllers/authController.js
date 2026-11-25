@@ -1,5 +1,14 @@
 import User from '../models/User.js';
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken, generateToken } from '../utils/token.js';
+import bcrypt from 'bcryptjs';
+import { pool } from '../config/db.js';
+import {
+    generateAccessToken,
+    generateRefreshToken,
+    verifyRefreshToken,
+    generateToken,
+    generateResetToken,
+    verifyResetToken,
+} from '../utils/token.js';
 
 /**
  * @desc    Register a new user
@@ -295,6 +304,79 @@ export const updateUser = async (req, res) => {
         } else {
             res.status(404).json({ message: 'User not found' });
         }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @desc    Request password reset token
+ * @route   POST /api/auth/forgot-password
+ * @access  Public
+ */
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: 'Please provide an email address' });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'No registered account found with this email address' });
+        }
+
+        const resetToken = generateResetToken(user._id, user.email);
+
+        res.status(200).json({
+            success: true,
+            message: 'Account verified! Please set your new password.',
+            email: user.email,
+            name: user.name,
+            resetToken,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @desc    Reset password using verified reset token
+ * @route   POST /api/auth/reset-password
+ * @access  Public
+ */
+export const resetPassword = async (req, res) => {
+    try {
+        const { email, resetToken, newPassword } = req.body;
+
+        if (!email || !resetToken || !newPassword) {
+            return res.status(400).json({ message: 'Email, reset token, and new password are required' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+        }
+
+        const decoded = verifyResetToken(resetToken);
+        if (!decoded || decoded.email.toLowerCase() !== email.toLowerCase()) {
+            return res.status(400).json({ message: 'Reset token is invalid or has expired. Please try again.' });
+        }
+
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User account not found' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        await pool.query('UPDATE users SET password = $1, updated_at = NOW() WHERE id = $2', [hashedPassword, user._id]);
+
+        res.status(200).json({
+            success: true,
+            message: 'Password reset successful! You can now log in with your new password.',
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
