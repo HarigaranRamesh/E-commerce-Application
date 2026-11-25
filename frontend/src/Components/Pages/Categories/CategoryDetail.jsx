@@ -1,6 +1,6 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Heart, ChevronRight, SlidersHorizontal, Star, Eye } from "lucide-react";
+import { Heart, ChevronRight, ChevronLeft, SlidersHorizontal, Star, Eye } from "lucide-react";
 import "../../Main/Products.css";
 import { WishlistContext } from "../../../Context/WishlistContext";
 import { AuthContext } from "../../../Context/AuthContext";
