@@ -50,15 +50,12 @@ export default function Login() {
       // api.js uses axios defaults. response.data contains the payload.
 
       login(response.data); // Update context with user data + token
-      toast.success("Welcome back!");
 
-      setTimeout(() => {
-        if (response.data.role === 'admin') {
-          navigate("/admin/dashboard");
-        } else {
-          navigate(redirectPath);
-        }
-      }, 1000);
+      if (response.data.role === 'admin') {
+        navigate("/admin/dashboard");
+      } else {
+        navigate(redirectPath);
+      }
     } catch (error) {
       console.error("Login error:", error);
       const message = error.response?.data?.message || "Invalid credentials. Please try again.";

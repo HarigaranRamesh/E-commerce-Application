@@ -106,7 +106,6 @@ const Wishlist = () => {
                       type="button"
                       onClick={() => {
                         removeFromWishlist(item.id);
-                        toast.error(`${item.name} removed from Wishlist`);
                       }}
                       className="wishlist-trash-btn"
                       title="Remove from wishlist"

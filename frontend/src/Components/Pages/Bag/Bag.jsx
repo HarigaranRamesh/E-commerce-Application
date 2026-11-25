@@ -88,20 +88,17 @@ const Bag = () => {
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
     setCouponCode("");
-    toast("Coupon removed", { icon: "ℹ️" });
   };
 
   const handleMoveToWishlist = async (item) => {
     const success = await addToWishlist(item);
     if (success) {
       removeFromCart(item.itemKey);
-      toast.success(`Moved ${item.name} to Wishlist ❤️`);
     }
   };
 
   const handleRemove = (itemKey) => {
     removeFromCart(itemKey);
-    toast.success("Item removed from bag");
   };
 
   const handleCheckout = () => {
@@ -260,7 +257,6 @@ const Bag = () => {
               onClick={() => {
                 if (window.confirm("Are you sure you want to clear your shopping bag?")) {
                   clearCart();
-                  toast("Shopping bag cleared", { icon: "🧹" });
                 }
               }}
             >

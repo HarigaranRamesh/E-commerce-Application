@@ -114,7 +114,6 @@ const Checkout = () => {
   const handleRemoveCoupon = () => {
     setCouponCode(null);
     setDiscountAmount(0);
-    toast("Coupon removed", { icon: "ℹ️" });
   };
 
   const handleOrderSubmission = async (e) => {

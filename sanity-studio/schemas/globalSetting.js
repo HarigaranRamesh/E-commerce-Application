@@ -70,5 +70,20 @@ export const globalSetting = {
       type: 'number',
       initialValue: 999,
     },
+    {
+      name: 'features',
+      title: 'Trust Badges & Service Features',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'title', title: 'Feature Title', type: 'string' },
+            { name: 'desc', title: 'Feature Description', type: 'string' },
+            { name: 'icon', title: 'Icon Identifier', type: 'string', description: 'truck, refresh, shield, headset' },
+          ],
+        },
+      ],
+    },
   ],
 };

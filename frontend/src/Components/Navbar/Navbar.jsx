@@ -7,7 +7,7 @@ import { useSite } from "../../Context/SiteContext";
 import { ShoppingBag, Heart, Search, Menu, X, ArrowRight, ChevronDown, Package, User, MapPin } from "lucide-react";
 import { productsAPI } from "../../services/api";
 import { throttle } from "../../utils/performance";
-import toast from "react-hot-toast";
+
 import logo from "../../assets/mens_hub_logo.png";
 import "./Navbar.css";
 
@@ -129,7 +129,6 @@ export default function Navbar() {
     logout();
     setMenuOpen(false);
     setAccountMenuOpen(false);
-    toast.success("Logged out successfully");
     navigate("/");
   };
 

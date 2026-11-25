@@ -192,10 +192,8 @@ const ProductDetail = () => {
         }
         if (isWishlisted) {
             removeFromWishlist(product.id);
-            toast("Removed from Wishlist", { icon: "❌" });
         } else {
             addToWishlist(product);
-            toast.success("Added to Wishlist ❤️");
         }
     };
 

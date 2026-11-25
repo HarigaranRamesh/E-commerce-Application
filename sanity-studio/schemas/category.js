@@ -28,6 +28,37 @@ export const category = {
       },
     },
     {
+      name: 'imageUrl',
+      title: 'Fallback / External Image URL',
+      type: 'url',
+    },
+    {
+      name: 'count',
+      title: 'Styles Count Badge',
+      type: 'string',
+      description: 'e.g. 40+ Styles, Trending Dresses & Tops',
+    },
+    {
+      name: 'gender',
+      title: 'Department / Gender',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'All', value: 'all' },
+          { title: 'Men', value: 'men' },
+          { title: 'Women', value: 'women' },
+          { title: 'Kids', value: 'kids' },
+        ],
+      },
+      initialValue: 'all',
+    },
+    {
+      name: 'order',
+      title: 'Display Order',
+      type: 'number',
+      initialValue: 1,
+    },
+    {
       name: 'description',
       title: 'Description',
       type: 'text',
