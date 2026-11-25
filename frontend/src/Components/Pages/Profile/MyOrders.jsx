@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { ordersAPI } from "../../../services/api";
 import { toast } from "react-hot-toast";
-import { Package, Truck, Clock, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, ExternalLink, ArrowRight } from "lucide-react";
+import { Package, Truck, Clock, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, ExternalLink, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./MyOrders.css";
 
@@ -9,6 +9,10 @@ const MyOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [expandedOrder, setExpandedOrder] = useState(null);
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [sortBy, setSortBy] = useState("newest");
+    const [currentPage, setCurrentPage] = useState(1);
+    const ordersPerPage = 5;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -41,6 +45,40 @@ const MyOrders = () => {
     const toggleOrder = (orderId) => {
         setExpandedOrder(expandedOrder === orderId ? null : orderId);
     };
+
+    const filteredOrders = useMemo(() => {
+        let list = [...orders];
+
+        // Status filtering
+        if (statusFilter === "delivered") {
+            list = list.filter((o) => (o.status || "").toLowerCase() === "delivered");
+        } else if (statusFilter === "in_transit") {
+            list = list.filter((o) => ["shipped", "out_for_delivery"].includes((o.status || "").toLowerCase()));
+        } else if (statusFilter === "processing") {
+            list = list.filter((o) => ["processing", "confirmed", "pending"].includes((o.status || "").toLowerCase()));
+        } else if (statusFilter === "cancelled") {
+            list = list.filter((o) => ["cancelled", "returned"].includes((o.status || "").toLowerCase()));
+        }
+
+        // Sorting
+        if (sortBy === "oldest") {
+            list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+        } else if (sortBy === "amount_high") {
+            list.sort((a, b) => Number(b.totalPrice || 0) - Number(a.totalPrice || 0));
+        } else if (sortBy === "amount_low") {
+            list.sort((a, b) => Number(a.totalPrice || 0) - Number(b.totalPrice || 0));
+        } else {
+            list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        }
+
+        return list;
+    }, [orders, statusFilter, sortBy]);
+
+    const totalPages = Math.ceil(filteredOrders.length / ordersPerPage) || 1;
+    const paginatedOrders = useMemo(() => {
+        const start = (currentPage - 1) * ordersPerPage;
+        return filteredOrders.slice(start, start + ordersPerPage);
+    }, [filteredOrders, currentPage, ordersPerPage]);
 
     const getStatusBadge = (status) => {
         const s = (status || "pending").toLowerCase();
@@ -119,8 +157,68 @@ const MyOrders = () => {
                 <span className="orders-count-pill">{orders.length} {orders.length === 1 ? "Order" : "Orders"}</span>
             </div>
 
-            <div className="profile-orders-list">
-                {orders.map((order) => {
+            {/* Orders Filtering & Sorting Toolbar */}
+            <div className="orders-filter-toolbar">
+                <div className="orders-status-tabs">
+                    <button
+                        type="button"
+                        className={`orders-status-tab ${statusFilter === "all" ? "active" : ""}`}
+                        onClick={() => { setStatusFilter("all"); setCurrentPage(1); }}
+                    >
+                        All ({orders.length})
+                    </button>
+                    <button
+                        type="button"
+                        className={`orders-status-tab ${statusFilter === "processing" ? "active" : ""}`}
+                        onClick={() => { setStatusFilter("processing"); setCurrentPage(1); }}
+                    >
+                        Processing
+                    </button>
+                    <button
+                        type="button"
+                        className={`orders-status-tab ${statusFilter === "in_transit" ? "active" : ""}`}
+                        onClick={() => { setStatusFilter("in_transit"); setCurrentPage(1); }}
+                    >
+                        In Transit
+                    </button>
+                    <button
+                        type="button"
+                        className={`orders-status-tab ${statusFilter === "delivered" ? "active" : ""}`}
+                        onClick={() => { setStatusFilter("delivered"); setCurrentPage(1); }}
+                    >
+                        Delivered
+                    </button>
+                    <button
+                        type="button"
+                        className={`orders-status-tab ${statusFilter === "cancelled" ? "active" : ""}`}
+                        onClick={() => { setStatusFilter("cancelled"); setCurrentPage(1); }}
+                    >
+                        Cancelled
+                    </button>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontSize: "0.82rem", color: "#64748b" }}>Sort by:</span>
+                    <select
+                        className="orders-sort-select"
+                        value={sortBy}
+                        onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+                    >
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="amount_high">Total: High to Low</option>
+                        <option value="amount_low">Total: Low to High</option>
+                    </select>
+                </div>
+            </div>
+
+            {filteredOrders.length === 0 ? (
+                <div style={{ padding: "40px 20px", textAlign: "center", color: "#64748b" }}>
+                    <p style={{ margin: 0 }}>No orders found under "{statusFilter.replace("_", " ")}" status.</p>
+                </div>
+            ) : (
+                <div className="profile-orders-list">
+                    {paginatedOrders.map((order) => {
                     const orderId = String(order.id || order._id || "");
                     const displayId = orderId ? (orderId.length > 8 ? orderId.substring(0, 8).toUpperCase() : orderId) : "ORDER";
                     const orderDate = order.createdAt
@@ -281,6 +379,48 @@ const MyOrders = () => {
                     );
                 })}
             </div>
+            )}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="orders-pagination-bar">
+                    <span>
+                        Showing {(currentPage - 1) * ordersPerPage + 1} to {Math.min(currentPage * ordersPerPage, filteredOrders.length)} of {filteredOrders.length} orders
+                    </span>
+                    <div className="orders-pagination-actions">
+                        <button
+                            type="button"
+                            className="orders-page-btn"
+                            disabled={currentPage <= 1}
+                            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                            title="Previous Page"
+                        >
+                            <ChevronLeft size={16} />
+                        </button>
+
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                            <button
+                                key={p}
+                                type="button"
+                                className={`orders-page-btn ${currentPage === p ? "active" : ""}`}
+                                onClick={() => setCurrentPage(p)}
+                            >
+                                {p}
+                            </button>
+                        ))}
+
+                        <button
+                            type="button"
+                            className="orders-page-btn"
+                            disabled={currentPage >= totalPages}
+                            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                            title="Next Page"
+                        >
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

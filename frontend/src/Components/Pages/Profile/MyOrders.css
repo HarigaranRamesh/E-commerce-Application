@@ -410,3 +410,114 @@
         gap: 16px;
     }
 }
+
+/* Orders Filtering & Pagination Controls */
+.orders-filter-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--luxury-border, #ededed);
+}
+
+.orders-status-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.orders-status-tab {
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.orders-status-tab:hover {
+    border-color: var(--luxury-navy, #2c4152);
+    color: var(--luxury-navy, #2c4152);
+}
+
+.orders-status-tab.active {
+    background: var(--luxury-navy, #2c4152);
+    color: #ffffff;
+    border-color: var(--luxury-navy, #2c4152);
+}
+
+.orders-sort-select {
+    padding: 6px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #ffffff;
+    font-size: 0.82rem;
+    color: #334155;
+    cursor: pointer;
+    outline: none;
+}
+
+.orders-sort-select:focus {
+    border-color: var(--luxury-navy, #2c4152);
+}
+
+.orders-pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--luxury-border, #ededed);
+    font-size: 0.85rem;
+    color: #64748b;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.orders-pagination-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.orders-page-btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #334155;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.orders-page-btn:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.orders-page-btn.active {
+    background: var(--luxury-navy, #2c4152);
+    color: #ffffff;
+    border-color: var(--luxury-navy, #2c4152);
+}
+
+.orders-page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
