@@ -40,10 +40,12 @@ import { CartProvider } from "./Context/CartContext";
 import { WishlistProvider } from "./Context/WishlistContext";
 import { SiteProvider } from "./Context/SiteContext";
 import { Toaster } from "react-hot-toast";
+import ScrollToTop from "./Components/Common/ScrollToTop";
 
 function App() {
   return (
     <SiteProvider>
+      <ScrollToTop />
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
