@@ -181,6 +181,8 @@ const createTables = async () => {
     // Indexes for fast querying & high-performance lookups
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_category_lower ON products(LOWER(category));`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_category_rating ON products(category, rating DESC);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_views_count ON products(views_count DESC);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_gender_lower ON products(LOWER(gender));`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_name_lower ON products(LOWER(name));`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured);`);
