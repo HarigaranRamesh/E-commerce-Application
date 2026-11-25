@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { fetchHeroBanners } from "../../services/sanity";
 import "./Hero.css";
 
 import heroModelImg from "../../assets/hero_model_clean.png";
 import saleImg from "../../assets/sale.jpg";
 import manImg from "../../assets/man.jpg";
 
-const bannerSlides = [
+const DEFAULT_BANNER_SLIDES = [
   {
     id: 1,
     image: heroModelImg,
@@ -35,12 +36,31 @@ const bannerSlides = [
 ];
 
 const Hero = () => {
+  const [slides, setSlides] = useState(DEFAULT_BANNER_SLIDES);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const total = bannerSlides.length;
+  const total = slides.length;
 
   useEffect(() => {
-    if (isPaused) return;
+    let isMounted = true;
+    const loadBanners = async () => {
+      try {
+        const dynamicBanners = await fetchHeroBanners();
+        if (isMounted && dynamicBanners && dynamicBanners.length > 0) {
+          setSlides(dynamicBanners);
+        }
+      } catch (err) {
+        console.warn("Could not load dynamic hero banners:", err);
+      }
+    };
+    loadBanners();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isPaused || total <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % total);
     }, 5000);
@@ -69,12 +89,12 @@ const Hero = () => {
         className="hero-slider-track"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {bannerSlides.map((slide, index) => (
-          <div key={slide.id} className="hero-slide-item">
-            <Link to={slide.link} className="hero-slide-link" title={slide.alt}>
+        {slides.map((slide, index) => (
+          <div key={slide.id || index} className="hero-slide-item">
+            <Link to={slide.link || "/Category"} className="hero-slide-link" title={slide.alt || slide.title}>
               <img
                 src={slide.image}
-                alt={slide.alt}
+                alt={slide.alt || slide.title}
                 className="hero-bg-img"
                 loading={index === 0 ? "eager" : "lazy"}
               />
@@ -84,36 +104,40 @@ const Hero = () => {
       </div>
 
       {/* Navigation Controls */}
-      <button
-        type="button"
-        className="hero-nav-arrow prev"
-        onClick={handlePrev}
-        aria-label="Previous Slide"
-      >
-        <ChevronLeft size={28} />
-      </button>
-
-      <button
-        type="button"
-        className="hero-nav-arrow next"
-        onClick={handleNext}
-        aria-label="Next Slide"
-      >
-        <ChevronRight size={28} />
-      </button>
-
-      {/* Pagination Indicators */}
-      <div className="hero-slider-dots">
-        {bannerSlides.map((_, idx) => (
+      {total > 1 && (
+        <>
           <button
-            key={idx}
             type="button"
-            className={`hero-dot ${idx === currentSlide ? "active" : ""}`}
-            onClick={() => setCurrentSlide(idx)}
-            aria-label={`Go to slide ${idx + 1}`}
-          />
-        ))}
-      </div>
+            className="hero-nav-arrow prev"
+            onClick={handlePrev}
+            aria-label="Previous Slide"
+          >
+            <ChevronLeft size={28} />
+          </button>
+
+          <button
+            type="button"
+            className="hero-nav-arrow next"
+            onClick={handleNext}
+            aria-label="Next Slide"
+          >
+            <ChevronRight size={28} />
+          </button>
+
+          {/* Pagination Indicators */}
+          <div className="hero-slider-dots">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className={`hero-dot ${idx === currentSlide ? "active" : ""}`}
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 };
