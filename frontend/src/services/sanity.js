@@ -58,7 +58,7 @@ export async function fetchHeroBanners() {
     subtitle,
     alt,
     image,
-    imageUrl,
+    "imageUrl": coalesce(image.asset->url, imageUrl),
     link,
     badge,
     order
@@ -71,7 +71,7 @@ export async function fetchHeroBanners() {
     title: item.title,
     subtitle: item.subtitle,
     alt: item.alt || item.title,
-    image: resolveSanityImageUrl(item.image, item.imageUrl),
+    image: item.imageUrl || resolveSanityImageUrl(item.image, item.imageUrl),
     link: item.link || '/Category',
     badge: item.badge,
   }));

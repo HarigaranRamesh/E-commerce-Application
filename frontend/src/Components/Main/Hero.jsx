@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchHeroBanners } from "../../services/sanity";
 import "./Hero.css";
 
+import heroSaleSweaterImg from "../../assets/hero_sale_sweater.png";
 import heroModelImg from "../../assets/hero_model_clean.png";
 import saleImg from "../../assets/sale.jpg";
 import manImg from "../../assets/man.jpg";
@@ -11,27 +12,27 @@ import manImg from "../../assets/man.jpg";
 const DEFAULT_BANNER_SLIDES = [
   {
     id: 1,
+    image: heroSaleSweaterImg,
+    alt: "Winter Knitwear & Luxury Sweaters",
+    link: "/Category",
+  },
+  {
+    id: 2,
     image: heroModelImg,
     alt: "Clothings Store Signature Collection",
     link: "/Category",
   },
   {
-    id: 2,
+    id: 3,
     image: saleImg,
     alt: "Season Sale - Up to 60% Off",
     link: "/Category",
   },
   {
-    id: 3,
+    id: 4,
     image: manImg,
     alt: "Men's Luxury Essentials",
     link: "/category/men",
-  },
-  {
-    id: 4,
-    image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1920&q=80",
-    alt: "Women's Designer Fashion",
-    link: "/category/women",
   },
 ];
 
@@ -70,7 +71,7 @@ const Hero = () => {
     if (isPaused || total <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % total);
-    }, 5000);
+    }, 2000);
     return () => clearInterval(timer);
   }, [isPaused, total]);
 
