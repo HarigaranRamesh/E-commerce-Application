@@ -1,4 +1,5 @@
 import Product from '../models/Product.js';
+import { productCache, suggestionCache, categoryCache } from '../utils/lruCache.js';
 
 /**
  * @desc    Get all products with filtering, sorting, and pagination
@@ -63,7 +64,17 @@ export const getProducts = async (req, res) => {
 export const getProductSuggestions = async (req, res) => {
     try {
         const { q } = req.query;
+        const cacheKey = String(q || '').toLowerCase().trim();
+        if (!cacheKey) return res.json([]);
+
+        // O(1) LRU Cache lookup
+        const cached = suggestionCache.get(cacheKey);
+        if (cached) {
+            return res.json(cached);
+        }
+
         const suggestions = await Product.getSuggestions(q);
+        suggestionCache.set(cacheKey, suggestions, 60000); // 1 min TTL
         res.json(suggestions);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -77,9 +88,18 @@ export const getProductSuggestions = async (req, res) => {
  */
 export const getProductById = async (req, res) => {
     try {
+        const productId = String(req.params.id);
+        
+        // O(1) LRU Cache lookup
+        const cached = productCache.get(productId);
+        if (cached) {
+            return res.json(cached);
+        }
+
         const product = await Product.findById(req.params.id);
 
         if (product) {
+            productCache.set(productId, product, 120000); // 2 min TTL
             res.json(product);
         } else {
             res.status(404).json({ message: 'Product not found' });
@@ -131,6 +151,9 @@ export const createProduct = async (req, res) => {
             variants: req.body.variants || [],
         });
 
+        productCache.clear();
+        suggestionCache.clear();
+        categoryCache.clear();
         res.status(201).json(product);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -163,6 +186,9 @@ export const updateProduct = async (req, res) => {
             product.variants = req.body.variants || product.variants;
 
             const updatedProduct = await product.save();
+            productCache.delete(String(req.params.id));
+            suggestionCache.clear();
+            categoryCache.clear();
             res.json(updatedProduct);
         } else {
             res.status(404).json({ message: 'Product not found' });
@@ -183,6 +209,9 @@ export const deleteProduct = async (req, res) => {
 
         if (product) {
             await product.deleteOne();
+            productCache.delete(String(req.params.id));
+            suggestionCache.clear();
+            categoryCache.clear();
             res.json({ message: 'Product removed' });
         } else {
             res.status(404).json({ message: 'Product not found' });
