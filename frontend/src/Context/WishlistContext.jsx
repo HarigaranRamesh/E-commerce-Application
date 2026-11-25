@@ -1,4 +1,4 @@
-import { createContext, useReducer, useEffect, useContext } from "react";
+import { createContext, useReducer, useEffect, useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { wishlistAPI } from "../services/api";
 import { toast } from "react-hot-toast";
@@ -32,9 +32,11 @@ const wishlistReducer = (state, action) => {
 export const WishlistProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [wishlist, dispatch] = useReducer(wishlistReducer, []);
+  const [loading, setLoading] = useState(true);
 
   // Sync wishlist with backend and user session
   useEffect(() => {
+    let isMounted = true;
     if (user && user.email) {
       const userKey = `wishlist_${user.email}`;
       let cached = [];
@@ -45,24 +47,33 @@ export const WishlistProvider = ({ children }) => {
       }
       if (cached.length > 0) {
         dispatch({ type: "LOAD_WISHLIST", payload: cached });
+        if (isMounted) setLoading(false);
       }
 
       // Fetch official wishlist from backend
       wishlistAPI.getWishlist()
         .then((res) => {
-          if (Array.isArray(res.data)) {
+          if (isMounted && Array.isArray(res.data)) {
             dispatch({ type: "LOAD_WISHLIST", payload: res.data });
             localStorage.setItem(userKey, JSON.stringify(res.data));
           }
         })
         .catch(() => {
           // If offline, fallback to cached
+        })
+        .finally(() => {
+          if (isMounted) setLoading(false);
         });
     } else {
       // Unauthenticated users have NO wishlist access
       dispatch({ type: "LOAD_WISHLIST", payload: [] });
       localStorage.removeItem("wishlist_guest");
+      if (isMounted) setLoading(false);
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [user]);
 
   // Persist wishlist whenever it changes when logged in
@@ -128,6 +139,7 @@ export const WishlistProvider = ({ children }) => {
     <WishlistContext.Provider
       value={{
         wishlist,
+        loading,
         addToWishlist,
         removeFromWishlist,
         clearWishlist,

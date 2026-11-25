@@ -10,7 +10,7 @@ import "./Wishlist.css";
 const SIZES = ["S", "M", "L", "XL"];
 
 const Wishlist = () => {
-  const { wishlist, removeFromWishlist } = useContext(WishlistContext);
+  const { wishlist, loading, removeFromWishlist } = useContext(WishlistContext);
   const { addToCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -69,8 +69,21 @@ const Wishlist = () => {
         {/* Centered Serif Title as shown in screenshot */}
         <h1 className="wishlist-main-title">My Wishlist</h1>
 
-        {/* Empty State */}
-        {wishlist.length === 0 ? (
+        {/* Loading Shimmer State */}
+        {loading && wishlist.length === 0 ? (
+          <div className="wishlist-grid">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="wishlist-product-card skeleton-card">
+                <div className="skeleton-box" style={{ height: "300px" }}></div>
+                <div style={{ padding: "16px" }}>
+                  <div className="skeleton-line" style={{ width: "35%", height: "12px", marginBottom: "8px" }}></div>
+                  <div className="skeleton-line" style={{ width: "80%", height: "16px", marginBottom: "8px" }}></div>
+                  <div className="skeleton-line" style={{ width: "40%", height: "18px" }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : wishlist.length === 0 ? (
           <div className="wishlist-empty-card">
             <div className="empty-icon-box">
               <Heart size={34} />
