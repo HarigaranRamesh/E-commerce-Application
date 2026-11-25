@@ -51,30 +51,41 @@ function App() {
           <WishlistProvider>
           <Toaster
             position="top-right"
+            gutter={10}
             toastOptions={{
-              duration: 2500,
+              duration: 3000,
               style: {
                 background: "#ffffff",
-                color: "#1e293b",
-                fontSize: "14px",
+                color: "#121c2d",
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                fontSize: "13.5px",
                 fontWeight: "500",
-                padding: "12px 18px",
-                borderRadius: "10px",
-                boxShadow: "0 8px 30px rgba(0, 0, 0, 0.08)",
-                border: "1px solid #e2e8f0",
-                maxWidth: "380px",
+                lineHeight: "1.45",
+                padding: "12px 16px",
+                borderRadius: "4px",
+                boxShadow: "0 4px 16px rgba(18, 28, 45, 0.08), 0 1px 3px rgba(18, 28, 45, 0.05)",
+                border: "1px solid #e1e3ea",
+                borderLeft: "4px solid #0263e0",
+                minWidth: "300px",
+                maxWidth: "420px",
               },
               success: {
                 duration: 2500,
+                style: {
+                  borderLeft: "4px solid #008b5c",
+                },
                 iconTheme: {
-                  primary: "#10b981",
+                  primary: "#008b5c",
                   secondary: "#ffffff",
                 },
               },
               error: {
-                duration: 3000,
+                duration: 3500,
+                style: {
+                  borderLeft: "4px solid #d9383a",
+                },
                 iconTheme: {
-                  primary: "#ef4444",
+                  primary: "#d9383a",
                   secondary: "#ffffff",
                 },
               },
