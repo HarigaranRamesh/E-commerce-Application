@@ -5,9 +5,12 @@ import { productsAPI } from "../../../services/api";
 import staticProducts from "../../../assets/data/products";
 import { WishlistContext } from "../../../Context/WishlistContext";
 import { AuthContext } from "../../../Context/AuthContext";
-import { curry } from "../../../utils/performance";
+import { curry, LRUCache } from "../../../utils/performance";
 import { toast } from "react-hot-toast";
 import "../../../Components/Main/Products.css";
+
+// In-memory O(1) LRU Cache for search & filter results (stores up to 50 queries for 5 minutes)
+const searchResultCache = new LRUCache(50, 5 * 60 * 1000);
 
 const deduplicateProducts = (items) => {
     const seen = new Set();
@@ -44,20 +47,41 @@ const SearchResults = () => {
     });
 
     useEffect(() => {
-        const fetchFilteredProducts = async () => {
+        const cacheKey = JSON.stringify({
+            query: query.trim().toLowerCase(),
+            selectedCategory,
+            sort,
+            inStockOnly,
+            maxPrice,
+        });
+
+        // 1. Instant cache hit from memory LRU cache (0ms, 0 network requests)
+        const cached = searchResultCache.get(cacheKey);
+        if (cached) {
+            setProducts(cached);
+            setLoading(false);
+            return;
+        }
+
+        // 2. Debounce fetch by 250ms (prevents excessive API calls when dragging price slider or toggling filters)
+        let isCancelled = false;
+        const timer = setTimeout(async () => {
             setLoading(true);
             try {
                 const params = {
-                    search: query,
+                    search: query || undefined,
                     category: selectedCategory !== "all" ? selectedCategory : undefined,
                     sort: sort !== "relevance" ? sort : undefined,
                     maxPrice: maxPrice || undefined,
                     inStock: inStockOnly ? true : undefined,
                 };
                 const { data } = await productsAPI.getAll(params);
-                const results = Array.isArray(data) ? data : data.products || [];
-                setProducts(deduplicateProducts(results));
+                if (isCancelled) return;
+                const results = deduplicateProducts(Array.isArray(data) ? data : data.products || []);
+                searchResultCache.set(cacheKey, results);
+                setProducts(results);
             } catch {
+                if (isCancelled) return;
                 // Client-side fallback if backend request fails
                 let list = [...staticProducts];
                 if (query) {
@@ -80,13 +104,20 @@ const SearchResults = () => {
                 if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
                 if (sort === "rating") list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
-                setProducts(deduplicateProducts(list));
+                const results = deduplicateProducts(list);
+                searchResultCache.set(cacheKey, results);
+                setProducts(results);
             } finally {
-                setLoading(false);
+                if (!isCancelled) {
+                    setLoading(false);
+                }
             }
-        };
+        }, 250);
 
-        fetchFilteredProducts();
+        return () => {
+            isCancelled = true;
+            clearTimeout(timer);
+        };
     }, [query, selectedCategory, sort, inStockOnly, maxPrice]);
 
     const isWishlisted = (productId) => {
