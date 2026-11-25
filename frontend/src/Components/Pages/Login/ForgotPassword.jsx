@@ -1,21 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, KeyRound } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, KeyRound, ExternalLink } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { authAPI } from "../../../services/api";
 import "../Login/Login.css";
 
 export default function ForgotPassword() {
-    const [step, setStep] = useState(1); // 1: verify email, 2: set new password
-    const [email, setEmail] = useState("");
-    const [resetToken, setResetToken] = useState("");
+    const [searchParams] = useSearchParams();
+    const queryToken = searchParams.get("token");
+    const queryEmail = searchParams.get("email");
+
+    const [step, setStep] = useState(queryToken && queryEmail ? 2 : 1);
+    const [email, setEmail] = useState(queryEmail || "");
+    const [resetToken, setResetToken] = useState(queryToken || "");
     const [userName, setUserName] = useState("");
+    const [previewUrl, setPreviewUrl] = useState(null);
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (queryToken && queryEmail) {
+            setStep(2);
+            setResetToken(queryToken);
+            setEmail(queryEmail);
+            toast.success("Reset link verified! Please set your new password.");
+        }
+    }, [queryToken, queryEmail]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -36,8 +50,11 @@ export default function ForgotPassword() {
             if (data.resetToken) {
                 setResetToken(data.resetToken);
                 setUserName(data.name || "");
+                if (data.previewUrl) {
+                    setPreviewUrl(data.previewUrl);
+                }
                 setStep(2);
-                toast.success(data.message || "Account verified! Please set your new password.");
+                toast.success(data.message || "Password reset email dispatched!");
             } else {
                 toast.error("Could not verify account. Please try again.");
             }
@@ -93,7 +110,7 @@ export default function ForgotPassword() {
                                 <KeyRound size={28} />
                             </div>
                             <h2>Forgot Password?</h2>
-                            <p>Enter your registered email address to verify your account and set a new password.</p>
+                            <p>Enter your registered email address to receive your secure password reset link.</p>
                         </div>
 
                         <form className="auth-form" onSubmit={handleVerifyEmail}>
@@ -113,7 +130,7 @@ export default function ForgotPassword() {
                             </div>
 
                             <button type="submit" className="auth-button" disabled={loading} style={{ opacity: loading ? 0.7 : 1 }}>
-                                {loading ? "Verifying Account..." : "Verify & Continue"}
+                                {loading ? "Sending Reset Email..." : "Send Reset Email"}
                             </button>
                         </form>
                     </>
@@ -129,12 +146,21 @@ export default function ForgotPassword() {
                                 <span>{email}</span>
                                 <button
                                     type="button"
-                                    onClick={() => setStep(1)}
+                                    onClick={() => { setStep(1); setPreviewUrl(null); }}
                                     style={{ background: 'none', border: 'none', color: '#0284c7', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.82rem', padding: 0 }}
                                 >
                                     Change
                                 </button>
                             </div>
+
+                            {previewUrl && (
+                                <div style={{ marginTop: '12px', padding: '10px 14px', background: '#fef3c7', borderRadius: '8px', border: '1px solid #fde68a', fontSize: '0.83rem', color: '#92400e', textAlign: 'left' }}>
+                                    <strong>Dev Preview:</strong> An email was generated!{" "}
+                                    <a href={previewUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#b45309', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'underline' }}>
+                                        View Email in Browser <ExternalLink size={13} />
+                                    </a>
+                                </div>
+                            )}
                         </div>
 
                         <form className="auth-form" onSubmit={handleResetPassword}>
