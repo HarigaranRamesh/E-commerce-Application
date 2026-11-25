@@ -34,9 +34,10 @@ const CategoryDetail = () => {
   const itemsPerPage = 12;
 
   // Normalize category name for display
-  const displayCategory = categoryName
+  const isAllCategory = !categoryName || ["all", "collection", "all-products", "all-collections"].includes(categoryName.toLowerCase());
+  const displayCategory = !isAllCategory
     ? categoryName.charAt(0).toUpperCase() + categoryName.slice(1).replace("-", " ")
-    : "Collection";
+    : "All";
 
   const filterFallback = (items) => {
     const catLower = (categoryName || "").toLowerCase();
@@ -50,6 +51,10 @@ const CategoryDetail = () => {
         return false;
       }
 
+      if (["all", "collection", "all-products", "all-collections"].includes(catLower) || !categoryName) {
+        return true;
+      }
+
       if (catLower === "men" || catLower === "mens") {
         return pGender === "men" || ["shirts", "pants", "hoodies", "t-shirts"].includes(pCat);
       }
@@ -58,6 +63,9 @@ const CategoryDetail = () => {
       }
       if (catLower === "kids" || catLower === "kid") {
         return pGender === "kids" || ["boys", "girls"].includes(pCat);
+      }
+      if (catLower === "pants" && targetGender === "kids") {
+        return pGender === "kids" && (["boys", "girls", "kids"].includes(pCat) || (Array.isArray(p.tags) && (p.tags.includes("pants") || p.tags.includes("dungaree"))));
       }
       return pCat === catLower;
     });
