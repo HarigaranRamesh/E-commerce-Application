@@ -178,11 +178,30 @@ const createTables = async () => {
         `);
     }
 
-    // Indexes for fast querying
+    // Indexes for fast querying & high-performance lookups
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_category_lower ON products(LOWER(category));`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_gender_lower ON products(LOWER(gender));`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_name_lower ON products(LOWER(name));`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_price ON products(price);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_rating ON products(rating);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_created_at ON products(created_at DESC);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_brand ON products(LOWER(brand));`);
+
+    // Users indexes
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_users_email_lower ON users(LOWER(email));`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at DESC);`);
+
+    // Orders indexes
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_orders_is_paid ON orders(is_paid);`);
+
+    // Payments & coupons indexes
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons(code);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_order_id ON payments(order_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_razorpay_order_id ON payments(razorpay_order_id);`);
