@@ -1,6 +1,6 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Heart, SlidersHorizontal, ArrowUpDown, Check } from "lucide-react";
+import { Heart, SlidersHorizontal, ArrowUpDown, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { productsAPI } from "../../../services/api";
 import staticProducts from "../../../assets/data/products";
 import { WishlistContext } from "../../../Context/WishlistContext";
@@ -35,11 +35,14 @@ const SearchResults = () => {
     const [sort, setSort] = useState("relevance");
     const [inStockOnly, setInStockOnly] = useState(false);
     const [maxPrice, setMaxPrice] = useState(3000);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 12;
 
     const categories = ["all", "shirts", "pants", "hoodies", "t-shirts"];
 
     // Curried filter state updater
     const updateFilter = curry((field, value) => {
+        setCurrentPage(1);
         if (field === "category") setSelectedCategory(value);
         else if (field === "sort") setSort(value);
         else if (field === "inStock") setInStockOnly(value);
@@ -137,6 +140,12 @@ const SearchResults = () => {
             addToWishlist(product);
         }
     };
+
+    const totalPages = Math.ceil(products.length / itemsPerPage) || 1;
+    const paginatedProducts = useMemo(() => {
+        const start = (currentPage - 1) * itemsPerPage;
+        return products.slice(start, start + itemsPerPage);
+    }, [products, currentPage, itemsPerPage]);
 
     return (
         <div className="container" style={{ paddingTop: "140px", minHeight: "75vh", paddingBottom: "60px" }}>
@@ -281,61 +290,102 @@ const SearchResults = () => {
                     </button>
                 </div>
             ) : (
-                <div className="product-container" style={{ padding: 0 }}>
-                    {products.map((product) => (
-                        <div
-                            key={product.id}
-                            className="product-card"
-                            onClick={() => navigate(`/product/${product.id}`)}
-                            style={{ cursor: "pointer" }}
-                        >
-                            <div className="product-image-wrapper">
-                                <Heart
-                                    className="wishlist-icon"
-                                    onClick={(e) => toggleWishlist(product, e)}
-                                    fill={isWishlisted(product.id) ? "red" : "none"}
-                                    color={isWishlisted(product.id) ? "red" : "gray"}
-                                    strokeWidth={1.5}
-                                />
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="product-image"
-                                />
-                                {product.stock <= 5 && product.stock > 0 && (
-                                    <span style={{ position: "absolute", bottom: "8px", left: "8px", background: "#fef2f2", color: "#dc2626", fontSize: "0.72rem", padding: "2px 8px", borderRadius: "10px", fontWeight: 600 }}>
-                                        Low Stock
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="product-details">
-                                <span className="product-brand-tag">{product.brand || "CLOTHINGS STORE"}</span>
-                                <h3 className="product-title" title={product.name}>{product.name}</h3>
-
-                                <div className="product-price-row">
-                                    <span className="product-price">₹{Number(product.price).toLocaleString("en-IN")}</span>
-                                    {product.original_price && Number(product.original_price) > Number(product.price) && (
-                                        <>
-                                            <span className="product-original-price">
-                                                ₹{Number(product.original_price).toLocaleString("en-IN")}
-                                            </span>
-                                            <span className="product-discount-percent">
-                                                ({Math.round(((Number(product.original_price) - Number(product.price)) / Number(product.original_price)) * 100)}% off)
-                                            </span>
-                                        </>
+                <>
+                    <div className="product-container" style={{ padding: 0 }}>
+                        {paginatedProducts.map((product) => (
+                            <div
+                                key={product.id}
+                                className="product-card"
+                                onClick={() => navigate(`/product/${product.id}`)}
+                                style={{ cursor: "pointer" }}
+                            >
+                                <div className="product-image-wrapper">
+                                    <Heart
+                                        className="wishlist-icon"
+                                        onClick={(e) => toggleWishlist(product, e)}
+                                        fill={isWishlisted(product.id) ? "red" : "none"}
+                                        color={isWishlisted(product.id) ? "red" : "gray"}
+                                        strokeWidth={1.5}
+                                    />
+                                    <img
+                                        src={product.image}
+                                        alt={product.name}
+                                        className="product-image"
+                                    />
+                                    {product.stock <= 5 && product.stock > 0 && (
+                                        <span style={{ position: "absolute", bottom: "8px", left: "8px", background: "#fef2f2", color: "#dc2626", fontSize: "0.72rem", padding: "2px 8px", borderRadius: "10px", fontWeight: 600 }}>
+                                            Low Stock
+                                        </span>
                                     )}
                                 </div>
 
-                                <div className="product-offer-row">
-                                    <span className="offer-tag-label">Offer Price:</span>
-                                    <span className="offer-tag-price">₹{Math.round(Number(product.price) * 0.8).toLocaleString("en-IN")}</span>
-                                    <span className="offer-tag-code">| With SUPER20</span>
+                                <div className="product-details">
+                                    <span className="product-brand-tag">{product.brand || "CLOTHINGS STORE"}</span>
+                                    <h3 className="product-title" title={product.name}>{product.name}</h3>
+
+                                    <div className="product-price-row">
+                                        <span className="product-price">₹{Number(product.price).toLocaleString("en-IN")}</span>
+                                        {product.original_price && Number(product.original_price) > Number(product.price) && (
+                                            <>
+                                                <span className="product-original-price">
+                                                    ₹{Number(product.original_price).toLocaleString("en-IN")}
+                                                </span>
+                                                <span className="product-discount-percent">
+                                                    ({Math.round(((Number(product.original_price) - Number(product.price)) / Number(product.original_price)) * 100)}% off)
+                                                </span>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    <div className="product-offer-row">
+                                        <span className="offer-tag-label">Offer Price:</span>
+                                        <span className="offer-tag-price">₹{Math.round(Number(product.price) * 0.8).toLocaleString("en-IN")}</span>
+                                        <span className="offer-tag-code">| With SUPER20</span>
+                                    </div>
                                 </div>
                             </div>
+                        ))}
+                    </div>
+
+                    {/* Pagination Bar */}
+                    {totalPages > 1 && (
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "2.5rem", padding: "1.25rem 0", borderTop: "1px solid #e5e7eb", flexWrap: "wrap", gap: "1rem" }}>
+                            <span style={{ fontSize: "0.88rem", color: "#6b7280" }}>
+                                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, products.length)} of {products.length} products
+                            </span>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                <button
+                                    type="button"
+                                    disabled={currentPage <= 1}
+                                    onClick={() => { setCurrentPage((p) => Math.max(p - 1, 1)); window.scrollTo({ top: 100, behavior: "smooth" }); }}
+                                    style={{ padding: "0.4rem 0.75rem", borderRadius: "6px", border: "1px solid #d1d5db", background: "#fff", cursor: currentPage <= 1 ? "not-allowed" : "pointer", opacity: currentPage <= 1 ? 0.4 : 1 }}
+                                    title="Previous Page"
+                                >
+                                    <ChevronLeft size={16} />
+                                </button>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                    <button
+                                        key={p}
+                                        type="button"
+                                        onClick={() => { setCurrentPage(p); window.scrollTo({ top: 100, behavior: "smooth" }); }}
+                                        style={{ minWidth: "34px", height: "34px", padding: "0 0.5rem", borderRadius: "6px", border: "1px solid", borderColor: currentPage === p ? "#111827" : "#d1d5db", background: currentPage === p ? "#111827" : "#fff", color: currentPage === p ? "#fff" : "#374151", fontWeight: currentPage === p ? 600 : 400, cursor: "pointer" }}
+                                    >
+                                        {p}
+                                    </button>
+                                ))}
+                                <button
+                                    type="button"
+                                    disabled={currentPage >= totalPages}
+                                    onClick={() => { setCurrentPage((p) => Math.min(p + 1, totalPages)); window.scrollTo({ top: 100, behavior: "smooth" }); }}
+                                    style={{ padding: "0.4rem 0.75rem", borderRadius: "6px", border: "1px solid #d1d5db", background: "#fff", cursor: currentPage >= totalPages ? "not-allowed" : "pointer", opacity: currentPage >= totalPages ? 0.4 : 1 }}
+                                    title="Next Page"
+                                >
+                                    <ChevronRight size={16} />
+                                </button>
+                            </div>
                         </div>
-                    ))}
-                </div>
+                    )}
+                </>
             )}
         </div>
     );
