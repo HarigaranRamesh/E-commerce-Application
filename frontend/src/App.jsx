@@ -91,6 +91,10 @@ function App() {
                 <Route path="/order-confirmation" element={<OrderConfirmation />} />
                 <Route path="/booking-confirmation/:id" element={<OrderConfirmation />} />
                 <Route path="/booking-confirmation" element={<OrderConfirmation />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsConditions />} />
+                <Route path="/shipping" element={<ShippingReturns />} />
               </Route>
 
               {/* Admin Routes - Isolated from Public Layout */}
